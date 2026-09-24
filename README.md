@@ -35,9 +35,12 @@ Konzept und Ausbauplan: [`pilzhandel/KONZEPT.md`](pilzhandel/KONZEPT.md).
 - Wechselwirkungs-Check (14 Medikamente und Umstände), Vergleich von bis zu 3 Pilzen,
   teilbare Merkliste
 - Einkaufs-Checkliste, kuratierte Shops und seriöse Infoseiten
+- Rezepte mit Speisepilzen, druckbare Arzt-Karte, Einnahme-Tagebuch mit Kalender-Erinnerung
+- Studien-Radar mit neuen PubMed-Treffern pro Pilz (noch nicht eingestuft)
 - Toolbar mit Suche und Live-Vorschlägen, Textgröße in 5 Stufen, Hell/Dunkel/Auto
 - Offlinefähig und installierbar (PWA)
 - Fotos von Wikimedia Commons; fehlt ein Foto, erscheint eine Illustration
+- Schriften lokal eingebunden, kein Abruf bei Google
 
 ## Herkunft
 
@@ -54,3 +57,8 @@ Versionsgeschichte bis zu diesem Schnitt steht weiterhin im alten Repository.
 Alle Pfade im Projekt sind relativ — es läuft an jeder Adresse und auch lokal per
 Doppelklick. Nach einer Änderung an den App-Dateien die Zahl in `VERSION` in
 `pilzhandel/sw.js` hochzählen, sonst sehen installierte Kopien die Änderung erst später.
+
+- Daten ändern: in `heilpilze.html` (Pilze) bzw. `pilzhandel/tools/build-data.js` (App-Zusätze, Rezepte),
+  dann `node pilzhandel/tools/build-data.js`
+- Studien-Radar aktualisieren: `node pilzhandel/tools/studien-radar.js [Tage]`, Treffer sichten,
+  `pilzhandel/radar.js` committen

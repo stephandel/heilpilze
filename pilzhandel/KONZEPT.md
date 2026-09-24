@@ -1,6 +1,6 @@
 # Pilz Handel · Konzept für die Webapp
 
-Stand: 23. September 2026
+Stand: 24. September 2026
 
 ## 1. Idee in einem Satz
 
@@ -55,17 +55,20 @@ Wo wir uns absetzen: smaints wirbt mit Wirkung, wir ordnen Wirkung ein. Das ist 
 7. Einkaufen: Checkliste, elf Anbieter in vier Kategorien, 14 geprüfte Infoseiten
 8. Wissen: FAQ, Methode, Einkauf, Sicherheit, Rechtslage
 9. Installierbar als App (PWA), offlinefähig
+10. Rezepte mit Speisepilzen (8 Gerichte, je mit Sicherheitshinweis), verlinkt von den Detailseiten
+11. Druckbare Arzt-Karte aus Merkliste und Check („Das nehme ich, bitte prüfen“), Name, Medikamente und Dosis lokal gespeichert
+12. Einnahme-Tagebuch: Pilz, Präparat, Menge, Befinden; Auswertung, CSV-Export, Sicherung als Datei, Kalender-Erinnerung (.ics) mit Termin für Pause und Bilanz
+13. Studien-Radar: `tools/studien-radar.js` holt neue Humanstudien und Übersichtsarbeiten aus PubMed nach `radar.js`; Anzeige als „noch nicht eingestuft“, Live-Link zu PubMed auf jeder Detailseite
+14. Schriften lokal eingebunden, externe Abrufe nur noch für Fotos
 
 **Nächste Stufen, nach Aufwand sortiert**
 
 | Stufe | Idee | Aufwand |
 |---|---|---|
 | 1 | Eigene Fotos oder lizenzierte Bildserie statt Commons, einheitlicher Look | klein, braucht Fotos |
-| 1 | Rezepte mit Speisepilzen (Shiitake, Austernpilz, Hericium, Maitake) | klein |
-| 1 | Druckbare Arzt-Karte aus Merkliste und Check („Das nehme ich, bitte prüfen“) | klein |
 | 2 | Produktdatenbank: konkrete Produkte mit β-Glucan-Gehalt, Herkunft, Preis pro Studiendosis | mittel |
-| 2 | Einnahme-Tagebuch mit Erinnerung (lokal gespeichert) | mittel |
-| 2 | Studien-Radar: neue Studien pro Pilz, halbautomatisch aus PubMed | mittel |
+| 2 | Studien-Radar als GitHub Action, die monatlich läuft und einen Pull Request öffnet | klein |
+| 2 | Treffer aus dem Radar lesen und in `heilpilze.html` einstufen (Handarbeit, fachlich) | laufend |
 | 3 | Eigener Shop oder Affiliate-Links, klar gekennzeichnet | groß, rechtlich prüfen |
 | 3 | Konto mit Synchronisierung über Geräte | groß |
 
@@ -82,5 +85,6 @@ Wo wir uns absetzen: smaints wirbt mit Wirkung, wir ordnen Wirkung ein. Das ist 
 
 - Reines HTML, CSS und JavaScript ohne Framework und ohne Build. Läuft auf GitHub Pages.
 - Datenquelle ist `heilpilze.html`. `tools/build-data.js` erzeugt daraus `data.js` und ergänzt Bilder, Farben, Wechselwirkungen und Shops.
-- Alle Einstellungen, Merkliste und Check-Auswahl liegen nur im Browser (`localStorage`). Kein Tracking.
-- Externe Abrufe: Google Fonts und Wikimedia Commons. Für volle Datensparsamkeit können beide lokal eingebunden werden.
+- Alle Einstellungen, Merkliste, Check-Auswahl, Tagebuch und Arzt-Karte liegen nur im Browser (`localStorage`). Kein Tracking.
+- Schriften liegen in `fonts/` (SIL Open Font License). Einziger externer Abruf: Fotos von Wikimedia Commons.
+- `tools/studien-radar.js` braucht Node 18 oder neuer (eingebautes `fetch`) und fragt die öffentliche PubMed-Schnittstelle ohne Schlüssel ab.
