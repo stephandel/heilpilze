@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Pilz Handel · Heilpilze ehrlich eingeordnet</title>
+<meta name="description" content="Pilz Handel: 21 Heil- und Vitalpilze mit evidenzbasierter Einstufung jeder Wirkung, Wechselwirkungs-Check, Vergleich, Einkaufsratgeber und seriösen Shops.">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#F7F1E8" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#15110E" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Pilz Handel">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,600;0,9..40,700;0,9..40,800;1,9..40,400&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,400;1,9..144,500&display=swap" rel="stylesheet">
+<script>
+  /* Theme und Schriftgröße vor dem ersten Rendern setzen, damit nichts flackert */
+  (function(){
+    try{
+      var t = localStorage.getItem("ph-theme"); if(t==="light"||t==="dark") document.documentElement.setAttribute("data-theme", t);
+      var f = parseFloat(localStorage.getItem("ph-fs")); if(f>=0.8 && f<=1.6) document.documentElement.style.fontSize = (f*100)+"%";
+    }catch(e){}
+  })();
+</script>
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-search" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></symbol>
+    <symbol id="i-heart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 20s-7.5-4.6-9.2-9.3C1.6 7.3 3.9 4 7.3 4c2 0 3.5 1.1 4.7 2.7C13.2 5.1 14.7 4 16.7 4c3.4 0 5.7 3.3 4.5 6.7C19.5 15.4 12 20 12 20z"/></symbol>
+    <symbol id="i-heart-f" viewBox="0 0 24 24" fill="currentColor"><path d="M12 20s-7.5-4.6-9.2-9.3C1.6 7.3 3.9 4 7.3 4c2 0 3.5 1.1 4.7 2.7C13.2 5.1 14.7 4 16.7 4c3.4 0 5.7 3.3 4.5 6.7C19.5 15.4 12 20 12 20z"/></symbol>
+    <symbol id="i-compare" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="7" height="16" rx="1.5"/><rect x="14" y="4" width="7" height="16" rx="1.5"/></symbol>
+    <symbol id="i-shield" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 4.5 6v5.5c0 4.6 3.2 8.2 7.5 9.5 4.3-1.3 7.5-4.9 7.5-9.5V6L12 3z"/><path d="m9 12 2 2 4-4"/></symbol>
+    <symbol id="i-store" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.5 5.5 4h13L20 9.5"/><path d="M4 9.5c0 1.4 1.1 2.5 2.7 2.5s2.6-1.1 2.6-2.5c0 1.4 1.2 2.5 2.7 2.5s2.7-1.1 2.7-2.5c0 1.4 1.1 2.5 2.6 2.5S20 10.9 20 9.5"/><path d="M5.5 12v8h13v-8"/><path d="M10 20v-4.5h4V20"/></symbol>
+    <symbol id="i-book" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5.5C4 4.7 4.7 4 5.5 4H11v16H5.5c-.8 0-1.5-.7-1.5-1.5v-13z"/><path d="M20 5.5c0-.8-.7-1.5-1.5-1.5H13v16h5.5c.8 0 1.5-.7 1.5-1.5v-13z"/></symbol>
+    <symbol id="i-home" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11 12 4l8 7"/><path d="M6 9.5V20h12V9.5"/></symbol>
+    <symbol id="i-grid" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></symbol>
+    <symbol id="i-list" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 6h11M9 12h11M9 18h11"/><circle cx="4.5" cy="6" r="1"/><circle cx="4.5" cy="12" r="1"/><circle cx="4.5" cy="18" r="1"/></symbol>
+    <symbol id="i-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2M12 19.5v2M4.6 4.6 6 6M18 18l1.4 1.4M2.5 12h2M19.5 12h2M4.6 19.4 6 18M18 6l1.4-1.4"/></symbol>
+    <symbol id="i-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></symbol>
+    <symbol id="i-auto" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="8"/><path d="M12 4a8 8 0 0 1 0 16z" fill="currentColor"/></symbol>
+    <symbol id="i-sliders" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/></symbol>
+    <symbol id="i-share" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3.5M7.5 8 12 3.5 16.5 8"/><path d="M5 12.5V19c0 .8.7 1.5 1.5 1.5h11c.8 0 1.5-.7 1.5-1.5v-6.5"/></symbol>
+    <symbol id="i-back" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5 8 12l7 7"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.5 4.5 4.5L19 7.5"/></symbol>
+    <symbol id="i-leaf" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 19c0-8 5-14 15-14 0 10-6 15-14 15"/><path d="M5 19 13 11"/></symbol>
+    <symbol id="i-flask" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 3.5h5M10 3.5v6L4.8 18.3A1.5 1.5 0 0 0 6.1 20.5h11.8a1.5 1.5 0 0 0 1.3-2.2L14 9.5v-6"/><path d="M7.5 14.5h9"/></symbol>
+    <symbol id="i-print" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M7 9V3.5h10V9"/><rect x="3.5" y="9" width="17" height="8" rx="1.5"/><path d="M7 14h10v6.5H7z"/></symbol>
+    <symbol id="i-logo" viewBox="0 0 80 80">
+      <circle cx="40" cy="40" r="40" fill="var(--surface-2)"/>
+      <path d="M30 47 C30 58 28 65 26 70 Q40 75 54 70 C52 65 50 58 50 47 Z" fill="#EADBC4" stroke="#B89A76" stroke-width="1.2"/>
+      <path d="M9 44 C9 24 23 11 40 11 C57 11 71 24 71 44 C71 48 68 50 64 50 L16 50 C12 50 9 48 9 44 Z" fill="#8A5634"/>
+      <path d="M9 44 C9 24 23 11 40 11 C57 11 71 24 71 44 C71 48 68 50 64 50 L16 50 C12 50 9 48 9 44 Z" fill="url(#capg)"/>
+      <path d="M16 50 Q40 57 64 50" fill="none" stroke="#D9BF9C" stroke-width="3" stroke-linecap="round"/>
+      <ellipse cx="29" cy="25" rx="10" ry="5" transform="rotate(-28 29 25)" fill="#fff" opacity=".22"/>
+      <circle cx="48" cy="22" r="2.2" fill="#fff" opacity=".18"/><circle cx="56" cy="33" r="1.6" fill="#fff" opacity=".18"/>
+      <path d="M18 72 q4 -6 8 0 M52 72 q4 -7 9 0" fill="none" stroke="#6E8452" stroke-width="2.4" stroke-linecap="round"/>
+    </symbol>
+    <linearGradient id="capg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#A86B45"/><stop offset="1" stop-color="#6B4127"/></linearGradient>
+  </defs>
+</svg>
+
+<a class="skip" href="#main">Zum Inhalt springen</a>
+
+<header class="toolbar">
+  <div class="container">
+    <a class="brand" href="#/" aria-label="Pilz Handel, Startseite">
+      <svg aria-hidden="true"><use href="#i-logo"/></svg>
+      <span class="wm">Pilz <em>Handel</em></span>
+    </a>
+    <nav class="mainnav" aria-label="Hauptnavigation">
+      <a href="#/pilze" data-nav="pilze">Pilze</a>
+      <a href="#/check" data-nav="check" title="Wechselwirkungs-Check">Check</a>
+      <a href="#/vergleich" data-nav="vergleich">Vergleich</a>
+      <a href="#/shops" data-nav="shops">Einkaufen</a>
+      <a href="#/wissen" data-nav="wissen">Wissen</a>
+    </nav>
+    <div class="gsearch" id="gsearch" role="search">
+      <div class="field">
+        <svg aria-hidden="true"><use href="#i-search"/></svg>
+        <input id="gq" type="search" placeholder="Pilz, Wirkung, Beschwerde …" autocomplete="off" aria-label="Suche" aria-controls="suggest" aria-expanded="false">
+        <kbd aria-hidden="true">/</kbd>
+      </div>
+      <div class="suggest" id="suggest" role="listbox"></div>
+    </div>
+    <div class="tools">
+      <button class="tbtn search-toggle" id="searchToggle" aria-label="Suche öffnen"><svg aria-hidden="true"><use href="#i-search"/></svg></button>
+      <div class="fontgroup" role="group" aria-label="Textgröße">
+        <button class="fs-s" data-fs="-1" aria-label="Text kleiner">A−</button>
+        <button data-fs="0" aria-label="Textgröße zurücksetzen">A</button>
+        <button class="fs-l" data-fs="1" aria-label="Text größer">A+</button>
+      </div>
+      <button class="tbtn" id="themeBtn" aria-label="Farbschema wechseln"><svg aria-hidden="true"><use href="#i-auto"/></svg></button>
+      <button class="tbtn" id="settingsBtn" aria-label="Anzeige-Einstellungen" aria-expanded="false" aria-controls="settings"><svg aria-hidden="true"><use href="#i-sliders"/></svg></button>
+      <a class="tbtn" href="#/merkliste" aria-label="Merkliste"><svg aria-hidden="true"><use href="#i-heart"/></svg><span class="badge" data-favcount></span></a>
+    </div>
+  </div>
+  <div class="popover" id="settings" role="dialog" aria-label="Anzeige-Einstellungen">
+    <h3>Anzeige</h3>
+    <div class="row"><span>Textgröße</span>
+      <div class="seg" id="fsSeg">
+        <button data-v="0.875" aria-label="Klein">S</button><button data-v="1" aria-label="Normal">M</button><button data-v="1.125" aria-label="Groß">L</button><button data-v="1.25" aria-label="Sehr groß">XL</button><button data-v="1.4" aria-label="Maximal">XXL</button>
+      </div>
+    </div>
+    <div class="row"><span>Farbschema</span>
+      <div class="seg" id="themeSeg">
+        <button data-v="auto">Auto</button><button data-v="light">Hell</button><button data-v="dark">Dunkel</button>
+      </div>
+    </div>
+    <p class="preview">Einstellungen werden auf diesem Gerät gespeichert.</p>
+    <div class="row"><span>Offline nutzen</span><button class="btn sm soft" id="installBtn" hidden>App installieren</button><small class="muted" id="offlineState">wird vorbereitet …</small></div>
+  </div>
+</header>
+
+<main id="main" tabindex="-1"></main>
+
+<footer class="footer">
+  <div class="container">
+    <div class="cols">
+      <div>
+        <a class="brand" href="#/" aria-label="Pilz Handel"><svg aria-hidden="true"><use href="#i-logo"/></svg><span class="wm">Pilz <em>Handel</em></span></a>
+        <p>Heilpilze ehrlich eingeordnet. Jede Wirkungsaussage mit Evidenzstufe und Quelle, ohne Heilversprechen.</p>
+      </div>
+      <div>
+        <h4>Entdecken</h4>
+        <ul><li><a href="#/pilze">Alle Pilze</a></li><li><a href="#/check">Wechselwirkungs-Check</a></li><li><a href="#/vergleich">Vergleich</a></li><li><a href="#/merkliste">Merkliste</a></li></ul>
+      </div>
+      <div>
+        <h4>Ratgeber</h4>
+        <ul><li><a href="#/shops">Einkaufen &amp; Shops</a></li><li><a href="#/wissen">Wissen &amp; Methode</a></li><li><a href="#/ueber">Über Pilz Handel</a></li></ul>
+      </div>
+    </div>
+    <p class="fine">Diese App dient der Information und ersetzt keine ärztliche Beratung. Heilpilze sind in Deutschland Lebensmittel bzw. Nahrungsergänzungsmittel, keine zugelassenen Arzneimittel. Fotos: Wikimedia Commons, Urheber und Lizenzen auf der jeweils verlinkten Dateiseite. Stand der Recherche: September 2026.</p>
+  </div>
+</footer>
+
+<nav class="tabbar" aria-label="Schnellnavigation">
+  <a href="#/" data-nav="home"><svg aria-hidden="true"><use href="#i-home"/></svg>Start</a>
+  <a href="#/pilze" data-nav="pilze"><svg aria-hidden="true"><use href="#i-grid"/></svg>Pilze</a>
+  <a href="#/check" data-nav="check"><svg aria-hidden="true"><use href="#i-shield"/></svg>Check</a>
+  <a href="#/merkliste" data-nav="merkliste"><svg aria-hidden="true"><use href="#i-heart"/></svg>Merkliste<span class="badge" data-favcount></span></a>
+  <a href="#/shops" data-nav="shops"><svg aria-hidden="true"><use href="#i-store"/></svg>Kaufen</a>
+</nav>
+
+<div class="tray" id="tray" role="region" aria-label="Vergleichsauswahl">
+  <span id="trayText"></span>
+  <a class="btn sm accent" href="#/vergleich">Vergleichen</a>
+  <button class="iconbtn" id="trayClear" aria-label="Auswahl leeren"><svg><use href="#i-x"/></svg></button>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

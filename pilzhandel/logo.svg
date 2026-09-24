@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 96" role="img" aria-labelledby="t">
+  <title id="t">Pilz Handel</title>
+  <defs>
+    <style>@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;1,9..144,500&amp;family=DM+Sans:wght@600&amp;display=swap');</style>
+    <linearGradient id="cap" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#A86B45"/>
+      <stop offset="1" stop-color="#6B4127"/>
+    </linearGradient>
+    <linearGradient id="stem" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#F3E8D6"/>
+      <stop offset="1" stop-color="#DCC9AC"/>
+    </linearGradient>
+  </defs>
+  <g transform="translate(8 8)">
+    <circle cx="40" cy="40" r="40" fill="#EFE5D6"/>
+    <path d="M30 47 C30 58 28 65 26 70 Q40 75 54 70 C52 65 50 58 50 47 Z" fill="url(#stem)" stroke="#B89A76" stroke-width="1.2"/>
+    <path d="M9 44 C9 24 23 11 40 11 C57 11 71 24 71 44 C71 48 68 50 64 50 L16 50 C12 50 9 48 9 44 Z" fill="url(#cap)"/>
+    <path d="M16 50 Q40 57 64 50" fill="none" stroke="#D9BF9C" stroke-width="3" stroke-linecap="round"/>
+    <ellipse cx="29" cy="25" rx="10" ry="5" transform="rotate(-28 29 25)" fill="#fff" opacity=".22"/>
+    <circle cx="48" cy="22" r="2.2" fill="#fff" opacity=".18"/>
+    <circle cx="56" cy="33" r="1.6" fill="#fff" opacity=".18"/>
+    <path d="M18 72 q4 -6 8 0 M52 72 q4 -7 9 0" fill="none" stroke="#6E8452" stroke-width="2.4" stroke-linecap="round"/>
+  </g>
+  <text x="104" y="56" font-family="Fraunces, Georgia, 'Times New Roman', serif" font-size="44" font-weight="600" fill="#2A211B" letter-spacing="-0.5">Pilz <tspan font-style="italic" font-weight="500" fill="#B4602E">Handel</tspan></text>
+  <text x="106" y="80" font-family="'DM Sans', 'Helvetica Neue', Arial, sans-serif" font-size="12.5" font-weight="600" fill="#7A6D60" letter-spacing="1.6">HEILPILZE · EVIDENZ · EINKAUF</text>
+</svg>
