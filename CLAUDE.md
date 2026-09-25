@@ -24,9 +24,13 @@ Sicherheit und Einkauf achten müssen.
 - Einziger externer Laufzeitabruf: Fotos von Wikimedia Commons. Keine weiteren einführen.
 - **Datenquelle ist `heilpilze.html`.** `pilzhandel/data.js` wird erzeugt, nie von Hand ändern:
   `node pilzhandel/tools/build-data.js`
+- **Neues Foto (`imgs`/`HERO` in `tools/build-data.js`):** erst `node pilzhandel/tools/fetch-image-credits.js`
+  (Urheber/Lizenz von Commons, schreibt `tools/image-credits.json`), dann `build-data.js`. Sonst
+  fehlt der Nachweis (VIS-04) und der Test dazu schlägt fehl.
 - Nach jeder Änderung an App-Dateien `VERSION` in `pilzhandel/sw.js` hochzählen.
 - Studien-Radar: `node pilzhandel/tools/studien-radar.js [Tage]`. Treffer gelten als
   „nicht eingestuft“, bis sie in `heilpilze.html` bewertet sind.
+- Vor jedem Commit: `node --test pilzhandel/tools/test.mjs`.
 
 ## Design
 
@@ -52,7 +56,7 @@ Verdächtig sind `ink3` auf `bg` und `accent` als Textfarbe im hellen Schema.
 
 ## Regeln (Pilot-Kern) und Ist-Stand
 
-Stand der Prüfung: 25.09.2026, zuletzt aktualisiert nach Schritt 1–3 des Arbeitsplans
+Stand der Prüfung: 25.09.2026, zuletzt aktualisiert nach Schritt 1–4 des Arbeitsplans
 (Code-Durchsicht plus Browsertest der geänderten Abläufe, kein vollständiger A11Y-03-Durchgang).
 ✅ erfüllt · 🟡 teilweise · ❌ offen. Eine Regel gilt erst als erfüllt, wenn der Nachweis vorliegt.
 
@@ -66,7 +70,7 @@ Stand der Prüfung: 25.09.2026, zuletzt aktualisiert nach Schritt 1–3 des Arbe
 | UI-03 Touch, Tastatur, Maus | Kein Kernvorgang hängt an Hover; alle Knöpfe per Tastatur erreichbar | ✅ | „Sicherung laden“ ist jetzt ein echter `<button id="dImpBtn">`, der den versteckten Datei-Input per Klick auslöst; im Accessibility-Tree als fokussierbarer Button bestätigt. `:hover`-Regeln in `app.css` sind reine Zusatzoptik, kein Kernvorgang hängt daran |
 | COLOR-02 Farbe nie allein | Ampel, Stufen, Risiko immer mit Text oder Symbol | ✅ | Check zeigt Status als Text („Ärztlich abklären“ usw.), Stufen als Buchstabe. Nach Pfifferling-Umstellung erneut prüfen, auch dunkel |
 | VIS-03 Textalternativen | Pilzfotos „Foto: Name“, Deko `alt=""`, Illustrationen `aria-hidden` | ✅ | `pimg()` in `app.js` |
-| VIS-04 Bildrechte | Urheber und Lizenz je Foto nennen, nicht nur verlinken | 🟡 | Link zur Commons-Dateiseite je Foto. CC BY/BY-SA verlangt Urheber und Lizenzname sichtbar; Hero-Bilder ohne Nachweis. Lösung: Urheber + Lizenz in `build-data.js` holen und anzeigen |
+| VIS-04 Bildrechte | Urheber und Lizenz je Foto nennen, nicht nur verlinken | ✅ | `tools/fetch-image-credits.js` holt Urheber und Lizenz von der Commons-API in `tools/image-credits.json`; `build-data.js` bettet sie als `PH.IMG_CREDITS` ein. `app.js` zeigt sie auf jeder Detailseite und beim Hero-Bild an (`imgCredit()`), alle 42 verwendeten Fotos haben einen Eintrag. Test prüft Vollständigkeit lokal, ohne Netzwerk |
 | A11Y-02 Semantik, Fokus, Namen | Landmarks, Sprunglink, beschriftete Knöpfe, `aria-live` für Ergebnisse | 🟡 | Weitgehend vorhanden, Datei-Input-Lücke aus UI-03 behoben. Fokus nach Seitenwechsel und Fokus im Undo-Toast noch nicht geprüft |
 | A11Y-03 Manueller Test | Kernabläufe mit Tastatur, VoiceOver, 200 % Zoom | ❌ | Kein vollständiges Protokoll. Abläufe: Anliegen → Pilz → Detail; Check; Tagebuch-Eintrag + Sicherung; Arzt-Karte drucken |
 | EXPLAIN-01 Kriterien offen | Anliegen-Finder, Top-Evidenz und Sortierung sagen in einem Satz, wonach sie ordnen | 🟡 | Methode im Wissensbereich erklärt; direkt an Finder und Sortierung fehlt der Satz. Shop-Liste: „Aufnahme heißt nicht …“ vorhanden |
@@ -93,7 +97,14 @@ Stand der Prüfung: 25.09.2026, zuletzt aktualisiert nach Schritt 1–3 des Arbe
    Datenqualität, `checkHits()` (Stufe = Maximum der Treffer) und `parseDiaryImport()` (verwirft
    ungültige Einträge). Die geprüfte Logik liegt in `pilzhandel/logic.js`, aus `app.js` ausgelagert,
    damit Test und App denselben Code laufen lassen statt einer Kopie.
-4. **Bildrechte (VIS-04):** Urheber und Lizenz beim Build aus der Commons-API holen, unter jedem Foto zeigen.
+4. ✅ **Bildrechte (VIS-04)** (erledigt 25.09.2026): `pilzhandel/tools/fetch-image-credits.js`
+   fragt die Commons-API für alle in `build-data.js` verwendeten Fotos (Pilze + Hero) ab und
+   schreibt `tools/image-credits.json`. `build-data.js` liest nur diesen Cache (kein
+   Netzwerkzugriff beim normalen Bauen) und bettet ihn als `PH.IMG_CREDITS` in `data.js` ein.
+   `app.js` zeigt Urheber und Lizenz auf jeder Detailseite und beim Hero-Bild. `HERO` liegt
+   jetzt ebenfalls in `build-data.js` (vorher hart in `app.js` kodiert), damit eine einzige
+   Quelle für „welche Fotos gibt es“ existiert. Ein Test prüft ohne Netzwerk, ob alle aktuell
+   verwendeten Fotos einen Cache-Eintrag haben.
 5. **Rechtsprofil + Claims (LEGAL-01, CLAIM-02):** als Abschnitt in KONZEPT.md, mit Datum und offenen Punkten.
 6. **Stil Pfifferling:** Tokens oben in `app.css` einsetzen, Kontrast prüfen, KONZEPT.md §3 anpassen.
 7. **A11Y-03-Durchgang:** Protokoll als kurze Liste in KONZEPT.md; UX-01, DEPTH-02, CONTENT-01 dabei mit abhaken.

@@ -79,6 +79,16 @@ describe("Datenqualität (data.js, alle Pilze)", () => {
       }
     }
   });
+
+  test("jedes verwendete Foto (Pilze + Hero) hat einen Bildrechte-Eintrag mit Lizenz (VIS-04)", () => {
+    // Rein lokal, ohne Netzwerk: prüft nur, ob tools/fetch-image-credits.js zuletzt für
+    // alle aktuell verwendeten Fotos gelaufen ist, nicht ob Commons erreichbar ist.
+    const { EXTRA, HERO } = require(join(root, "tools", "build-data.js"));
+    const used = [...new Set([...Object.values(EXTRA).flatMap(x => x.imgs || []), ...HERO])];
+    const credits = PH.IMG_CREDITS || {};
+    const missing = used.filter(f => !credits[f] || !credits[f].license);
+    assert.deepEqual(missing, [], `Bildrechte fehlen oder sind veraltet für: ${missing.join(", ")} — node pilzhandel/tools/fetch-image-credits.js und danach build-data.js laufen lassen`);
+  });
 });
 
 describe("Wechselwirkungs-Check (checkHits, aus logic.js)", () => {

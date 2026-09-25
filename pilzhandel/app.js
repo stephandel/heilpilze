@@ -50,7 +50,15 @@ const COMMONS = "https://commons.wikimedia.org/wiki/";
 const fileUrl = (name, w) => `${COMMONS}Special:FilePath/${encodeURIComponent(name.replace(/ /g, "_"))}?width=${w}`;
 const filePage = name => `${COMMONS}File:${encodeURIComponent(name.replace(/ /g, "_"))}`;
 const issueUrl = (subject, body) => `https://github.com/stephandel/heilpilze/issues/new?labels=inhalt&title=${encodeURIComponent("Fehler bei " + subject)}${body ? `&body=${encodeURIComponent(body)}` : ""}`;
-const HERO = ["A_little_mushroom_scene_in_the_woods_(30559452831).jpg", "Pilze-im-Moos.jpg", "Mushroom_Forest.jpg"];
+const HERO = D.HERO || [];
+/* Urheber und Lizenz eines Fotos, sofern tools/fetch-image-credits.js sie ermitteln konnte.
+   Sonst leerer String: der umgebende Text verweist dann weiter auf die Dateiseite. */
+const imgCredit = name => {
+  const c = D.IMG_CREDITS && D.IMG_CREDITS[name];
+  if(!c) return "";
+  const bits = [c.artist, c.license].filter(Boolean);
+  return bits.length ? ` (${bits.map(esc).join(", ")})` : "";
+};
 
 function art(m, fit="slice"){
   const c = m.color, st = "rgba(40,25,15,.22)";
@@ -334,7 +342,7 @@ function home(el){
         <span>${icon("leaf")} Keine Heilversprechen</span>
       </div>
     </div>
-    <a class="credit" href="${filePage(HERO[0])}" target="_blank" rel="noopener">Foto: Wikimedia Commons</a>
+    <a class="credit" href="${filePage(HERO[0])}" target="_blank" rel="noopener">Foto: Wikimedia Commons${imgCredit(HERO[0])}</a>
   </section>
 
   <section class="section container">
@@ -573,7 +581,7 @@ function detail(el, r){
           <ol class="srcs">${m.sources.map(s => `<li><a href="${esc(s.u)}" target="_blank" rel="noopener">${esc(s.t)}</a></li>`).join("")}</ol>
           ${RD && RD.items[m.id] && RD.items[m.id].list.length ? `<details class="acc" style="margin-top:1rem"><summary>Neu in PubMed, noch nicht eingestuft (${RD.items[m.id].count})</summary><div class="body"><ul class="studies">${RD.items[m.id].list.slice(0, 5).map(studyRow).join("")}</ul><p><a href="#/radar">Zum Studien-Radar</a></p></div></details>` : ""}
           <p style="margin-top:.8rem;font-size:.9rem"><a href="${pubmedUrl(m)}" target="_blank" rel="noopener">Aktuelle Humanstudien in PubMed ↗</a></p>
-          <p class="muted" style="font-size:.8rem;margin-top:.8rem">Foto: ${(m.imgs || []).map((n, i) => `<a href="${filePage(n)}" target="_blank" rel="noopener">Wikimedia Commons${m.imgs.length > 1 ? " " + (i + 1) : ""}</a>`).join(", ")} · Urheber und Lizenz auf der Dateiseite. Lädt das Foto nicht, siehst du eine Illustration.</p>
+          <p class="muted" style="font-size:.8rem;margin-top:.8rem">Foto: ${(m.imgs || []).map((n, i) => `<a href="${filePage(n)}" target="_blank" rel="noopener">Wikimedia Commons${m.imgs.length > 1 ? " " + (i + 1) : ""}</a>${imgCredit(n)}`).join(", ")} · vollständige Angaben auf der jeweiligen Dateiseite. Lädt das Foto nicht, siehst du eine Illustration.</p>
           <p style="margin-top:.8rem;font-size:.85rem"><a href="${issueUrl(m.name, "Pilz: " + m.name + "\nWas ist falsch, und woher weißt du das?\n\n")}" target="_blank" rel="noopener">Fehler bei diesem Pilz melden ↗</a></p>
         </section>
       </div>

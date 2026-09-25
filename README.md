@@ -40,6 +40,7 @@ Konzept und Ausbauplan: [`pilzhandel/KONZEPT.md`](pilzhandel/KONZEPT.md).
 - Toolbar mit Suche und Live-Vorschlägen, Textgröße in 5 Stufen, Hell/Dunkel/Auto
 - Offlinefähig und installierbar (PWA)
 - Fotos von Wikimedia Commons; fehlt ein Foto, erscheint eine Illustration
+- Urheber und Lizenz je Foto sichtbar, nicht nur verlinkt (`pilzhandel/tools/fetch-image-credits.js`)
 - Schriften lokal eingebunden, kein Abruf bei Google
 
 ## Herkunft
@@ -60,5 +61,9 @@ Doppelklick. Nach einer Änderung an den App-Dateien die Zahl in `VERSION` in
 
 - Daten ändern: in `heilpilze.html` (Pilze) bzw. `pilzhandel/tools/build-data.js` (App-Zusätze, Rezepte),
   dann `node pilzhandel/tools/build-data.js`
+- Neues Foto hinzugefügt oder entfernt (`imgs`/`HERO` in `pilzhandel/tools/build-data.js`):
+  danach `node pilzhandel/tools/fetch-image-credits.js` (holt Urheber/Lizenz von Wikimedia
+  Commons, schreibt `pilzhandel/tools/image-credits.json`), erst dann `build-data.js`
 - Studien-Radar aktualisieren: `node pilzhandel/tools/studien-radar.js [Tage]`, Treffer sichten,
   `pilzhandel/radar.js` committen
+- Tests laufen lassen: `node --test pilzhandel/tools/test.mjs`

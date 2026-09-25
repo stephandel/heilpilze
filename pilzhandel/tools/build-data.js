@@ -37,6 +37,9 @@ const EXTRA = {
   agarikon:   {shape:"bracket", color:"#E9E0CC", imgs:["Fomitopsis_officinalis_32014.JPG","Fomitopsis_officinalis_OPN.jpg"], flags:{}, buy:["extrakt"]}
 };
 
+/* Hintergrundfotos der Startseite, gleiche Herkunft und Nachweispflicht wie die Pilzfotos oben. */
+const HERO = ["A_little_mushroom_scene_in_the_woods_(30559452831).jpg", "Pilze-im-Moos.jpg", "Mushroom_Forest.jpg"];
+
 /* pubmed: Suchbegriff für Studien-Radar und PubMed-Links (Titel/Abstract) */
 const PUBMED = {
   "reishi": "\"Ganoderma lucidum\" OR \"Ganoderma lingzhi\" OR reishi OR lingzhi",
@@ -190,10 +193,30 @@ const MUSHROOMS = base.MUSHROOMS.map(m => {
   return Object.assign({}, m, x, {pubmed: PUBMED[m.id], flags: Object.assign({schwanger:1}, x.flags)});
 });
 
-const out = "/* Automatisch erzeugt von tools/build-data.js — nicht von Hand bearbeiten. Stand: September 2026 */\n" +
-  "window.PH = " + JSON.stringify({
-    LEVELS: base.LEVELS, SCORE_LBL: base.SCORE_LBL, TAGS: base.TAGS, TAG_ICONS, FLAGS, BUY,
-    MUSHROOMS, REFERENCE: base.REFERENCE, SHOPS, LINKS, RECIPES
-  }) + ";\n";
-fs.writeFileSync(path.join(__dirname, "..", "data.js"), out);
-console.log("data.js geschrieben:", MUSHROOMS.length, "Pilze,", (out.length/1024).toFixed(0), "KB");
+/* Bildrechte (VIS-04): tools/fetch-image-credits.js holt Urheber und Lizenz von Wikimedia
+   Commons und schreibt image-credits.json. build-data.js liest nur diesen Cache, ruft die
+   API selbst nicht auf — Bauen bleibt offline möglich, auch ohne aktuelle Fotos. */
+function loadImgCredits(){
+  const creditsPath = path.join(__dirname, "image-credits.json");
+  const allFiles = [...new Set([...Object.values(EXTRA).flatMap(x => x.imgs || []), ...HERO])];
+  let cache = {};
+  try { cache = JSON.parse(fs.readFileSync(creditsPath, "utf8")); }
+  catch(e){ console.warn("Kein image-credits.json gefunden — Fotos ohne Urheber/Lizenz-Anzeige. Zum Beheben: node pilzhandel/tools/fetch-image-credits.js"); }
+  const missing = allFiles.filter(f => !cache[f]);
+  if (missing.length) console.warn(`Bildrechte fehlen für ${missing.length} Foto(s): ${missing.join(", ")}. Zum Beheben: node pilzhandel/tools/fetch-image-credits.js`);
+  return Object.fromEntries(allFiles.filter(f => cache[f]).map(f => [f, cache[f]]));
+}
+
+function build(){
+  const IMG_CREDITS = loadImgCredits();
+  const out = "/* Automatisch erzeugt von tools/build-data.js — nicht von Hand bearbeiten. Stand: September 2026 */\n" +
+    "window.PH = " + JSON.stringify({
+      LEVELS: base.LEVELS, SCORE_LBL: base.SCORE_LBL, TAGS: base.TAGS, TAG_ICONS, FLAGS, BUY,
+      MUSHROOMS, REFERENCE: base.REFERENCE, SHOPS, LINKS, RECIPES, HERO, IMG_CREDITS
+    }) + ";\n";
+  fs.writeFileSync(path.join(__dirname, "..", "data.js"), out);
+  console.log("data.js geschrieben:", MUSHROOMS.length, "Pilze,", (out.length/1024).toFixed(0), "KB");
+}
+
+if (require.main === module) build();
+module.exports = { EXTRA, HERO, PUBMED };
