@@ -56,7 +56,7 @@ Verdächtig sind `ink3` auf `bg` und `accent` als Textfarbe im hellen Schema.
 
 ## Regeln (Pilot-Kern) und Ist-Stand
 
-Stand der Prüfung: 25.09.2026, zuletzt aktualisiert nach Schritt 1–5 des Arbeitsplans
+Stand der Prüfung: 25.09.2026, zuletzt aktualisiert nach Schritt 1–6 des Arbeitsplans
 (Code-Durchsicht plus Browsertest der geänderten Abläufe, kein vollständiger A11Y-03-Durchgang;
 Schritt 5 ist Rechtsanalyse, keine Rechtsberatung, und wartet auf echte Impressum-Daten).
 ✅ erfüllt · 🟡 teilweise · ❌ offen. Eine Regel gilt erst als erfüllt, wenn der Nachweis vorliegt.
@@ -69,7 +69,7 @@ Schritt 5 ist Rechtsanalyse, keine Rechtsberatung, und wartet auf echte Impressu
 | UX-03 Fehler + sichere Aktionen | Löschen und Leeren rückgängig machbar; Fehlertexte nennen den nächsten Schritt | ✅ | Toast mit „Rückgängig“ für Tagebuch-Löschen, Check „Auswahl leeren“, Vergleich „Auswahl leeren“ (`toast(msg, {onUndo})` in `app.js`), im Browser geprüft. Import-Fehlertext „Datei konnte nicht gelesen werden“ bleibt ohne Handlungshinweis – kleine Restlücke |
 | DEPTH-02 Risiken am Handlungspunkt | Sicherheit und Evidenzstufe stehen dort, wo gekauft oder dosiert wird, nicht nur im Wissensbereich | 🟡 | Check sagt „Fehlende Daten heißen nicht sicher“. Detailseite (Kaufen/Dosierung) und Shop-Liste noch nicht geprüft |
 | UI-03 Touch, Tastatur, Maus | Kein Kernvorgang hängt an Hover; alle Knöpfe per Tastatur erreichbar | ✅ | „Sicherung laden“ ist jetzt ein echter `<button id="dImpBtn">`, der den versteckten Datei-Input per Klick auslöst; im Accessibility-Tree als fokussierbarer Button bestätigt. `:hover`-Regeln in `app.css` sind reine Zusatzoptik, kein Kernvorgang hängt daran |
-| COLOR-02 Farbe nie allein | Ampel, Stufen, Risiko immer mit Text oder Symbol | ✅ | Check zeigt Status als Text („Ärztlich abklären“ usw.), Stufen als Buchstabe. Nach Pfifferling-Umstellung erneut prüfen, auch dunkel |
+| COLOR-02 Farbe nie allein | Ampel, Stufen, Risiko immer mit Text oder Symbol | ✅ | Check zeigt Status als Text („Ärztlich abklären“ usw.), Stufen als Buchstabe. Nach Pfifferling-Umstellung erneut geprüft (Browser, hell+dunkel): unverändert, da Ampel/Stufen-Logik nicht an Tokens hängt |
 | VIS-03 Textalternativen | Pilzfotos „Foto: Name“, Deko `alt=""`, Illustrationen `aria-hidden` | ✅ | `pimg()` in `app.js` |
 | VIS-04 Bildrechte | Urheber und Lizenz je Foto nennen, nicht nur verlinken | ✅ | `tools/fetch-image-credits.js` holt Urheber und Lizenz von der Commons-API in `tools/image-credits.json`; `build-data.js` bettet sie als `PH.IMG_CREDITS` ein. `app.js` zeigt sie auf jeder Detailseite und beim Hero-Bild an (`imgCredit()`), alle 42 verwendeten Fotos haben einen Eintrag. Test prüft Vollständigkeit lokal, ohne Netzwerk |
 | A11Y-02 Semantik, Fokus, Namen | Landmarks, Sprunglink, beschriftete Knöpfe, `aria-live` für Ergebnisse | 🟡 | Weitgehend vorhanden, Datei-Input-Lücke aus UI-03 behoben. Fokus nach Seitenwechsel und Fokus im Undo-Toast noch nicht geprüft |
@@ -114,7 +114,23 @@ Schritt 5 ist Rechtsanalyse, keine Rechtsberatung, und wartet auf echte Impressu
    bei Stephan:** Name, ladungsfähige Anschrift und E-Mail festlegen, dann Impressum- und
    Datenschutz-Ansicht in der App bauen und im Fuß verlinken (aus §5/§18 MStV folgt: leicht
    erkennbar, in höchstens zwei Klicks erreichbar — ein Absatz in KONZEPT.md reicht dafür nicht).
-6. **Stil Pfifferling:** Tokens oben in `app.css` einsetzen, Kontrast prüfen, KONZEPT.md §3 anpassen.
+6. ✅ **Stil Pfifferling** (erledigt 25.09.2026): Tokens in `app.css` eingesetzt (Farben, Radius
+   6/4/3 px statt 18/12/8 px, Schatten deutlich leiser für „Karten flach“). Kontrast für jede
+   Text/Grund-Paarung mit der WCAG-Formel nachgerechnet, nicht nur geschätzt. Zwei Lücken dabei
+   gefunden und behoben, die schon in der alten Palette latent oder durch die hellere
+   Pfifferling-Akzentfarbe neu entstanden wären: weißer Buttontext auf der Akzentfarbe erreichte
+   nur 3,45:1 (dunkel 2:1) statt 4,5:1 → neuer Token `--on-accent`, jetzt 4,55–7,78:1. Die
+   Akzentfarbe selbst als Link-/Beschriftungstext auf hellem Grund erreichte nur 3,17:1 → neuer
+   Token `--accent-ink`, jetzt 4,95:1. Beide nur in Zusammenhängen eingesetzt, wo vorher `accent`
+   direkt als Text galt; Buttons/Icons/Ränder verwenden weiter die unveränderte Markenfarbe.
+   Im Browser hell und dunkel auf Start, Katalog, Check und Detailseite geprüft, keine
+   Konsolenfehler. KONZEPT.md §3 aktualisiert. Nebenbei mitgezogen, weil sonst inkonsistent:
+   `logo.svg`-Wordmark, `manifest.webmanifest` und die `theme-color`-Meta-Tags in `index.html`
+   trugen noch die alte Terrakotta/Erdbraun-Farbe.
+   **Offen:** Die illustrierten Mushroom-Icons (`icon.svg`, PNG-Icons in `icons/`, die
+   Fallback-Illustrationen in `app.js`) verwenden weiterhin ihre eigene braun/grüne
+   Illustrationspalette, nicht die neuen Marken-Tokens — das ist Bildmaterial, kein
+   Token-Austausch, und bewusst nicht angefasst.
 7. **A11Y-03-Durchgang:** Protokoll als kurze Liste in KONZEPT.md; UX-01, DEPTH-02, CONTENT-01 dabei mit abhaken.
 8. **Kennzahlen (PROD-04), Vorschlag:** Anteil Aussagen mit Beleg je Aussage; Radar-Treffer
    innerhalb von 30 Tagen eingestuft; Zahl gemeldeter Fehler und Zeit bis zur Korrektur.

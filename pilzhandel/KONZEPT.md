@@ -27,10 +27,22 @@ Wo wir uns absetzen: smaints wirbt mit Wirkung, wir ordnen Wirkung ein. Das ist 
 
 ## 3. Design
 
-- **Farben:** Creme `#F7F1E8` als Grund, Erdbraun `#3A2A1F` für Marke und Knöpfe, Terrakotta `#B4602E` als Akzent, Moosgrün für „belegt“. Im Dunkelmodus warme Braun-Schwarztöne statt kaltem Grau.
+- **Farben (Stand 25.09.2026, Palette „Pfifferling“):** Buttergelb `#FBF5E4` als Grund, dunkles
+  Oliv `#2F3322` für Marke und Fließtext, Orange `#C9761A` als Akzent, dasselbe Moosgrün wie
+  vorher für „belegt“. Im Dunkelmodus warme Braun-Schwarztöne statt kaltem Grau. Ecken 6 px auf
+  Karten, 4 px auf kleinen Elementen (vorher 18/12/8 px), Karten flach — sie stützen sich auf den
+  Rahmen, nicht auf Schatten. Abgelöst: die Palette „Waldboden“ (Creme `#F7F1E8`, Erdbraun
+  `#3A2A1F`, Terrakotta `#B4602E`), Auswahl und alle Werte in `CLAUDE.md`.
+  Für Buttons und Fließtext auf der Akzentfarbe reicht die reine Akzentfarbe nicht für 4,5:1
+  Kontrast (WCAG AA) — deshalb zwei zusätzliche, aus ihr abgeleitete Token: `--accent-ink` für
+  Links/Beschriftungen auf hellem Grund, `--on-accent` für Text auf der Akzentfarbe selbst
+  (Buttons, Badges). Beide in `app.css` dokumentiert und gegen alle Text/Grund-Paarungen
+  gegengerechnet (WCAG-Kontrastformel, kein automatisiertes Tool).
 - **Schrift:** Fraunces, eine weiche Serifenschrift, für Überschriften und das Logo. DM Sans, eine gut lesbare Grotesk, für Text.
 - **Name:** Handel ist der Nachname. Die Marke ist damit persönlich, wie ein Familienbetrieb. Das Wortspiel mit „handeln“ trägt die Idee: Hier wird Wissen weitergegeben, keine Ware verkauft.
 - **Logo:** Brauner Pilz im Stil von 🍄‍🟫 mit Moos am Fuß. Schriftzug „Pilz“ gerade, „Handel“ kursiv in Terrakotta, das wirkt wie eine Unterschrift unter dem Pilz. Untertitel: Heilpilze · Evidenz · Einkauf. Dateien: `logo.svg`, `icon.svg`, PNG-Icons in `icons/`.
+  Logo und App-Icons zeigen noch die alte Terrakotta-Farbe, nicht die neue Akzentfarbe — offen,
+  siehe Wissenslücken unten.
 - **Bilder:** Fotos von Wikimedia Commons, direkt im Browser geladen. Lädt ein Foto nicht, zeigt die App eine gezeichnete Illustration in der Farbe des Pilzes. Die Seite sieht also nie kaputt aus.
 
 ## 4. Bedienung (Usability)
