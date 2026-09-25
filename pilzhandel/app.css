@@ -470,6 +470,11 @@ table.cmp ul{margin:0;padding-left:1rem;} table.cmp li{margin-bottom:.3rem;}
 .notice b{color:var(--warn);}
 .notice.info{background:var(--surface-2);border-color:var(--line);}
 .notice.info b{color:var(--ink);}
+.prose{padding-bottom:3rem;}
+.prose .h3{font-size:1.15rem;margin:1.75rem 0 .5rem;}
+.prose p{margin:0 0 .8rem;line-height:1.6;}
+.prose .notice{margin-bottom:1.5rem;}
+mark.todo{background:var(--warn-bg);color:var(--warn);font-weight:700;padding:0 .25em;border-radius:3px;outline:1px dashed var(--warn);}
 
 /* ---------- Shops ---------- */
 .shopgrid{display:grid;grid-template-columns:repeat(auto-fill, minmax(min(100%, 17rem), 1fr));gap:1rem;}

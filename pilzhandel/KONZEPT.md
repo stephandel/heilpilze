@@ -181,9 +181,11 @@ Betreiber verantwortlich.
   Absicherung selbst liegt bei Wikimedia.
 - Ob GitHub Pages einen Auftragsverarbeitungsvertrag anbietet bzw. ob einer nötig ist.
 - Endgültige Einstufung als journalistisch-redaktionell (Punkt 2 oben).
-- **Nächster Schritt, der nicht mehr am Schreibtisch zu lösen ist:** echten Namen, ladungsfähige
-  Anschrift (kein Postfach) und eine erreichbare E-Mail-Adresse für das Impressum festlegen und
-  eintragen, dann Impressum- und Datenschutz-Ansicht in der App veröffentlichen.
+- **Umsetzung (25.09.2026):** Impressum (`#/impressum`) und Datenschutzerklärung (`#/datenschutz`)
+  sind als eigene Ansichten gebaut und im Fuß sowie auf „Über“ verlinkt. Die Angaben kommen aus
+  `betreiber.js`; fehlende Felder erscheinen als markierter Platzhalter mit Entwurfshinweis, und
+  `tools/test.mjs` führt sie als offenen Punkt (todo). **Einziger Rest:** Name, ladungsfähige
+  Anschrift (kein Postfach) und E-Mail in `betreiber.js` eintragen, `VERSION` in `sw.js` erhöhen.
 
 Quellen: [§ 5 DDG](https://www.gesetze-im-internet.de/ddg/__5.html) (Volltext geprüft) ·
 [§ 18 MStV — Das Impressum und der Verantwortliche](https://www.res-media.net/18-mstv-das-impressum-und-der-verantwortliche/) ·
@@ -302,3 +304,48 @@ Nebenbei mit geprüft, weil dieser Durchgang genau dafür da war (Arbeitsplan-Sc
 - **CONTENT-01** (Zweck/Grenzen sichtbar): auf Start, Check und Detailseite bestätigt (Fußzeile:
   „ersetzt keine ärztliche Beratung“; Check: eigener Hinweistext).
   Nicht auf jeder einzelnen Unterseite einzeln nachgeprüft.
+
+## 11. Kennzahlen-Zielwerte — Vorschlag (Stand: 25. September 2026, nicht bestätigt)
+
+Regel PROD-04. Die Werte stehen als `ZIELE` oben in `tools/kennzahlen.js`, das Skript zeigt je
+Kennzahl „Ziel erreicht/verfehlt“. **Bestätigen:** dort `bestaetigt: true` setzen (Zahlen dürfen
+vorher geändert werden).
+
+| Kennzahl | Vorschlag | Heute | Begründung |
+|---|---|---|---|
+| Quellen je Pilz | mindestens 2 | 11 von 21 Pilzen haben nur 1 | Eine einzelne Quelle ist nicht gegenzuprüfen. Betroffen sind fast alle Pilze ab Rang 10; die bekannten (Reishi, Shiitake, Hericium …) liegen bei 3–6. Realistisch als Jahresziel, nicht sofort. |
+| Alter der Radar-Abfrage | höchstens 45 Tage | 1 Tag | Monatlicher Pflegeplan (§5/OPS-06) plus zwei Wochen Puffer. |
+| Gemeldete Fehler | höchstens 3 offen, Ø höchstens 14 Tage bis zur Korrektur | 0 / – | Für ein Gesundheitsangebot sollte ein gemeldeter Fehler nicht monatelang stehen bleiben. |
+
+**Bewusst ohne Zielwert:** die Zahl der Studien-Radar-Treffer (heute 77). `studien-radar.js`
+merkt sich nicht, welche Treffer schon gesichtet wurden, die Zahl sinkt also nicht durch
+Arbeit. Ein Zielwert darauf würde nur Frust erzeugen. Wenn das gewünscht ist, wäre die kleine
+Erweiterung: eine Liste gesichteter PubMed-Nummern, die das Radar ausblendet.
+
+## 12. Handtest Barrierefreiheit — Checkliste zum Abhaken (ca. 15 Minuten)
+
+Holt die drei offenen Punkte aus §10 nach. Braucht ein iPhone (oder Android) und einen Rechner
+mit Tastatur. Bei jedem „Nein“: kurz notieren, auf welcher Seite, und Claude geben.
+
+**A. iPhone mit VoiceOver** (Einstellungen → Bedienungshilfen → VoiceOver an; Wischen nach
+rechts = nächstes Element, Doppeltippen = auswählen). App im Safari öffnen.
+
+- [ ] Startseite: VoiceOver liest zuerst „Zum Inhalt springen“, dann Logo und Suche — nichts wird als „Taste“ ohne Namen vorgelesen.
+- [ ] Einen Pilz öffnen: Nach dem Seitenwechsel beginnt das Vorlesen oben bei der neuen Seite, nicht irgendwo mitten im alten Inhalt.
+- [ ] Herz-Knopf auf einer Pilzkarte: wird als „Merken“ o. ä. mit Pilznamen vorgelesen; nach dem Doppeltippen wird der neue Zustand angesagt.
+- [ ] Check: zwei Medikamente auswählen, dann „Auswahl leeren“. Die Meldung mit „Rückgängig“ wird vorgelesen und „Rückgängig“ ist direkt erreichbar.
+- [ ] Tagebuch: Die Felder Präparat, Menge, Notiz werden mit ihrem Namen vorgelesen, nicht nur mit dem grauen Beispieltext.
+
+**B. iPhone mit großer Schrift** (VoiceOver wieder aus; in der App oben die Anzeige-Einstellungen
+öffnen und die größte Textstufe wählen).
+
+- [ ] Startseite, Pilz-Detailseite, Check, Tagebuch, Impressum: kein Text abgeschnitten oder überlappend, nichts ragt seitlich aus dem Bildschirm.
+- [ ] Die Leiste unten (Start, Pilze, Check, Merkliste, Kaufen) verdeckt keine Knöpfe; der letzte Inhalt einer Seite lässt sich über die Leiste hinaus scrollen.
+- [ ] Querformat drehen: Seite bleibt benutzbar.
+
+**C. Rechner, nur Tastatur** (Maus weglegen; Tab = weiter, Umschalt+Tab = zurück, Enter = auslösen).
+
+- [ ] Vom Seitenanfang mit Tab durch die obere Leiste: Reihenfolge ist links nach rechts, jeder Schritt hat einen sichtbaren Rahmen.
+- [ ] Anzeige-Einstellungen mit Enter öffnen, mit Tab durch, mit Escape schließen — der Fokus landet wieder auf dem Einstellungs-Knopf.
+- [ ] Suche: Begriff tippen, mit Pfeil runter einen Vorschlag wählen, Enter öffnet den Pilz.
+- [ ] Nirgends „hängt“ der Fokus fest oder verschwindet unsichtbar.

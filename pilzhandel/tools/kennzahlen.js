@@ -14,6 +14,17 @@ function loadWindowScript(file){
   return sandbox.window;
 }
 
+// Zielwerte: VORSCHLAG vom 25.09.2026, von Stephan noch nicht bestätigt. Bestätigen = `bestaetigt`
+// auf true setzen; Zahlen ändern ist ausdrücklich erlaubt. Begründung in KONZEPT.md §11.
+const ZIELE = {
+  bestaetigt: false,
+  quellenJePilzMin: 2,        // kein Pilz soll sich auf nur eine einzige Quelle stützen
+  radarMaxAlterTage: 45,      // monatlicher Pflegerhythmus plus zwei Wochen Puffer
+  meldungMaxTageBisKorrektur: 14,
+  meldungMaxOffen: 3
+};
+const ziel = ok => (ok ? "  ✓ Ziel erreicht" : "  ✗ Ziel verfehlt") + (ZIELE.bestaetigt ? "" : " (Zielwert nur Vorschlag)");
+
 const PH = loadWindowScript("data.js").PH;
 const RD = loadWindowScript("radar.js").PH_RADAR;
 
@@ -27,13 +38,18 @@ const totalEffects = PH.MUSHROOMS.reduce((n, m) => n + m.effects.length, 0);
 console.log(`Pilze: ${PH.MUSHROOMS.length}`);
 console.log(`Wirkungsaussagen gesamt: ${totalEffects}, Ø ${(totalEffects / PH.MUSHROOMS.length).toFixed(1)} je Pilz`);
 console.log(`Quellen gesamt: ${totalSources}, Ø ${(totalSources / PH.MUSHROOMS.length).toFixed(1)} je Pilz`);
+const thin = PH.MUSHROOMS.filter(m => m.sources.length < ZIELE.quellenJePilzMin);
+console.log(`Pilze mit weniger als ${ZIELE.quellenJePilzMin} Quellen: ${thin.length}` + (thin.length ? ` (${thin.map(m => m.id).join(", ")})` : ""));
+console.log(ziel(thin.length === 0));
 
 // 2. Studien-Radar: wie viele neue Treffer warten noch auf Einstufung, wie alt ist der Scan.
 if(RD){
   const pending = Object.values(RD.items).reduce((n, i) => n + i.count, 0);
   const ageDays = Math.round((Date.now() - new Date(RD.stand + "T12:00").getTime()) / 864e5);
   console.log(`\nStudien-Radar: ${pending} noch nicht eingestufte Treffer, Stand vor ${ageDays} Tag(en) (${RD.stand})`);
-  if(ageDays > 45) console.log("  → älter als 45 Tage, siehe Pflegeplan (monatlich vorgesehen)");
+  console.log(ziel(ageDays <= ZIELE.radarMaxAlterTage) + ` · Abfrage höchstens ${ZIELE.radarMaxAlterTage} Tage alt`);
+  // Die Trefferzahl selbst bekommt bewusst keinen Zielwert: studien-radar.js merkt sich nicht,
+  // welche Treffer schon gesichtet sind, sie sinkt also nicht durch Sichten.
 } else {
   console.log("\nStudien-Radar: radar.js nicht gefunden oder leer.");
 }
@@ -49,6 +65,8 @@ try{
     : null;
   console.log(`\nGemeldete Inhaltsfehler: ${open.length} offen, ${closed.length} erledigt` +
     (avgDaysToClose ? `, Ø ${avgDaysToClose} Tage bis zur Korrektur` : ""));
+  console.log(ziel(open.length <= ZIELE.meldungMaxOffen && (avgDaysToClose === null || +avgDaysToClose <= ZIELE.meldungMaxTageBisKorrektur)) +
+    ` · höchstens ${ZIELE.meldungMaxOffen} offen, Ø höchstens ${ZIELE.meldungMaxTageBisKorrektur} Tage bis zur Korrektur`);
 } catch(e){
   console.log("\nGemeldete Inhaltsfehler: nicht abrufbar (gh CLI fehlt oder kein Netzwerk).");
 }

@@ -176,3 +176,21 @@ describe("Tagebuch-Import (parseDiaryImport, aus logic.js)", () => {
     assert.deepEqual(parseDiaryImport({ diary: [null, 42, "x"] }, [], isValidId), []);
   });
 });
+
+describe("Impressum & Datenschutz (betreiber.js, LEGAL-01)", () => {
+  const sandbox = { window: {} };
+  vm.createContext(sandbox);
+  vm.runInContext(readFileSync(join(root, "betreiber.js"), "utf8"), sandbox, { filename: "betreiber.js" });
+  const BT = sandbox.window.PH_BETREIBER;
+  const missing = ["name", "strasse", "plzOrt", "email"].filter(k => !String(BT[k] || "").trim());
+
+  // Als "todo" markiert, solange Angaben fehlen: blockiert keine Commits, wird aber bei jedem
+  // Testlauf angezeigt. Vor dem Zusammenführen nach main muss dieser Test grün sein.
+  test("alle Betreiberangaben sind ausgefüllt", missing.length ? { todo: `fehlt noch: ${missing.join(", ")}` } : {}, () => {
+    assert.deepEqual(missing, []);
+  });
+
+  test("die E-Mail-Adresse sieht gültig aus, sobald sie eingetragen ist", () => {
+    if(BT.email) assert.match(BT.email, /^[^\s@]+@[^\s@]+\.[^\s@]+$/);
+  });
+});

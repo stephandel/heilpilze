@@ -254,7 +254,11 @@ sug.addEventListener("click", () => { closeSuggest(); gq.value = ""; });
 $("#searchToggle").addEventListener("click", () => { $("#gsearch").classList.add("open"); gq.focus(); });
 document.addEventListener("keydown", e => {
   if(e.key === "/" && !/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName)){ e.preventDefault(); if(innerWidth < 700) $("#gsearch").classList.add("open"); gq.focus(); }
-  if(e.key === "Escape"){ pop.classList.remove("show"); }
+  if(e.key === "Escape" && pop.classList.contains("show")){
+    const inside = pop.contains(document.activeElement);
+    pop.classList.remove("show"); $("#settingsBtn").setAttribute("aria-expanded", "false");
+    if(inside) $("#settingsBtn").focus();
+  }
 });
 
 /* ---------- Merkliste & Vergleich (delegiert) ---------- */
@@ -303,7 +307,7 @@ function route(){
   const parts = p.split("/").filter(Boolean);
   return { path: parts[0] || "", arg: parts[1] ? decodeURIComponent(parts[1]) : "", params: new URLSearchParams(qs || "") };
 }
-const VIEWS = { "":home, pilze:catalog, pilz:detail, vergleich:compare, check, merkliste:favorites, shops, wissen, ueber:about, rezepte:recipes, arztkarte, tagebuch, radar };
+const VIEWS = { "":home, pilze:catalog, pilz:detail, vergleich:compare, check, merkliste:favorites, shops, wissen, ueber:about, impressum, datenschutz, rezepte:recipes, arztkarte, tagebuch, radar };
 let lastPath = null;
 function render(){
   const r = route();
@@ -870,8 +874,73 @@ function about(el){
       <div><h4>Datenschutz</h4><p>Merkliste, Vergleich, Check-Auswahl, Tagebuch, Arzt-Karte und Anzeige-Einstellungen bleiben lokal in deinem Browser. Es gibt kein Konto und kein Tracking. Nur die Fotos werden von Wikimedia Commons geladen; die Schriften liegen in der App selbst.</p></div>
       <div><h4>Stand</h4><p>Recherche September 2026. Diese App ersetzt keine ärztliche Beratung.</p></div>
     </div>
+    <p style="margin-top:1.25rem"><a href="#/impressum">Impressum</a> · <a href="#/datenschutz">Datenschutzerklärung</a></p>
   </div>`;
   return "Über";
+}
+
+/* ---------- Impressum & Datenschutz (LEGAL-01), Angaben aus betreiber.js ---------- */
+const BT = window.PH_BETREIBER || {};
+const BT_FIELDS = { name: "Name", strasse: "Straße und Hausnummer", plzOrt: "PLZ und Ort", email: "E-Mail-Adresse" };
+const btMissing = () => Object.keys(BT_FIELDS).filter(k => !String(BT[k] || "").trim());
+const bt = k => String(BT[k] || "").trim() ? esc(BT[k]) : `<mark class="todo">[fehlt noch: ${BT_FIELDS[k]}]</mark>`;
+const btMail = () => String(BT.email || "").trim() ? `<a href="mailto:${esc(BT.email)}">${esc(BT.email)}</a>` : bt("email");
+const btDraft = () => btMissing().length ? `<p class="notice" role="note"><b>Entwurf:</b> Die Betreiberangaben sind noch nicht vollständig. Diese Seite darf so nicht veröffentlicht werden.</p>` : "";
+const btAddress = () => `${bt("name")}<br>${bt("strasse")}<br>${bt("plzOrt")}<br>Deutschland`;
+
+function impressum(el){
+  el.innerHTML = `
+  <div class="container pagehead">
+    <div class="eyebrow">Anbieterkennzeichnung</div>
+    <h1 class="h2">Impressum</h1>
+  </div>
+  <div class="container prose" style="max-width:48rem">
+    ${btDraft()}
+    <h2 class="h3">Angaben gemäß § 5 DDG</h2>
+    <p>${btAddress()}</p>
+    <p>E-Mail: ${btMail()}</p>
+    <h2 class="h3">Verantwortlich für den Inhalt nach § 18 Abs. 2 MStV</h2>
+    <p>${bt("name")}, Anschrift wie oben</p>
+    <h2 class="h3">Hinweis</h2>
+    <p>Pilz Handel ist ein privates, werbefreies Informationsprojekt. Alle Wirkungsaussagen sind nach Evidenzstufe gekennzeichnet und ersetzen keine ärztliche Beratung. Für die Inhalte verlinkter externer Seiten sind ausschließlich deren Betreiber verantwortlich.</p>
+    <p><a href="#/datenschutz">Zur Datenschutzerklärung</a></p>
+  </div>`;
+  return "Impressum";
+}
+
+function datenschutz(el){
+  el.innerHTML = `
+  <div class="container pagehead">
+    <div class="eyebrow">Datenschutz</div>
+    <h1 class="h2">Datenschutzerklärung</h1>
+    <p class="lead">Kurz gesagt: Kein Konto, keine Cookies, kein Tracking. Was du in der App speicherst, bleibt auf deinem Gerät.</p>
+  </div>
+  <div class="container prose" style="max-width:48rem">
+    ${btDraft()}
+    <h2 class="h3">Verantwortlicher</h2>
+    <p>${btAddress()}<br>E-Mail: ${btMail()}</p>
+
+    <h2 class="h3">Daten, die nur auf deinem Gerät liegen</h2>
+    <p>Merkliste, Vergleich, Check-Auswahl, Einnahme-Tagebuch, Arzt-Karte und Anzeige-Einstellungen speichert ausschließlich dein Browser (im sogenannten lokalen Speicher). Diese Daten werden nicht übertragen und erreichen den Betreiber nie. Du kannst sie jederzeit löschen, indem du die Websitedaten dieser Seite in deinem Browser entfernst.</p>
+
+    <h2 class="h3">Hosting über GitHub Pages</h2>
+    <p>Die App wird über GitHub Pages bereitgestellt (GitHub Inc., USA). Beim Aufruf verarbeitet GitHub technisch notwendige Daten, insbesondere deine IP-Adresse, und speichert sie in Server-Protokollen. Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO; das berechtigte Interesse liegt in der sicheren und zuverlässigen Bereitstellung der App. Der Betreiber selbst hat keinen Zugriff auf diese Protokolle. Näheres: <a href="https://docs.github.com/de/site-policy/privacy-policies/github-general-privacy-statement" target="_blank" rel="noopener">Datenschutzerklärung von GitHub</a>.</p>
+
+    <h2 class="h3">Fotos von Wikimedia Commons</h2>
+    <p>Die Pilzfotos lädt dein Browser direkt von Servern der Wikimedia Foundation (USA). Dabei erhält die Wikimedia Foundation deine IP-Adresse. Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO; das berechtigte Interesse liegt darin, frei lizenzierte Fotos mit korrekter Urheberangabe zu zeigen, ohne sie selbst zu hosten. Es handelt sich um eine Übermittlung in ein Drittland außerhalb der EU. Näheres: <a href="https://foundation.wikimedia.org/wiki/Policy:Privacy_policy/de" target="_blank" rel="noopener">Datenschutzerklärung der Wikimedia Foundation</a>.</p>
+
+    <h2 class="h3">Fehler melden</h2>
+    <p>Wenn du über „Fehler melden“ einen inhaltlichen Fehler meldest, geschieht das freiwillig über GitHub Issues. Dafür brauchst du ein GitHub-Konto, und deine Meldung ist öffentlich sichtbar. Es gilt die Datenschutzerklärung von GitHub.</p>
+
+    <h2 class="h3">Schriften</h2>
+    <p>Die Schriften sind in der App selbst enthalten. Es werden keine Schriftdienste Dritter aufgerufen.</p>
+
+    <h2 class="h3">Deine Rechte</h2>
+    <p>Du hast das Recht auf Auskunft, Berichtigung, Löschung, Einschränkung der Verarbeitung und Widerspruch (Art. 15–18 und 21 DSGVO). Wende dich dafür an die oben genannte E-Mail-Adresse. Außerdem kannst du dich bei einer Datenschutz-Aufsichtsbehörde beschweren (Art. 77 DSGVO).</p>
+
+    <p class="muted">Stand: September 2026</p>
+  </div>`;
+  return "Datenschutz";
 }
 
 /* ---------- Rezepte ---------- */
