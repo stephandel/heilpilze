@@ -56,8 +56,9 @@ Verdächtig sind `ink3` auf `bg` und `accent` als Textfarbe im hellen Schema.
 
 ## Regeln (Pilot-Kern) und Ist-Stand
 
-Stand der Prüfung: 25.09.2026, zuletzt aktualisiert nach Schritt 1–4 des Arbeitsplans
-(Code-Durchsicht plus Browsertest der geänderten Abläufe, kein vollständiger A11Y-03-Durchgang).
+Stand der Prüfung: 25.09.2026, zuletzt aktualisiert nach Schritt 1–5 des Arbeitsplans
+(Code-Durchsicht plus Browsertest der geänderten Abläufe, kein vollständiger A11Y-03-Durchgang;
+Schritt 5 ist Rechtsanalyse, keine Rechtsberatung, und wartet auf echte Impressum-Daten).
 ✅ erfüllt · 🟡 teilweise · ❌ offen. Eine Regel gilt erst als erfüllt, wenn der Nachweis vorliegt.
 
 | Regel | Was sie hier konkret heißt | Stand | Nachweis / Lücke |
@@ -77,11 +78,11 @@ Stand der Prüfung: 25.09.2026, zuletzt aktualisiert nach Schritt 1–4 des Arbe
 | CONTENT-01 Zweck + Grenzen | „Allgemeine Information, keine Beratung“ auf Start, Detail und Check sichtbar | 🟡 | Steht in „Über“ und im Fuß; Check verweist auf ärztliche Abklärung. Auf Detailseite prüfen |
 | CONTENT-02 Herkunft + Stand | Verantwortlicher, Stand und Aktualisierungsregel je Pilz | 🟡 | Nur globaler Stand „September 2026“. Kein Datum je Pilz, kein Verantwortlicher genannt |
 | CONTENT-03 Evidenz vs. Meinung vs. Werbung | E/F/T/S je Aussage; Shops klar als redaktionelle Auswahl | ✅ | Kern der App. Radar-Treffer als „nicht eingestuft“ markiert |
-| CLAIM-02 Health Claims / HWG | Eigene Texte (Hero, Finder-Kacheln, Zusammenfassungen) auf Wirkversprechen prüfen | ❌ | Rechtslage für Produkte erklärt, eigene Formulierungen nicht geprüft. Ergebnis mit Datum hier festhalten |
+| CLAIM-02 Health Claims / HWG | Eigene Texte (Hero, Finder-Kacheln, Zusammenfassungen) auf Wirkversprechen prüfen | ✅ | KONZEPT.md §9 (25.09.2026): Hero, Finder, Zusammenfassungen, Shop- und Rezepttexte gegen Reizwortliste geprüft, keine Heilversprechen gefunden. Shop-Liste als verbleibendes Risiko benannt, keine Regel erzwingt das bisher, nur Gewohnheit. Keine Rechtsberatung |
 | CLAIM-03 Aussagenregister | Jede Wirkungsaussage: Text, Stufe, Beleg, Stand | 🟡 | `effects` je Pilz haben Text, Stufe, Begründung. Quellen nur je Pilz, nicht je Aussage. Datenqualität jetzt per Test geprüft (TEST-01) |
 | DQ-04 Fehler melden | Meldeweg in der App, Korrektur durch Stephan | ✅ | Link „Fehler melden“ im Fuß (jede Seite) und „Fehler bei diesem Pilz melden“ auf jeder Detailseite, beide öffnen ein vorausgefülltes GitHub-Issue (`issueUrl()` in `app.js`, Repo `stephandel/heilpilze`, Label `inhalt`). Korrekturverantwortung liegt bei Stephan, nicht weiter automatisiert |
 | SYNC-03 Browser-Speicher | Hinweis „kann gelöscht werden, Sicherung speichern“ bei Tagebuch und Arzt-Karte | 🟡 | Tagebuch hat jetzt Warnhinweis plus Export/Import (im Browser geprüft). Arzt-Karte weiterhin ohne Hinweis und ohne Sicherung |
-| LEGAL-01 Rechtsprofil | Einmal schriftlich: Betreiber, Zielmarkt DE, Datenarten, externe Abrufe, Impressumsfrage | ❌ | Offen. Klären lassen: Anbieterkennzeichnung nach MStV auch ohne Geschäftsmäßigkeit; Weitergabe der IP beim Foto-Abruf an Wikimedia |
+| LEGAL-01 Rechtsprofil | Einmal schriftlich: Betreiber, Zielmarkt DE, Datenarten, externe Abrufe, Impressumsfrage | 🟡 | KONZEPT.md §8 (25.09.2026): Profil geschrieben, Ergebnis **Impressum und Datenschutzerklärung sind vermutlich schon jetzt Pflicht** (nicht erst bei Verkauf, wie §6 bisher annahm), fehlen aber noch live auf der Seite. Entwürfe für beide liegen in §8 mit Platzhaltern. Fehlt: echter Name/Anschrift/E-Mail von Stephan, dann als Ansicht veröffentlichen. Keine Rechtsberatung |
 | DOC-01 Doku im Repo | README, KONZEPT.md, CLAUDE.md bei jeder wesentlichen Änderung nachziehen | 🟡 | CLAUDE.md nachgeführt. KONZEPT.md §3 weiterhin veraltet (Palette), §5 (Funktionsliste) nicht um logic.js/Meldeweg ergänzt |
 | OPS-06 Pflegeplan | Fester Rhythmus für Radar, Inhalte, Links, Fotos | ❌ | Vorschlag im Arbeitsplan |
 | TEST-01 Tests nach Risiko | Tests für Check-Logik, Datenaufbereitung, Tagebuch-Import | ✅ | `pilzhandel/tools/test.mjs`, 17 Tests, `node --test tools/test.mjs`. Prüft Datenqualität aller 21 Pilze (Stufen, Punktwert, Flags, Quellen), `checkHits()` (Stufe = Maximum, nicht Summe) und `parseDiaryImport()` (ungültige/doppelte Einträge, Wertebereiche). Beide Funktionen sind nach `pilzhandel/logic.js` ausgelagert und werden von `app.js` und dem Test benutzt, kein Kopie-Risiko |
@@ -105,7 +106,14 @@ Stand der Prüfung: 25.09.2026, zuletzt aktualisiert nach Schritt 1–4 des Arbe
    jetzt ebenfalls in `build-data.js` (vorher hart in `app.js` kodiert), damit eine einzige
    Quelle für „welche Fotos gibt es“ existiert. Ein Test prüft ohne Netzwerk, ob alle aktuell
    verwendeten Fotos einen Cache-Eintrag haben.
-5. **Rechtsprofil + Claims (LEGAL-01, CLAIM-02):** als Abschnitt in KONZEPT.md, mit Datum und offenen Punkten.
+5. 🟡 **Rechtsprofil + Claims (LEGAL-01, CLAIM-02)** (Analyse erledigt 25.09.2026, Veröffentlichung
+   offen): KONZEPT.md §8+§9. Wichtigster Fund: Impressum und Datenschutzerklärung sind nach
+   dieser Einschätzung vermutlich **schon jetzt** Pflicht, nicht erst bei einem Verkauf — die
+   Seite hat aktuell keines von beiden. Entwürfe mit Platzhaltern liegen in §8. Claims-Prüfung
+   (Hero, Finder, Zusammenfassungen, Shops) fand keine Heilversprechen. **Nächster Schritt liegt
+   bei Stephan:** Name, ladungsfähige Anschrift und E-Mail festlegen, dann Impressum- und
+   Datenschutz-Ansicht in der App bauen und im Fuß verlinken (aus §5/§18 MStV folgt: leicht
+   erkennbar, in höchstens zwei Klicks erreichbar — ein Absatz in KONZEPT.md reicht dafür nicht).
 6. **Stil Pfifferling:** Tokens oben in `app.css` einsetzen, Kontrast prüfen, KONZEPT.md §3 anpassen.
 7. **A11Y-03-Durchgang:** Protokoll als kurze Liste in KONZEPT.md; UX-01, DEPTH-02, CONTENT-01 dabei mit abhaken.
 8. **Kennzahlen (PROD-04), Vorschlag:** Anteil Aussagen mit Beleg je Aussage; Radar-Treffer

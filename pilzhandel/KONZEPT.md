@@ -74,9 +74,10 @@ Wo wir uns absetzen: smaints wirbt mit Wirkung, wir ordnen Wirkung ein. Das ist 
 
 ## 6. Falls später doch verkauft wird
 
-„Handel“ ist der Nachname, die App verkauft nichts. Solange sie ein privates Informationsprojekt ohne Werbung bleibt, reicht der jetzige Stand. Kämen später Affiliate-Links oder ein eigener Shop dazu, gelten zusätzliche Pflichten:
+„Handel“ ist der Nachname, die App verkauft nichts. Kämen später Affiliate-Links oder ein eigener Shop dazu, gelten zusätzliche Pflichten:
 
-- **Impressum und Datenschutzerklärung** sind Pflicht, sobald die Seite geschäftsmäßig ist.
+- ~~Impressum und Datenschutzerklärung sind Pflicht, sobald die Seite geschäftsmäßig ist.~~
+  **Korrektur (§8):** Das war zu optimistisch. Nach heutiger Einschätzung gilt das schon jetzt, nicht erst ab einem Verkauf — siehe §8.
 - **Health-Claims-Verordnung:** Keine Wirkversprechen bei eigenen Produkten. Die Evidenzseite muss vom Shop klar getrennt sein, sonst wird sie rechtlich zur Werbung.
 - **Lebensmittelrecht:** Registrierung als Lebensmittelunternehmer, Kennzeichnung nach der Lebensmittelinformations-Verordnung, Novel-Food-Status einzelner Arten prüfen.
 - **Affiliate-Links** müssen als Werbung gekennzeichnet sein.
@@ -88,3 +89,142 @@ Wo wir uns absetzen: smaints wirbt mit Wirkung, wir ordnen Wirkung ein. Das ist 
 - Alle Einstellungen, Merkliste, Check-Auswahl, Tagebuch und Arzt-Karte liegen nur im Browser (`localStorage`). Kein Tracking.
 - Schriften liegen in `fonts/` (SIL Open Font License). Einziger externer Abruf: Fotos von Wikimedia Commons.
 - `tools/studien-radar.js` braucht Node 18 oder neuer (eingebautes `fetch`) und fragt die öffentliche PubMed-Schnittstelle ohne Schlüssel ab.
+
+## 8. Rechtsprofil (Stand: 25. September 2026)
+
+Regel LEGAL-01 aus dem Pilot-Regelkatalog verlangt ein Rechtsprofil vor Veröffentlichung — die
+Seite ist aber schon live. Dieser Abschnitt holt das nach. **Keine Rechtsberatung:** erstellt
+auf Basis öffentlich zugänglicher Gesetzestexte und Kanzlei-Erläuterungen (Quellen unten), nicht
+von einer Anwältin oder einem Anwalt geprüft. Referenzprofil Deutschland/EU, kein weltweiter
+Rechtskatalog.
+
+| Feld | Einschätzung |
+|---|---|
+| Verantwortlicher Betreiber | Stephan Handel, Einzelperson. Vollständige Angaben fehlen noch auf der Seite selbst (siehe offene Punkte). |
+| Länder / Zielmarkt | Primär Deutschland (deutschsprachig, deutsche Anbieter, deutsches Recht als Bezugsrahmen). Über GitHub Pages ohne Geoblocking weltweit erreichbar; für Besuchende außerhalb der EU gilt zusätzlich deren eigenes Recht, hier nicht geprüft. |
+| Zielgruppen | Erwachsene Laien mit allgemeinem Interesse oder einem konkreten Gesundheitsanliegen. Keine gezielte Ansprache an Kinder oder Jugendliche. |
+| Minderjährige | **Nicht nötig, begründet:** keine Altersprüfung, kein Jugendschutzbeauftragter. Die Inhalte sind Gesundheitsinformation ohne jugendschutzrelevante Kategorien (keine Gewalt, Sexualität, extremistische Inhalte). |
+| Vertragsarten | Keine. Die App schließt selbst keine Verträge, verkauft nichts, hat keine Registrierung. Verweise zu Drittanbieter-Shops führen aus der App heraus; dort gelten deren eigene AGB und Widerrufsregeln. |
+| Datenkategorien | Browserdaten (Merkliste, Check-Auswahl, Tagebuch, Arzt-Karte, Anzeigeeinstellungen) verlassen das Gerät nie und werden vom Betreiber nicht verarbeitet — dafür besteht ihm gegenüber keine Informationspflicht. Tatsächlich verarbeitet werden **IP-Adressen**: einmal durchs Hosting (GitHub-Pages-Server-Logs), einmal beim direkten Laden der Fotos im Browser (Wikimedia-Foundation-Server). IP-Adressen sind personenbezogene Daten (EuGH „Breyer“), auch ohne Cookies oder Tracking. |
+| Verkaufskanäle | Keine eigenen. Die Shop-Liste verlinkt elf Drittanbieter ohne Affiliate-Vergütung (Stand heute, siehe §6). |
+| Inhalte | Gesundheitsbezogene Fachinhalte zu Heilpilzen, Rezepte, kuratierte Linklisten. Redaktionelle Sorgfalt dazu bereits im Pilot-Regelkatalog verankert (CONTENT-01/02/03, siehe `CLAUDE.md`). |
+| Besondere Branchenfunktionen | Gesundheitsinhalte (Claims-Grenzen, siehe §9); Auslandsbezug durch Bildabruf bei einer US-Stiftung (Wikimedia Foundation). |
+
+**Ergebnis:**
+
+1. **Anbieterkennzeichnung (Impressum), § 5 DDG i. V. m. § 18 Abs. 1 MStV — vermutlich schon
+   heute Pflicht, nicht erst bei einem Verkauf.** Die Ausnahme gilt nur für Angebote, die
+   „ausschließlich persönlichen oder familiären Zwecken“ dienen. Eine öffentliche, professionell
+   gestaltete, unter eigenem Namen und Logo geführte Webapp mit regelmäßiger Pflege erfüllt das
+   nicht. Gewinnerzielungsabsicht ist laut Rechtsprechung keine Voraussetzung. **Fehlt aktuell.**
+2. **Verantwortlicher nach § 18 Abs. 2 MStV** (zusätzlich zum Impressum, für journalistisch-
+   redaktionelle Angebote): Grenzfall. Pilz Handel ordnet und kommentiert Inhalte redaktionell
+   (Evidenzstufen, Methode-Seite, kuratierte Shop-Auswahl), was dafürspricht. Anbieter und
+   Verantwortlicher dürfen bei einer Einzelperson identisch sein — der Zusatzaufwand ist nur eine
+   weitere Namensnennung. Empfehlung: mit ausweisen, statt die Einstufung abschließend zu klären.
+3. **Datenschutzerklärung, Art. 13 DSGVO — Pflicht**, weil IP-Adressen über Hosting und
+   Bildabruf verarbeitet werden, auch ohne Cookies oder Tracking. **Fehlt aktuell**, es gibt nur
+   den kurzen Absatz unter „Über Pilz Handel“.
+
+**Entwurf Impressum** (Platzhalter füllen, dann als eigene Ansicht in der App veröffentlichen,
+von „Fuß“ und „Über“ verlinkt):
+
+```
+Impressum
+
+Verantwortlich für den Inhalt:
+[Vollständiger Name]
+[Straße und Hausnummer]
+[PLZ und Ort]
+Deutschland
+
+Kontakt: [E-Mail-Adresse]
+
+Verantwortlich im Sinne des § 18 Abs. 2 Medienstaatsvertrag:
+[Name wie oben, falls identisch]
+
+Haftungshinweis: Pilz Handel ist ein privates, werbefreies Informationsprojekt.
+Alle Wirkungsaussagen sind nach Evidenzstufe gekennzeichnet und ersetzen keine
+ärztliche Beratung. Für die Inhalte verlinkter externer Seiten sind deren
+Betreiber verantwortlich.
+```
+
+**Entwurf Datenschutzerklärung** (Kernpunkte, redaktionell noch auszuformulieren):
+
+- Verantwortlicher: wie Impressum.
+- Es gibt kein Nutzerkonto, keine Cookies, kein Tracking und keine Analyse-Software.
+- Merkliste, Vergleich, Check-Auswahl, Tagebuch, Arzt-Karte und Anzeigeeinstellungen speichert
+  ausschließlich der Browser (`localStorage`). Diese Daten erreichen den Betreiber nie.
+- Beim Aufruf der Seite verarbeitet GitHub Pages als Hosting-Anbieter Server-Logs mit der
+  IP-Adresse (Rechtsgrundlage: Art. 6 Abs. 1 lit. f DSGVO, berechtigtes Interesse am sicheren
+  Betrieb). Details: GitHubs eigene Datenschutzerklärung.
+- Fotos werden direkt vom Server der Wikimedia Foundation (USA) geladen; dabei erhält Wikimedia
+  die IP-Adresse des Besuchers. Details: Datenschutzerklärung der Wikimedia Foundation.
+- Es gibt einen Meldeweg für inhaltliche Fehler über GitHub Issues (öffentlich, freiwillig).
+
+**Offen, nicht von uns abschließend geklärt:**
+
+- Ob der Bildabruf bei der Wikimedia Foundation (USA) eine nach Art. 44 ff. DSGVO ausreichende
+  Garantie hat — wird in der Datenschutzerklärung als Drittlandtransfer benannt, die rechtliche
+  Absicherung selbst liegt bei Wikimedia.
+- Ob GitHub Pages einen Auftragsverarbeitungsvertrag anbietet bzw. ob einer nötig ist.
+- Endgültige Einstufung als journalistisch-redaktionell (Punkt 2 oben).
+- **Nächster Schritt, der nicht mehr am Schreibtisch zu lösen ist:** echten Namen, ladungsfähige
+  Anschrift (kein Postfach) und eine erreichbare E-Mail-Adresse für das Impressum festlegen und
+  eintragen, dann Impressum- und Datenschutz-Ansicht in der App veröffentlichen.
+
+Quellen: [§ 5 DDG](https://www.gesetze-im-internet.de/ddg/__5.html) (Volltext geprüft) ·
+[§ 18 MStV — Das Impressum und der Verantwortliche](https://www.res-media.net/18-mstv-das-impressum-und-der-verantwortliche/) ·
+[§ 18 MStV — Informationspflichten und Auskunftsrechte](https://dr-dsgvo.de/18-mstv-informationspflichten-und-auskunftsrechte/) ·
+[Benennung des inhaltlich Verantwortlichen](https://koehrer.de/benennung-des-inhaltlich-verantwortlichen-%C2%A7-18-abs-2-mstv/)
+(letztere drei sind Kanzlei-Erläuterungen, kein Gesetzestext direkt geprüft).
+
+## 9. Prüfung eigener Aussagen — Health Claims & HWG (Stand: 25. September 2026)
+
+Regel CLAIM-02 aus dem Pilot-Regelkatalog. Geprüft: eigene, nicht quellenbelegte Texte der
+App — Hero, Anliegen-Finder-Kacheln, Pilz-Zusammenfassungen (`summary`), Shop-Beschreibungen,
+Rezepttexte. **Nicht** Gegenstand: die evidenzbasierten Wirkungsaussagen selbst (`effects`),
+die schon über CONTENT-03 mit Quelle und Stufe gekennzeichnet sind.
+
+**Rechtlicher Rahmen in Kürze** (laut mehreren Kanzlei-Erläuterungen, kein Gesetzestext direkt
+geprüft):
+
+- Die Health-Claims-Verordnung (EG) 1924/2006 gilt nur für „kommerzielle Mitteilungen“ bei
+  Kennzeichnung, Aufmachung oder Werbung für Lebensmittel, die an Endverbraucher abgegeben
+  werden. Unabhängige Gesundheitsinformation — wie bei der Verbraucherzentrale oder dem
+  Krebsinformationsdienst, an denen sich Pilz Handel ausdrücklich orientiert (§2) — fällt in
+  der Regel nicht darunter, außer sie ist faktisch doch produktbezogene Werbung.
+- Das Heilmittelwerbegesetz nimmt sachliche, aufklärende oder journalistische Inhalte ohne
+  Wettbewerbsabsicht aus. Die Abgrenzung wird laut Fachliteratur schwierig, sobald ein Angebot
+  zugleich Anbieter oder Produkte hervorhebt — das trifft auf die Shop-Liste zu.
+
+**Durchsicht:** automatisiert nach Reizwörtern („heilt“, „wirkt gegen“, „bekämpft“, „verhindert“,
+„garantiert“, „wirksam gegen“, „kuriert“, „hilft bei“, „lindert“, „stärkt“) über alle
+Pilz-Zusammenfassungen, Shop- und Rezepttexte, dazu manuelle Durchsicht von Hero- und
+Finder-Text.
+
+**Ergebnis: keine Formulierung gefunden, die eine Heilwirkung behauptet oder ein Produkt mit
+einer Krankheit in Verbindung bringt.**
+
+- Hero und Finder beschreiben nur, was die App tut ( „Jede Wirkung mit Evidenzstufe und
+  Quelle“), nicht eine Wirkung selbst.
+- Shop-Beschreibungen loben Herkunft, Zertifizierung und Verarbeitung ( „Bio-Zucht“,
+  „GMP-zertifiziertes Labor“), nicht Gesundheitswirkungen.
+- Pilz-Zusammenfassungen ordnen historisch/wissenschaftlich ein, ohne eigene Wirkbehauptung.
+
+**Verbleibendes Risiko:** Die Shop-Liste nennt Anbieter namentlich und beschreibt sie positiv —
+genau dort kann laut Fachliteratur die HWG-Ausnahme für redaktionelle Inhalte kippen, weil
+„Anbieter oder Produkte hervorgehoben“ werden. Heute eingehalten, aber nur durch Gewohnheit,
+nicht durch eine erzwungene Regel: **jede neue Shop-Beschreibung nennt nur Fakten (Herkunft,
+Zertifizierung, Sortiment), nie eine Wirkung oder eine Empfehlung „bei Beschwerde X“.**
+
+Nicht geprüft: lebensmittelrechtliche Kennzeichnungspflichten der bei den Shops verkauften
+Produkte selbst — das ist Sache der jeweiligen Anbieter, nicht von Pilz Handel.
+
+**Kein Änderungsbedarf am aktuellen Text.** Diese Prüfung ist eine Momentaufnahme, keine
+Freigabe für künftige Texte. Jede neue, selbst formulierte Passage (nicht die reinen
+`effects`-Einträge) sollte gegen dieselben Reizwortgruppen geprüft werden, bevor sie live geht.
+
+Quellen: [Health Claims: Anwendungsbereich der HCVO](https://www.it-recht-kanzlei.de/anwendungsbereich-health-claims-verordnung.html) ·
+[Heilmittelwerbegesetz kompakt](https://www.dmrz.de/wissen/ratgeber/heilmittelwerbegesetz) ·
+[Werbung für Heilmittel: was ist erlaubt?](https://www.rueden.de/blog/wettbewerbsrecht/werbung-fuer-heilmittel-was-ist-erlaubt-was-ist-verboten/).
