@@ -87,7 +87,7 @@ durchlaufen).
 | SYNC-03 Browser-Speicher | Hinweis „kann gelöscht werden, Sicherung speichern“ bei Tagebuch und Arzt-Karte | ✅ | Tagebuch hat Warnhinweis plus Export/Import. Arzt-Karte hat jetzt denselben Warnhinweis, als Sicherung dient der vorhandene „Drucken oder als PDF sichern“-Knopf (kein zusätzlicher JSON-Export gebaut, da die Karte für den Druck gedacht ist) (25.09.2026, im Browser geprüft) |
 | LEGAL-01 Rechtsprofil | Einmal schriftlich: Betreiber, Zielmarkt DE, Datenarten, externe Abrufe, Impressumsfrage | 🟡 | KONZEPT.md §8 (25.09.2026): Profil geschrieben, Ergebnis **Impressum und Datenschutzerklärung sind vermutlich schon jetzt Pflicht** (nicht erst bei Verkauf, wie §6 bisher annahm), fehlen aber noch live auf der Seite. Entwürfe für beide liegen in §8 mit Platzhaltern. Impressum und Datenschutz sind als Ansichten gebaut (`#/impressum`, `#/datenschutz`, im Fuß verlinkt), Angaben kommen aus `pilzhandel/betreiber.js`. Fehlt nur: Name/Anschrift/E-Mail dort eintragen, `VERSION` in `sw.js` erhöhen; der todo-Test in `test.mjs` wird dann grün. Nicht nach `main` bringen, solange er todo ist. Keine Rechtsberatung |
 | DOC-01 Doku im Repo | README, KONZEPT.md, CLAUDE.md bei jeder wesentlichen Änderung nachziehen | ✅ | CLAUDE.md nachgeführt. KONZEPT.md §3 war bereits aktuell (Palette Pfifferling seit Schritt 6). §5 (Funktionsliste) um Meldeweg, Rückgängig-Funktion, Bildrechte, Tests, Kennzahlen-Skript und Impressum/Datenschutz-Ansichten ergänzt (25.09.2026) |
-| OPS-06 Pflegeplan | Fester Rhythmus für Radar, Inhalte, Links, Fotos | ✅ | Rhythmus dokumentiert (Arbeitsplan-Schritt 9). Der monatliche Radar-Teil läuft jetzt automatisch: `.github/workflows/studien-radar.yml` (25.09.2026), öffnet bei neuen Treffern einen PR zum Sichten, stuft nichts selbst ein. Braucht einmalig eine Einstellung von Stephan, siehe Kommentar oben in der Datei. Shop-/Infolinks (vierteljährlich) und Einstufungen (jährlich) bleiben bewusst Handarbeit |
+| OPS-06 Pflegeplan | Fester Rhythmus für Radar, Inhalte, Links, Fotos | ✅ | Rhythmus dokumentiert (Arbeitsplan-Schritt 9). Der monatliche Radar-Teil läuft jetzt automatisch: `.github/workflows/studien-radar.yml` (25.09.2026), öffnet bei neuen Treffern einen PR zum Sichten, stuft nichts selbst ein. Nötige Repo-Einstellung war beim Prüfen schon aktiv. Shop-/Infolinks (vierteljährlich) und Einstufungen (jährlich) bleiben bewusst Handarbeit |
 | TEST-01 Tests nach Risiko | Tests für Check-Logik, Datenaufbereitung, Tagebuch-Import | ✅ | `pilzhandel/tools/test.mjs`, 20 Tests (einer todo, bis `betreiber.js` ausgefüllt ist), `node --test tools/test.mjs`. Prüft Datenqualität aller 21 Pilze (Stufen, Punktwert, Flags, Quellen), `checkHits()` (Stufe = Maximum, nicht Summe) und `parseDiaryImport()` (ungültige/doppelte Einträge, Wertebereiche). Beide Funktionen sind nach `pilzhandel/logic.js` ausgelagert und werden von `app.js` und dem Test benutzt, kein Kopie-Risiko |
 
 ## Arbeitsplan (Reihenfolge nach Schaden)
@@ -164,9 +164,8 @@ durchlaufen).
    Einstufungen und Stand je Pilz erneuern, dabei `data-2026-09` als grobe Marke im Kopf
    behalten. Der Radar-Teil läuft jetzt automatisch: `.github/workflows/studien-radar.yml`
    ruft `studien-radar.js` monatlich auf und öffnet bei neuen Treffern einen Pull Request zum
-   Sichten (Label `inhalt`), stuft aber nichts selbst ein — das bleibt Handarbeit. Braucht
-   einmalig eine Einstellung von Stephan (Repo-Einstellungen → Actions → General → Workflow
-   permissions → PRs erlauben, Kommentar in der Workflow-Datei), sonst läuft der Radar-Schritt
-   durch, nur der letzte Schritt (PR öffnen) schlägt fehl.
+   Sichten (Label `inhalt`), stuft aber nichts selbst ein — das bleibt Handarbeit. Nötige
+   Repo-Einstellung (PRs durch Actions erlauben) war beim Prüfen am 25.09.2026 schon aktiv,
+   keine weitere Aktion von Stephan nötig.
 
 Nach jedem erledigten Punkt die Tabelle oben aktualisieren.
