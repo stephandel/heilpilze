@@ -56,16 +56,18 @@ Verdächtig sind `ink3` auf `bg` und `accent` als Textfarbe im hellen Schema.
 
 ## Regeln (Pilot-Kern) und Ist-Stand
 
-Stand der Prüfung: 25.09.2026, zuletzt aktualisiert nach Schritt 1–7 des Arbeitsplans
+Stand der Prüfung: 25.09.2026, zuletzt aktualisiert nach Schritt 1–9 des Arbeitsplans
 (Code-Durchsicht plus Browsertest der geänderten Abläufe; A11Y-03-Durchgang mit Werkzeug-
 Grenzen, siehe KONZEPT.md §10. Schritt 5 ist Rechtsanalyse, keine Rechtsberatung, und wartet
-auf echte Impressum-Daten).
+auf echte Impressum-Daten. Schritt 8+9 sind Vorschläge mit Basiswerten, Ziele/Rhythmus muss
+Stephan bestätigen oder anpassen — damit ist der komplette Arbeitsplan mindestens einmal
+durchlaufen).
 ✅ erfüllt · 🟡 teilweise · ❌ offen. Eine Regel gilt erst als erfüllt, wenn der Nachweis vorliegt.
 
 | Regel | Was sie hier konkret heißt | Stand | Nachweis / Lücke |
 |---|---|---|---|
 | PROD-01 Produktbrief | Satz oben ist die Messlatte für jede neue Funktion | ✅ | Diese Datei |
-| PROD-04 Erfolg + Gegenindikator | Ohne Tracking: Inhaltsqualität messen statt Nutzung | ❌ | Kennzahlen festlegen, siehe Arbeitsplan |
+| PROD-04 Erfolg + Gegenindikator | Ohne Tracking: Inhaltsqualität messen statt Nutzung | 🟡 | `tools/kennzahlen.js` misst drei Zahlen aus vorhandenen Daten (Arbeitsplan-Schritt 8), Stephan muss Zielwerte noch festlegen |
 | UX-01 Zweck, Zustand, nächster Schritt | Jede Ansicht hat Eyebrow, Überschrift, Lead und leeren Zustand mit Handlung | ✅ | Beim A11Y-03-Durchgang (25.09.2026) auf Start, Katalog, Check, Tagebuch bestätigt: Eyebrow, Überschrift, Lead vor jedem Inhalt |
 | UX-03 Fehler + sichere Aktionen | Löschen und Leeren rückgängig machbar; Fehlertexte nennen den nächsten Schritt | ✅ | Toast mit „Rückgängig“ für Tagebuch-Löschen, Check „Auswahl leeren“, Vergleich „Auswahl leeren“ (`toast(msg, {onUndo})` in `app.js`). Beim A11Y-03-Durchgang einen echten Fokus-Bug im Rückgängig-Knopf gefunden und behoben (siehe A11Y-02). Import-Fehlertext „Datei konnte nicht gelesen werden“ bleibt ohne Handlungshinweis – kleine Restlücke |
 | DEPTH-02 Risiken am Handlungspunkt | Sicherheit und Evidenzstufe stehen dort, wo gekauft oder dosiert wird, nicht nur im Wissensbereich | ✅ | Beim A11Y-03-Durchgang bestätigt: „Sicherheit“-Karte auf der Detailseite steht direkt neben Kaufen/Dosierung, nicht hinter einem Klick. Check zeigt seinen Einschränkungshinweis dauerhaft |
@@ -85,7 +87,7 @@ auf echte Impressum-Daten).
 | SYNC-03 Browser-Speicher | Hinweis „kann gelöscht werden, Sicherung speichern“ bei Tagebuch und Arzt-Karte | 🟡 | Tagebuch hat jetzt Warnhinweis plus Export/Import (im Browser geprüft). Arzt-Karte weiterhin ohne Hinweis und ohne Sicherung |
 | LEGAL-01 Rechtsprofil | Einmal schriftlich: Betreiber, Zielmarkt DE, Datenarten, externe Abrufe, Impressumsfrage | 🟡 | KONZEPT.md §8 (25.09.2026): Profil geschrieben, Ergebnis **Impressum und Datenschutzerklärung sind vermutlich schon jetzt Pflicht** (nicht erst bei Verkauf, wie §6 bisher annahm), fehlen aber noch live auf der Seite. Entwürfe für beide liegen in §8 mit Platzhaltern. Fehlt: echter Name/Anschrift/E-Mail von Stephan, dann als Ansicht veröffentlichen. Keine Rechtsberatung |
 | DOC-01 Doku im Repo | README, KONZEPT.md, CLAUDE.md bei jeder wesentlichen Änderung nachziehen | 🟡 | CLAUDE.md nachgeführt. KONZEPT.md §3 weiterhin veraltet (Palette), §5 (Funktionsliste) nicht um logic.js/Meldeweg ergänzt |
-| OPS-06 Pflegeplan | Fester Rhythmus für Radar, Inhalte, Links, Fotos | ❌ | Vorschlag im Arbeitsplan |
+| OPS-06 Pflegeplan | Fester Rhythmus für Radar, Inhalte, Links, Fotos | 🟡 | Rhythmus als Vorschlag dokumentiert (Arbeitsplan-Schritt 9), nicht automatisiert — Stephan muss ihn tatsächlich einhalten oder später die geplante GitHub Action (KONZEPT.md §5) bauen lassen |
 | TEST-01 Tests nach Risiko | Tests für Check-Logik, Datenaufbereitung, Tagebuch-Import | ✅ | `pilzhandel/tools/test.mjs`, 17 Tests, `node --test tools/test.mjs`. Prüft Datenqualität aller 21 Pilze (Stufen, Punktwert, Flags, Quellen), `checkHits()` (Stufe = Maximum, nicht Summe) und `parseDiaryImport()` (ungültige/doppelte Einträge, Wertebereiche). Beide Funktionen sind nach `pilzhandel/logic.js` ausgelagert und werden von `app.js` und dem Test benutzt, kein Kopie-Risiko |
 
 ## Arbeitsplan (Reihenfolge nach Schaden)
@@ -138,10 +140,31 @@ auf echte Impressum-Daten).
    verfügbaren Werkzeugen nicht zu prüfen: echter Screenreader, schmaler Mobil-Viewport mit
    großer Schrift, echtes sequenzielles Durchtabben. Empfehlung: einmal von Hand an einem echten
    Telefon nachholen.
-8. **Kennzahlen (PROD-04), Vorschlag:** Anteil Aussagen mit Beleg je Aussage; Radar-Treffer
-   innerhalb von 30 Tagen eingestuft; Zahl gemeldeter Fehler und Zeit bis zur Korrektur.
-   Gegenindikator: Meldungen, die eine T- oder S-Aussage als Empfehlung verstanden haben.
-9. **Pflegeplan (OPS-06), Vorschlag:** monatlich Radar laufen lassen und sichten; vierteljährlich
-   Shop- und Infolinks prüfen; jährlich Einstufungen und Stand je Pilz erneuern.
+8. 🟡 **Kennzahlen (PROD-04), Vorschlag mit Basiswerten** (erledigt 25.09.2026, Ziele/Schwellen
+   offen für Stephan): `pilzhandel/tools/kennzahlen.js` rechnet drei Zahlen direkt aus den
+   vorhandenen Daten, ohne jede Form von Nutzer-Tracking:
+   - Inhaltsumfang: Wirkungsaussagen und Quellen je Pilz (Basiswert 25.09.2026: 21 Pilze,
+     Ø 6,3 Aussagen, Ø 2,4 Quellen je Pilz) — ein Rückgang würde auffallen, wenn ein neuer
+     Pilz ohne genug Belege ergänzt wird.
+   - Studien-Radar-Rückstand: noch nicht eingestufte Treffer und Alter des letzten Scans
+     (Basiswert: 77 offene Treffer, Scan von gestern).
+   - Gemeldete Inhaltsfehler über das `inhalt`-Label aus dem Meldeweg (Schritt 2): offen/erledigt
+     und Ø Tage bis zur Korrektur, per `gh issue list`. Das Label existierte noch gar nicht im
+     Repository — jetzt angelegt (`gh label create inhalt`), sonst wäre der Meldeweg gegen ein
+     nicht vorhandenes Label gelaufen und hätte nie gefilterte Zahlen geliefert.
+   **Nicht automatisch messbar**, weil dafür niemand Daten mitschreibt: der Gegenindikator
+   (Anteil Meldungen, die eine T-/S-Aussage als Empfehlung missverstanden haben — beim Sichten
+   von Hand einschätzen) und die Zeit von Radar-Treffer bis Einstufung (dafür müsste die PMID
+   beim Einstufen in `heilpilze.html` vermerkt werden, macht das Skript nicht von selbst).
+   **Offen, Entscheidung bei Stephan:** ob diese drei Zahlen die richtigen sind und welche
+   Zielwerte/Schwellen gelten sollen — das Skript liefert nur die Messung, nicht das Urteil.
+9. 🟡 **Pflegeplan (OPS-06), Vorschlag** (erledigt 25.09.2026, nicht automatisiert): monatlich
+   `node pilzhandel/tools/kennzahlen.js` und `node pilzhandel/tools/studien-radar.js` laufen
+   lassen, Treffer sichten; vierteljährlich Shop- und Infolinks in `tools/build-data.js` und
+   `KONZEPT.md` auf tote Links prüfen; jährlich Einstufungen und Stand je Pilz erneuern, dabei
+   `data-2026-09` als grobe Marke im Kopf behalten. **Bewusst nicht gebaut:** eine GitHub Action,
+   die das monatliche Radar automatisch laufen lässt und einen Pull Request öffnet, steht schon
+   als eigener Punkt in KONZEPT.md §5 (Stufe 2) — das ist ein eigenständiges Feature mit eigenen
+   Fragen (PubMed-Ratenlimits, Bot-Rechte zum Öffnen von PRs), keine Nebenarbeit dieses Schritts.
 
 Nach jedem erledigten Punkt die Tabelle oben aktualisieren.

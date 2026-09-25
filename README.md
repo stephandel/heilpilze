@@ -67,3 +67,5 @@ Doppelklick. Nach einer Änderung an den App-Dateien die Zahl in `VERSION` in
 - Studien-Radar aktualisieren: `node pilzhandel/tools/studien-radar.js [Tage]`, Treffer sichten,
   `pilzhandel/radar.js` committen
 - Tests laufen lassen: `node --test pilzhandel/tools/test.mjs`
+- Kennzahlen-Basiswerte ansehen: `node pilzhandel/tools/kennzahlen.js` (Inhaltsumfang,
+  Studien-Radar-Rückstand, gemeldete Inhaltsfehler; siehe `CLAUDE.md`, Regel PROD-04)
