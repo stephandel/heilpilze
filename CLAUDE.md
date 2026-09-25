@@ -56,26 +56,27 @@ Verdächtig sind `ink3` auf `bg` und `accent` als Textfarbe im hellen Schema.
 
 ## Regeln (Pilot-Kern) und Ist-Stand
 
-Stand der Prüfung: 25.09.2026, zuletzt aktualisiert nach Schritt 1–6 des Arbeitsplans
-(Code-Durchsicht plus Browsertest der geänderten Abläufe, kein vollständiger A11Y-03-Durchgang;
-Schritt 5 ist Rechtsanalyse, keine Rechtsberatung, und wartet auf echte Impressum-Daten).
+Stand der Prüfung: 25.09.2026, zuletzt aktualisiert nach Schritt 1–7 des Arbeitsplans
+(Code-Durchsicht plus Browsertest der geänderten Abläufe; A11Y-03-Durchgang mit Werkzeug-
+Grenzen, siehe KONZEPT.md §10. Schritt 5 ist Rechtsanalyse, keine Rechtsberatung, und wartet
+auf echte Impressum-Daten).
 ✅ erfüllt · 🟡 teilweise · ❌ offen. Eine Regel gilt erst als erfüllt, wenn der Nachweis vorliegt.
 
 | Regel | Was sie hier konkret heißt | Stand | Nachweis / Lücke |
 |---|---|---|---|
 | PROD-01 Produktbrief | Satz oben ist die Messlatte für jede neue Funktion | ✅ | Diese Datei |
 | PROD-04 Erfolg + Gegenindikator | Ohne Tracking: Inhaltsqualität messen statt Nutzung | ❌ | Kennzahlen festlegen, siehe Arbeitsplan |
-| UX-01 Zweck, Zustand, nächster Schritt | Jede Ansicht hat Eyebrow, Überschrift, Lead und leeren Zustand mit Handlung | 🟡 | Muster vorhanden (Check, Vergleich); je Ansicht beim A11Y-03-Durchgang abhaken |
-| UX-03 Fehler + sichere Aktionen | Löschen und Leeren rückgängig machbar; Fehlertexte nennen den nächsten Schritt | ✅ | Toast mit „Rückgängig“ für Tagebuch-Löschen, Check „Auswahl leeren“, Vergleich „Auswahl leeren“ (`toast(msg, {onUndo})` in `app.js`), im Browser geprüft. Import-Fehlertext „Datei konnte nicht gelesen werden“ bleibt ohne Handlungshinweis – kleine Restlücke |
-| DEPTH-02 Risiken am Handlungspunkt | Sicherheit und Evidenzstufe stehen dort, wo gekauft oder dosiert wird, nicht nur im Wissensbereich | 🟡 | Check sagt „Fehlende Daten heißen nicht sicher“. Detailseite (Kaufen/Dosierung) und Shop-Liste noch nicht geprüft |
+| UX-01 Zweck, Zustand, nächster Schritt | Jede Ansicht hat Eyebrow, Überschrift, Lead und leeren Zustand mit Handlung | ✅ | Beim A11Y-03-Durchgang (25.09.2026) auf Start, Katalog, Check, Tagebuch bestätigt: Eyebrow, Überschrift, Lead vor jedem Inhalt |
+| UX-03 Fehler + sichere Aktionen | Löschen und Leeren rückgängig machbar; Fehlertexte nennen den nächsten Schritt | ✅ | Toast mit „Rückgängig“ für Tagebuch-Löschen, Check „Auswahl leeren“, Vergleich „Auswahl leeren“ (`toast(msg, {onUndo})` in `app.js`). Beim A11Y-03-Durchgang einen echten Fokus-Bug im Rückgängig-Knopf gefunden und behoben (siehe A11Y-02). Import-Fehlertext „Datei konnte nicht gelesen werden“ bleibt ohne Handlungshinweis – kleine Restlücke |
+| DEPTH-02 Risiken am Handlungspunkt | Sicherheit und Evidenzstufe stehen dort, wo gekauft oder dosiert wird, nicht nur im Wissensbereich | ✅ | Beim A11Y-03-Durchgang bestätigt: „Sicherheit“-Karte auf der Detailseite steht direkt neben Kaufen/Dosierung, nicht hinter einem Klick. Check zeigt seinen Einschränkungshinweis dauerhaft |
 | UI-03 Touch, Tastatur, Maus | Kein Kernvorgang hängt an Hover; alle Knöpfe per Tastatur erreichbar | ✅ | „Sicherung laden“ ist jetzt ein echter `<button id="dImpBtn">`, der den versteckten Datei-Input per Klick auslöst; im Accessibility-Tree als fokussierbarer Button bestätigt. `:hover`-Regeln in `app.css` sind reine Zusatzoptik, kein Kernvorgang hängt daran |
 | COLOR-02 Farbe nie allein | Ampel, Stufen, Risiko immer mit Text oder Symbol | ✅ | Check zeigt Status als Text („Ärztlich abklären“ usw.), Stufen als Buchstabe. Nach Pfifferling-Umstellung erneut geprüft (Browser, hell+dunkel): unverändert, da Ampel/Stufen-Logik nicht an Tokens hängt |
 | VIS-03 Textalternativen | Pilzfotos „Foto: Name“, Deko `alt=""`, Illustrationen `aria-hidden` | ✅ | `pimg()` in `app.js` |
 | VIS-04 Bildrechte | Urheber und Lizenz je Foto nennen, nicht nur verlinken | ✅ | `tools/fetch-image-credits.js` holt Urheber und Lizenz von der Commons-API in `tools/image-credits.json`; `build-data.js` bettet sie als `PH.IMG_CREDITS` ein. `app.js` zeigt sie auf jeder Detailseite und beim Hero-Bild an (`imgCredit()`), alle 42 verwendeten Fotos haben einen Eintrag. Test prüft Vollständigkeit lokal, ohne Netzwerk |
-| A11Y-02 Semantik, Fokus, Namen | Landmarks, Sprunglink, beschriftete Knöpfe, `aria-live` für Ergebnisse | 🟡 | Weitgehend vorhanden, Datei-Input-Lücke aus UI-03 behoben. Fokus nach Seitenwechsel und Fokus im Undo-Toast noch nicht geprüft |
-| A11Y-03 Manueller Test | Kernabläufe mit Tastatur, VoiceOver, 200 % Zoom | ❌ | Kein vollständiges Protokoll. Abläufe: Anliegen → Pilz → Detail; Check; Tagebuch-Eintrag + Sicherung; Arzt-Karte drucken |
+| A11Y-02 Semantik, Fokus, Namen | Landmarks, Sprunglink, beschriftete Knöpfe, `aria-live` für Ergebnisse | ✅ | Datei-Input-Lücke aus UI-03 behoben. Fokus nach Seitenwechsel bestätigt (`main.focus()` in `app.js`). Fokus im Undo-Toast war kaputt (Rückgängig-Knopf bekam nie Fokus, weil der native Klick-Fokus des Auslöser-Knopfs ihn überschrieb) und ist jetzt behoben (`setTimeout(fn,0)`), plus Tab-Falle nach dem Ausblenden geschlossen. Formularfelder im Tagebuch per `element.labels` bestätigt korrekt beschriftet |
+| A11Y-03 Manueller Test | Kernabläufe mit Tastatur, VoiceOver, 200 % Zoom | 🟡 | KONZEPT.md §10 (25.09.2026): Sprunglink, Seitenwechsel-Fokus, Textstufe A+ (140 %), Formularbeschriftung und Knopfnamen geprüft (Chrome-Automatisierung mit echten Klicks + Fokus-/Label-APIs). Dabei den A11Y-02-Fund oben gemacht. Nicht geprüft: echter Screenreader, schmaler Mobil-Viewport mit großer Schrift zusammen, echtes sequenzielles Durchtabben (Werkzeug-Grenzen, in KONZEPT.md §10 benannt) |
 | EXPLAIN-01 Kriterien offen | Anliegen-Finder, Top-Evidenz und Sortierung sagen in einem Satz, wonach sie ordnen | 🟡 | Methode im Wissensbereich erklärt; direkt an Finder und Sortierung fehlt der Satz. Shop-Liste: „Aufnahme heißt nicht …“ vorhanden |
-| CONTENT-01 Zweck + Grenzen | „Allgemeine Information, keine Beratung“ auf Start, Detail und Check sichtbar | 🟡 | Steht in „Über“ und im Fuß; Check verweist auf ärztliche Abklärung. Auf Detailseite prüfen |
+| CONTENT-01 Zweck + Grenzen | „Allgemeine Information, keine Beratung“ auf Start, Detail und Check sichtbar | ✅ | Beim A11Y-03-Durchgang auf Start, Check und Detailseite bestätigt (Fußzeile auf jeder Seite, Check-Hinweistext). Nicht auf jeder einzelnen Unterseite geprüft |
 | CONTENT-02 Herkunft + Stand | Verantwortlicher, Stand und Aktualisierungsregel je Pilz | 🟡 | Nur globaler Stand „September 2026“. Kein Datum je Pilz, kein Verantwortlicher genannt |
 | CONTENT-03 Evidenz vs. Meinung vs. Werbung | E/F/T/S je Aussage; Shops klar als redaktionelle Auswahl | ✅ | Kern der App. Radar-Treffer als „nicht eingestuft“ markiert |
 | CLAIM-02 Health Claims / HWG | Eigene Texte (Hero, Finder-Kacheln, Zusammenfassungen) auf Wirkversprechen prüfen | ✅ | KONZEPT.md §9 (25.09.2026): Hero, Finder, Zusammenfassungen, Shop- und Rezepttexte gegen Reizwortliste geprüft, keine Heilversprechen gefunden. Shop-Liste als verbleibendes Risiko benannt, keine Regel erzwingt das bisher, nur Gewohnheit. Keine Rechtsberatung |
@@ -131,7 +132,12 @@ Schritt 5 ist Rechtsanalyse, keine Rechtsberatung, und wartet auf echte Impressu
    Fallback-Illustrationen in `app.js`) verwenden weiterhin ihre eigene braun/grüne
    Illustrationspalette, nicht die neuen Marken-Tokens — das ist Bildmaterial, kein
    Token-Austausch, und bewusst nicht angefasst.
-7. **A11Y-03-Durchgang:** Protokoll als kurze Liste in KONZEPT.md; UX-01, DEPTH-02, CONTENT-01 dabei mit abhaken.
+7. 🟡 **A11Y-03-Durchgang** (erledigt 25.09.2026, mit offenen Punkten): Protokoll in KONZEPT.md
+   §10. UX-01, DEPTH-02, CONTENT-01 dabei bestätigt. Dabei einen echten Fokus-Bug im
+   Rückgängig-Knopf aus Schritt 1 gefunden und behoben (A11Y-02). Offen, weil mit den
+   verfügbaren Werkzeugen nicht zu prüfen: echter Screenreader, schmaler Mobil-Viewport mit
+   großer Schrift, echtes sequenzielles Durchtabben. Empfehlung: einmal von Hand an einem echten
+   Telefon nachholen.
 8. **Kennzahlen (PROD-04), Vorschlag:** Anteil Aussagen mit Beleg je Aussage; Radar-Treffer
    innerhalb von 30 Tagen eingestuft; Zahl gemeldeter Fehler und Zeit bis zur Korrektur.
    Gegenindikator: Meldungen, die eine T- oder S-Aussage als Empfehlung verstanden haben.

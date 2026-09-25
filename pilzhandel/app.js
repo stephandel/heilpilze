@@ -31,17 +31,25 @@ let toastT, toastUndoT;
 function toast(msg, opts){
   const t = $("#toast");
   clearTimeout(toastT); clearTimeout(toastUndoT);
+  // opacity:0 allein entfernt einen Knopf nicht aus der Tab-Reihenfolge: ohne das hier
+  // bliebe "Rückgängig" nach dem Ausblenden unsichtbar, aber per Tastatur weiter erreichbar.
+  const clearWhenHidden = () => setTimeout(() => { if(!t.classList.contains("show")) t.innerHTML = ""; }, 260);
   if(opts && opts.onUndo){
     t.innerHTML = `<span>${esc(msg)}</span> <button type="button" class="undo">${esc(opts.undoLabel || "Rückgängig")}</button>`;
-    const done = () => { t.classList.remove("show"); };
+    const done = () => { t.classList.remove("show"); clearWhenHidden(); };
     $("button.undo", t).addEventListener("click", () => { done(); opts.onUndo(); });
     t.classList.add("show", "has-action");
+    // Fokus auf den Rückgängig-Knopf: alle Aufrufer lösen den Toast über einen Klick aus
+    // (Löschen, Auswahl leeren), nie mitten in einer Texteingabe, darum ist das hier sicher.
+    // setTimeout statt direktem .focus(): der Browser fokussiert den geklickten Auslöser-Knopf
+    // nativ nach dem Event-Handler und würde unseren Fokus sonst sofort wieder überschreiben.
+    setTimeout(() => { const u = $("button.undo", t); if(u) u.focus(); }, 0);
     toastUndoT = setTimeout(done, opts.duration || 6000);
   } else {
     t.textContent = msg;
     t.classList.remove("has-action");
     t.classList.add("show");
-    toastT = setTimeout(() => t.classList.remove("show"), 2200);
+    toastT = setTimeout(() => { t.classList.remove("show"); clearWhenHidden(); }, 2200);
   }
 }
 

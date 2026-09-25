@@ -240,3 +240,65 @@ Freigabe für künftige Texte. Jede neue, selbst formulierte Passage (nicht die 
 Quellen: [Health Claims: Anwendungsbereich der HCVO](https://www.it-recht-kanzlei.de/anwendungsbereich-health-claims-verordnung.html) ·
 [Heilmittelwerbegesetz kompakt](https://www.dmrz.de/wissen/ratgeber/heilmittelwerbegesetz) ·
 [Werbung für Heilmittel: was ist erlaubt?](https://www.rueden.de/blog/wettbewerbsrecht/werbung-fuer-heilmittel-was-ist-erlaubt-was-ist-verboten/).
+
+## 10. Tastatur- und Fokus-Durchgang (Stand: 25. September 2026)
+
+Regel A11Y-03. Geprüft mit Chrome-Automatisierung: echte Klicks/Eingaben plus direkte Abfrage
+der Fokus- und Beschriftungs-APIs des Browsers (`document.activeElement`, `element.labels`),
+nicht nur Blick auf den Bildschirm.
+
+**Geprüft und bestätigt:**
+
+- Sprunglink „Zum Inhalt springen“ ist beim Fokussieren sichtbar und funktioniert.
+- Bei jedem Seitenwechsel bekommt `<main>` den Fokus (`main.focus({preventScroll:true})` in
+  `app.js`), Screenreader beginnen wieder oben statt auf einem toten Link stehen zu bleiben.
+  War schon vorhanden, jetzt am laufenden Code bestätigt statt nur vermutet.
+- Textstufe A+ (140 %, höchste Stufe) auf Desktop-Breite: keine Überlappung, kein
+  abgeschnittener Text, Karten fließen sauber in eine Spalte um.
+- Formularfelder im Tagebuch (Präparat, Menge, Notiz) sind trotz Platzhaltertext korrekt über
+  `<label>` beschriftet — per `element.labels` bestätigt, nicht nur vermutet. Der zuerst
+  angezeigte Name in der Werkzeug-Ausgabe war der Platzhalter, das war eine Einschränkung des
+  Prüfwerkzeugs, kein Fehler der App.
+- Arzt-Karte und Tagebuch: alle Knöpfe haben klare, eigene Beschriftungen (Pilznamen als
+  Knopftext, „Drucken oder als PDF sichern“ usw.), keine namenlosen Icon-Knöpfe gefunden.
+
+**Ein echter Fehler gefunden und behoben** (betrifft UX-03/A11Y-02, siehe `app.js`
+`function toast`): Der „Rückgängig“-Knopf im Toast aus Arbeitsplan-Schritt 1 bekam beim
+Erscheinen keinen Tastaturfokus. Ursache: Chrome fokussiert nach einem echten Klick zuerst den
+geklickten Auslöser-Knopf selbst (nativ, nach dem Ende unseres Event-Handlers), unser
+`.focus()`-Aufruf auf den Rückgängig-Knopf lief davor und wurde überschrieben. Ohne Korrektur
+war „Rückgängig“ für Tastaturnutzer nur über viele weitere Tab-Schritte erreichbar — für ein
+Feature, dessen Zweck schnelle Reaktion ist, praktisch unbrauchbar. Behoben mit
+`setTimeout(fn, 0)`, damit unser Fokus nach dem nativen Verhalten des Browsers läuft. Zusätzlich
+blieb der Knopf nach dem Ausblenden unsichtbar, aber weiter mit Tab erreichbar (Tab-Falle);
+behoben, indem der Toast-Inhalt kurz nach dem Ausblenden geleert wird. Beides live im Browser
+nachvollzogen (nicht nur am Code), mit einem echten Klick auf „Auswahl leeren“ im
+Wechselwirkungs-Check.
+
+**Nicht geprüft, offen:**
+
+- Ein echter Screenreader (VoiceOver, NVDA) — das Automatisierungswerkzeug kann keinen
+  Screenreader bedienen, nur dessen technische Grundlage (Fokus, Namen, Landmarks, `aria-live`)
+  stichprobenartig prüfen.
+- Der schmale Mobil-Viewport zusammen mit großer Schrift — das verwendete Werkzeug konnte den
+  Browser nicht zuverlässig auf Handy-Breite verkleinern (`resize_window` änderte die
+  Fenstergröße, aber nicht die von der Seite gesehene Viewport-Breite). Die Tab-Leiste unten
+  existiert für genau diesen Fall (siehe §4), wurde aber nicht bei A+/XXL gegengeprüft.
+- Reine Tastatur-Navigation per echtem, sequenziellem Tab-Tastendruck durch die ganze Toolbar —
+  die synthetischen Tab-Tastendrücke des Werkzeugs kamen im Test nicht zuverlässig an (bekanntes
+  Verhalten bei Erweiterungs-basierter Automatisierung). Ersatzweise wurden Fokusziele
+  programmatisch angesteuert und geprüft; das prüft Erreichbarkeit und Beschriftung, aber nicht
+  die tatsächliche Reihenfolge beim Durchtabben.
+- Empfehlung: die drei offenen Punkte einmal von Hand nachholen, am besten an einem echten
+  Telefon plus einer echten Tastatur ohne Automatisierung dazwischen.
+
+Nebenbei mit geprüft, weil dieser Durchgang genau dafür da war (Arbeitsplan-Schritt 7):
+
+- **UX-01** (Zweck, Zustand, nächster Schritt je Ansicht): auf Start, Katalog, Check, Tagebuch
+  bestätigt — jede Ansicht hat Eyebrow, Überschrift und erklärenden Lead-Satz vor dem Inhalt.
+- **DEPTH-02** (Risiken am Handlungspunkt sichtbar): auf der Pilz-Detailseite steht die
+  „Sicherheit“-Karte direkt neben Kaufen/Dosierung, nicht hinter einem Klick versteckt; der
+  Check zeigt seinen Einschränkungshinweis dauerhaft, nicht nur einmalig.
+- **CONTENT-01** (Zweck/Grenzen sichtbar): auf Start, Check und Detailseite bestätigt (Fußzeile:
+  „ersetzt keine ärztliche Beratung“; Check: eigener Hinweistext).
+  Nicht auf jeder einzelnen Unterseite einzeln nachgeprüft.
