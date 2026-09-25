@@ -5,9 +5,10 @@ name: Studien-Radar
 # radar.js ändert, einen Pull Request zum Sichten. Nichts wird automatisch in heilpilze.html
 # eingestuft — das bleibt Handarbeit, siehe CLAUDE.md.
 #
-# Voraussetzung (einmalig, von Stephan zu setzen): Repo-Einstellungen → Actions → General →
-# "Workflow permissions" → "Allow GitHub Actions to create and approve pull requests" aktivieren.
-# Ohne das schlägt der letzte Schritt fehl, der Rest läuft trotzdem gefahrlos durch.
+# Voraussetzung "Allow GitHub Actions to create and approve pull requests" (Repo-Einstellungen
+# → Actions → General → Workflow permissions) war am 25.09.2026 bereits aktiviert, keine weitere
+# Aktion nötig. Falls sie doch mal aus ist: nur der letzte Schritt (PR öffnen) schlägt dann fehl,
+# der Radar-Lauf selbst bleibt davon unberührt.
 
 on:
   schedule:
