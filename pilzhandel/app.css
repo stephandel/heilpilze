@@ -526,6 +526,9 @@ details.acc table.tbl td{padding:.5rem .6rem;border-bottom:1px solid var(--line)
 /* Toast */
 .toast{position:fixed;left:50%;bottom:calc(9rem + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(1rem);background:var(--brand);color:var(--brand-ink);padding:.7rem 1.1rem;border-radius:999px;font-weight:700;font-size:.88rem;box-shadow:var(--shadow-lg);opacity:0;pointer-events:none;transition:.25s;z-index:80;max-width:calc(100vw - 2rem);}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+.toast.has-action{pointer-events:auto;display:flex;align-items:center;gap:.7rem;border-radius:999px;}
+.toast .undo{background:transparent;border:1px solid color-mix(in srgb, var(--brand-ink) 50%, transparent);color:var(--brand-ink);font:inherit;font-weight:700;border-radius:999px;padding:.25rem .7rem;cursor:pointer;flex:none;}
+.toast .undo:hover,.toast .undo:focus-visible{background:color-mix(in srgb, var(--brand-ink) 15%, transparent);}
 @media(min-width:900px){.toast{bottom:5.5rem;}}
 
 /* Compare tray */

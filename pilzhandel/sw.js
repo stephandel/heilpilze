@@ -1,8 +1,8 @@
 /* Pilz Handel · Service Worker
    App-Dateien: zuerst aus dem Cache, im Hintergrund aktualisieren.
    Schriften liegen lokal im App-Cache. Fotos: nach dem ersten Laden aus dem Cache (offline verfügbar). */
-const VERSION = "ph-v3";
-const SHELL = ["./", "index.html", "app.css", "app.js", "data.js", "radar.js", "icon.svg", "logo.svg", "manifest.webmanifest", "icons/icon-192.png",
+const VERSION = "ph-v4";
+const SHELL = ["./", "index.html", "app.css", "app.js", "logic.js", "data.js", "radar.js", "icon.svg", "logo.svg", "manifest.webmanifest", "icons/icon-192.png",
   "fonts/fonts.css", "fonts/DMSans-normal-latin.woff2", "fonts/DMSans-italic-latin.woff2", "fonts/Fraunces-normal-latin.woff2", "fonts/Fraunces-italic-latin.woff2"];
 
 self.addEventListener("install", e => {

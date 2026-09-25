@@ -27,16 +27,29 @@ const saveFavs = () => { store.set("ph-favs", [...favs]); syncBadges(); };
 const saveCmp = () => { store.set("ph-cmp", cmp); syncTray(); };
 
 /* ---------- Toast ---------- */
-let toastT;
-function toast(msg){
-  const t = $("#toast"); t.textContent = msg; t.classList.add("show");
-  clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove("show"), 2200);
+let toastT, toastUndoT;
+function toast(msg, opts){
+  const t = $("#toast");
+  clearTimeout(toastT); clearTimeout(toastUndoT);
+  if(opts && opts.onUndo){
+    t.innerHTML = `<span>${esc(msg)}</span> <button type="button" class="undo">${esc(opts.undoLabel || "Rückgängig")}</button>`;
+    const done = () => { t.classList.remove("show"); };
+    $("button.undo", t).addEventListener("click", () => { done(); opts.onUndo(); });
+    t.classList.add("show", "has-action");
+    toastUndoT = setTimeout(done, opts.duration || 6000);
+  } else {
+    t.textContent = msg;
+    t.classList.remove("has-action");
+    t.classList.add("show");
+    toastT = setTimeout(() => t.classList.remove("show"), 2200);
+  }
 }
 
 /* ---------- Bilder ---------- */
 const COMMONS = "https://commons.wikimedia.org/wiki/";
 const fileUrl = (name, w) => `${COMMONS}Special:FilePath/${encodeURIComponent(name.replace(/ /g, "_"))}?width=${w}`;
 const filePage = name => `${COMMONS}File:${encodeURIComponent(name.replace(/ /g, "_"))}`;
+const issueUrl = (subject, body) => `https://github.com/stephandel/heilpilze/issues/new?labels=inhalt&title=${encodeURIComponent("Fehler bei " + subject)}${body ? `&body=${encodeURIComponent(body)}` : ""}`;
 const HERO = ["A_little_mushroom_scene_in_the_woods_(30559452831).jpg", "Pilze-im-Moos.jpg", "Mushroom_Forest.jpg"];
 
 function art(m, fit="slice"){
@@ -255,7 +268,17 @@ function syncTray(){
   $("#tray").classList.toggle("show", show);
   $("#trayText").textContent = cmp.length === 1 ? "1 Pilz ausgewählt" : cmp.length + " Pilze ausgewählt";
 }
-$("#trayClear").addEventListener("click", () => { cmp = []; saveCmp(); $$("[data-cmp]").forEach(b => b.setAttribute("aria-pressed", "false")); });
+$("#trayClear").addEventListener("click", () => {
+  if(!cmp.length) return;
+  const prev = cmp;
+  cmp = []; saveCmp(); $$("[data-cmp]").forEach(b => b.setAttribute("aria-pressed", "false"));
+  if(route().path === "vergleich") render();
+  toast("Vergleich geleert", { onUndo: () => {
+    cmp = prev; saveCmp();
+    $$("[data-cmp]").forEach(b => b.setAttribute("aria-pressed", cmp.includes(b.dataset.cmp)));
+    if(route().path === "vergleich") render();
+  } });
+});
 
 /* ---------- Router ---------- */
 function route(){
@@ -551,6 +574,7 @@ function detail(el, r){
           ${RD && RD.items[m.id] && RD.items[m.id].list.length ? `<details class="acc" style="margin-top:1rem"><summary>Neu in PubMed, noch nicht eingestuft (${RD.items[m.id].count})</summary><div class="body"><ul class="studies">${RD.items[m.id].list.slice(0, 5).map(studyRow).join("")}</ul><p><a href="#/radar">Zum Studien-Radar</a></p></div></details>` : ""}
           <p style="margin-top:.8rem;font-size:.9rem"><a href="${pubmedUrl(m)}" target="_blank" rel="noopener">Aktuelle Humanstudien in PubMed ↗</a></p>
           <p class="muted" style="font-size:.8rem;margin-top:.8rem">Foto: ${(m.imgs || []).map((n, i) => `<a href="${filePage(n)}" target="_blank" rel="noopener">Wikimedia Commons${m.imgs.length > 1 ? " " + (i + 1) : ""}</a>`).join(", ")} · Urheber und Lizenz auf der Dateiseite. Lädt das Foto nicht, siehst du eine Illustration.</p>
+          <p style="margin-top:.8rem;font-size:.85rem"><a href="${issueUrl(m.name, "Pilz: " + m.name + "\nWas ist falsch, und woher weißt du das?\n\n")}" target="_blank" rel="noopener">Fehler bei diesem Pilz melden ↗</a></p>
         </section>
       </div>
       <aside class="dside">
@@ -675,8 +699,8 @@ function check(el, r){
     if(!sel.length){ $("#ckOut").innerHTML = `<div class="empty"><div class="big" aria-hidden="true">🛡️</div><p>Wähle oben mindestens einen Punkt aus.</p></div>`; return; }
     if(!pool.length){ $("#ckOut").innerHTML = `<div class="empty"><p>Deine Merkliste ist leer.</p></div>`; return; }
     const res = pool.map(m => {
-      const hits = sel.filter(k => m.flags[k]).map(k => ({k, v: m.flags[k]}));
-      return {m, hits, lvl: hits.reduce((a, h) => Math.max(a, h.v), 0)};
+      const {hits, lvl} = checkHits(m.flags, sel);
+      return {m, hits, lvl};
     }).sort((a, b) => b.lvl - a.lvl || b.hits.length - a.hits.length || coll.compare(a.m.name, b.m.name));
     const n2 = res.filter(x => x.lvl === 2).length, n1 = res.filter(x => x.lvl === 1).length, n0 = res.length - n1 - n2;
     const ST = ["Kein bekannter Konflikt","Beachten","Ärztlich abklären"];
@@ -700,7 +724,16 @@ function check(el, r){
     i.checked ? flags.add(i.value) : flags.delete(i.value); store.set("ph-flags", [...flags]); out();
   }));
   $("#onlyFav").addEventListener("change", out);
-  $("#ckReset").addEventListener("click", () => { flags.clear(); store.set("ph-flags", []); $$(".ck input", el).forEach(i => i.checked = false); out(); });
+  $("#ckReset").addEventListener("click", () => {
+    if(!flags.size) return;
+    const prev = new Set(flags);
+    flags.clear(); store.set("ph-flags", []); $$(".ck input", el).forEach(i => i.checked = false); out();
+    toast("Auswahl geleert", { onUndo: () => {
+      flags = new Set(prev); store.set("ph-flags", [...flags]);
+      $$(".ck input", el).forEach(i => i.checked = flags.has(i.value));
+      out();
+    } });
+  });
   out();
   return "Wechselwirkungs-Check";
 }
@@ -982,10 +1015,12 @@ function tagebuch(el){
         <button class="btn sm" id="rIcs" type="button">📅 Termin herunterladen</button>
       </div>
     </section>
+    <p class="notice">Diese Einträge liegen nur in diesem Browser, nicht auf einem Server. Bei einem Gerätewechsel, geleertem Speicher oder einer Neuinstallation sind sie weg. Lade regelmäßig eine Sicherung herunter, besonders vor dem Arztgespräch.</p>
     <section class="frow2" style="margin:1.5rem 0">
       <button class="btn sm soft" id="dCsv" type="button">Als Tabelle (CSV) exportieren</button>
       <button class="btn sm soft" id="dJson" type="button">Sicherung speichern</button>
-      <label class="btn sm soft" style="cursor:pointer">Sicherung laden<input type="file" id="dImp" accept=".json,application/json" hidden></label>
+      <button class="btn sm soft" id="dImpBtn" type="button">Sicherung laden</button>
+      <input type="file" id="dImp" accept=".json,application/json" hidden>
     </section>
   </div>`;
   const save = () => { log.sort((a, b) => b.d.localeCompare(a.d) || b.t - a.t); store.set("ph-diary", log); out(); };
@@ -1004,7 +1039,12 @@ function tagebuch(el){
       </div>
       <div class="dlog">${Object.entries(byDay).slice(0, 60).map(([d, es]) => `<div class="dday"><h4>${fmt(d)}</h4>${es.map(e => `<div class="dentry"><span class="dm" title="Befinden ${e.s} von 5">${MOOD[e.s - 1]}</span><div><b>${esc(byId[e.m].name)}</b>${e.p || e.a ? ` · ${esc([e.p, e.a].filter(Boolean).join(", "))}` : ""}${e.n ? `<br><small>${esc(e.n)}</small>` : ""}</div><button class="iconbtn" data-del="${e.t}" aria-label="Eintrag löschen">${icon("x")}</button></div>`).join("")}</div>`).join("")}</div>
       ${Object.keys(byDay).length > 60 ? `<p class="muted">Ältere Einträge sind im Export enthalten.</p>` : ""}`;
-    $$("[data-del]", el).forEach(b => b.addEventListener("click", () => { log = log.filter(e => String(e.t) !== b.dataset.del); save(); toast("Eintrag gelöscht"); }));
+    $$("[data-del]", el).forEach(b => b.addEventListener("click", () => {
+      const removed = log.find(e => String(e.t) === b.dataset.del);
+      log = log.filter(e => String(e.t) !== b.dataset.del);
+      save();
+      toast("Eintrag gelöscht", { onUndo: () => { log.push(removed); save(); toast("Eintrag wiederhergestellt"); } });
+    }));
   };
   $("#dForm").addEventListener("submit", e => {
     e.preventDefault();
@@ -1022,12 +1062,12 @@ function tagebuch(el){
     download("pilz-tagebuch.csv", "text/csv;charset=utf-8", "﻿" + rows.map(r => r.map(v => csvCell(String(v ?? ""))).join(";")).join("\r\n"));
   });
   $("#dJson").addEventListener("click", () => download(`pilz-tagebuch-${isoDay(new Date())}.json`, "application/json", JSON.stringify({app:"pilzhandel", version:1, diary:log}, null, 1)));
+  $("#dImpBtn").addEventListener("click", () => $("#dImp").click());
   $("#dImp").addEventListener("change", async e => {
     const f = e.target.files[0]; if(!f) return;
     try{
       const data = JSON.parse(await f.text());
-      const add = (data.diary || []).filter(x => x && byId[x.m] && /^\d{4}-\d{2}-\d{2}$/.test(x.d) && !log.some(y => y.t === x.t))
-        .map(x => ({t:+x.t || Date.now() + Math.random(), d:x.d, m:x.m, p:String(x.p || ""), a:String(x.a || ""), s:Math.min(5, Math.max(1, +x.s || 3)), n:String(x.n || "")}));
+      const add = parseDiaryImport(data, log, id => !!byId[id]);
       log = log.concat(add); save(); toast(add.length + " Einträge übernommen");
     }catch(err){ toast("Datei konnte nicht gelesen werden"); }
     e.target.value = "";
