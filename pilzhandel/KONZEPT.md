@@ -72,6 +72,12 @@ Wo wir uns absetzen: smaints wirbt mit Wirkung, wir ordnen Wirkung ein. Das ist 
 12. Einnahme-Tagebuch: Pilz, Präparat, Menge, Befinden; Auswertung, CSV-Export, Sicherung als Datei, Kalender-Erinnerung (.ics) mit Termin für Pause und Bilanz
 13. Studien-Radar: `tools/studien-radar.js` holt neue Humanstudien und Übersichtsarbeiten aus PubMed nach `radar.js`; Anzeige als „noch nicht eingestuft“, Live-Link zu PubMed auf jeder Detailseite
 14. Schriften lokal eingebunden, externe Abrufe nur noch für Fotos
+15. Meldeweg für Inhaltsfehler: Link „Fehler melden“ im Fuß und „Fehler bei diesem Pilz melden“ auf jeder Detailseite, öffnen ein vorausgefülltes GitHub-Issue mit Label `inhalt`
+16. Rückgängig-Funktion für gelöschte Tagebuch-Einträge und geleerte Check-/Vergleichs-Auswahl (Toast mit „Rückgängig“)
+17. Bildrechte je Foto (Urheber, Lizenz von Wikimedia Commons) auf jeder Detailseite und beim Hero-Bild, per `tools/fetch-image-credits.js` erzeugt
+18. Automatisierte Tests (`pilzhandel/tools/test.mjs`, `node --test`) für Datenqualität aller Pilze, Check-Logik und Tagebuch-Import; die geprüfte Logik liegt gemeinsam mit `app.js` in `pilzhandel/logic.js`
+19. Kennzahlen-Skript (`tools/kennzahlen.js`): Inhaltsumfang, Studien-Radar-Rückstand und gemeldete Inhaltsfehler aus vorhandenen Daten, ohne Nutzer-Tracking
+20. Impressum und Datenschutzerklärung als eigene Ansichten (`#/impressum`, `#/datenschutz`, im Fuß verlinkt); Angaben (Name, Anschrift, E-Mail) in `pilzhandel/betreiber.js` noch leer, siehe §8
 
 **Nächste Stufen, nach Aufwand sortiert**
 

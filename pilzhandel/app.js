@@ -363,7 +363,7 @@ function home(el){
   </section>
 
   <section class="section container" style="padding-top:0">
-    <div class="sechead"><div><div class="eyebrow">Am besten belegt</div><h2 class="h2">Wo die Forschung am weitesten ist</h2></div><a class="link-more" href="#/pilze?sort=score">Alle ansehen</a></div>
+    <div class="sechead"><div><div class="eyebrow">Am besten belegt</div><h2 class="h2">Wo die Forschung am weitesten ist</h2><p>Sortiert nach Humanevidenz: dem Punktwert (0–4) der am besten belegten Wirkung je Pilz.</p></div><a class="link-more" href="#/pilze?sort=score">Alle ansehen</a></div>
     <div class="scroller">${top.map(m => card(m)).join("")}</div>
   </section>
 
@@ -447,7 +447,7 @@ function catalog(el, r, same){
   <div class="container pagehead">
     <div class="eyebrow">Katalog</div>
     <h1 class="h2">Alle Heilpilze</h1>
-    <p class="lead">Filtere nach Anliegen, Evidenzstufe und Bezugsart. Die Stufen-Filter blenden einzelne Wirkungsaussagen aus.</p>
+    <p class="lead">Filtere nach Anliegen, Evidenzstufe und Bezugsart. Die Stufen-Filter blenden einzelne Wirkungsaussagen aus. „Evidenz ↓“ sortiert nach dem Punktwert (0–4) der am besten belegten Wirkung, „Risiken/Verträglichste zuerst“ nach dem Ausmaß dokumentierter Sicherheitsprobleme (0–3).</p>
   </div>
   <div class="filterbar"><div class="container">
     <div class="hscroll" id="tagbar" aria-label="Anliegen">
@@ -1019,6 +1019,7 @@ function arztkarte(el){
       <a class="btn sm soft" href="#/check">${icon("shield")} Check anpassen (${sel.length})</a>
       <a class="btn sm soft" href="#/pilze">${icon("heart")} Pilze hinzufügen</a>
     </div>
+    <p class="notice noprint" style="margin-top:1rem">Name, Medikamente und Dosierung liegen nur in diesem Browser, nicht auf einem Server. Bei einem Gerätewechsel, geleertem Speicher oder einer Neuinstallation sind sie weg. Drucke die Karte oder sichere sie als PDF, bevor du sie brauchst.</p>
   </div>
   <div class="container">
     ${list.length ? "" : `<div class="notice noprint" style="margin-bottom:1rem"><b>Noch keine Pilze gemerkt.</b> Wähle hier aus, was du nimmst oder nehmen möchtest:</div>`}
