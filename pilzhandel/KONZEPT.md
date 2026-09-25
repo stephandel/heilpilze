@@ -78,6 +78,8 @@ Wo wir uns absetzen: smaints wirbt mit Wirkung, wir ordnen Wirkung ein. Das ist 
 18. Automatisierte Tests (`pilzhandel/tools/test.mjs`, `node --test`) für Datenqualität aller Pilze, Check-Logik und Tagebuch-Import; die geprüfte Logik liegt gemeinsam mit `app.js` in `pilzhandel/logic.js`
 19. Kennzahlen-Skript (`tools/kennzahlen.js`): Inhaltsumfang, Studien-Radar-Rückstand und gemeldete Inhaltsfehler aus vorhandenen Daten, ohne Nutzer-Tracking
 20. Impressum und Datenschutzerklärung als eigene Ansichten (`#/impressum`, `#/datenschutz`, im Fuß verlinkt); Angaben (Name, Anschrift, E-Mail) in `pilzhandel/betreiber.js` noch leer, siehe §8
+21. Verantwortlich/Stand/Aktualisierungsregel auf jeder Detailseite (verlinkt zum Impressum statt den Namen zu wiederholen)
+22. Studien-Radar als GitHub Action (`.github/workflows/studien-radar.yml`): läuft monatlich, öffnet bei neuen Treffern einen Pull Request zum Sichten; stuft nichts selbst ein. Braucht einmalig eine Einstellung von Stephan (Kommentar in der Datei)
 
 **Nächste Stufen, nach Aufwand sortiert**
 
@@ -85,7 +87,6 @@ Wo wir uns absetzen: smaints wirbt mit Wirkung, wir ordnen Wirkung ein. Das ist 
 |---|---|---|
 | 1 | Eigene Fotos oder lizenzierte Bildserie statt Commons, einheitlicher Look | klein, braucht Fotos |
 | 2 | Produktdatenbank: konkrete Produkte mit β-Glucan-Gehalt, Herkunft, Preis pro Studiendosis | mittel |
-| 2 | Studien-Radar als GitHub Action, die monatlich läuft und einen Pull Request öffnet | klein |
 | 2 | Treffer aus dem Radar lesen und in `heilpilze.html` einstufen (Handarbeit, fachlich) | laufend |
 | 3 | Eigener Shop oder Affiliate-Links, klar gekennzeichnet | groß, rechtlich prüfen |
 | 3 | Konto mit Synchronisierung über Geräte | groß |

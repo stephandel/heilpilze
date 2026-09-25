@@ -79,7 +79,7 @@ durchlaufen).
 | A11Y-03 Manueller Test | Kernabläufe mit Tastatur, VoiceOver, 200 % Zoom | 🟡 | KONZEPT.md §10 (25.09.2026): Sprunglink, Seitenwechsel-Fokus, Textstufe A+ (140 %), Formularbeschriftung und Knopfnamen geprüft (Chrome-Automatisierung mit echten Klicks + Fokus-/Label-APIs). Dabei den A11Y-02-Fund oben gemacht. Nicht geprüft: echter Screenreader, schmaler Mobil-Viewport mit großer Schrift zusammen, echtes sequenzielles Durchtabben (Werkzeug-Grenzen, in KONZEPT.md §10 benannt). Handtest-Checkliste zum Abhaken in KONZEPT.md §12. Beim Abgleich gefunden und behoben: Escape schloss die Anzeige-Einstellungen, ließ aber `aria-expanded` auf true und den Fokus im Nichts |
 | EXPLAIN-01 Kriterien offen | Anliegen-Finder, Top-Evidenz und Sortierung sagen in einem Satz, wonach sie ordnen | ✅ | Finder-Kachel hatte den Satz bereits. Ergänzt (25.09.2026, im Browser geprüft): „Am besten belegt“ auf der Startseite und die Sortierung im Katalog-Filter nennen jetzt je einen Satz, was „Evidenz“/„Risiken“ numerisch bedeutet (Punktwert aus `heilpilze.html`: score 0–4, risk 0–3). Shop-Liste: „Aufnahme heißt nicht …“ vorhanden |
 | CONTENT-01 Zweck + Grenzen | „Allgemeine Information, keine Beratung“ auf Start, Detail und Check sichtbar | ✅ | Beim A11Y-03-Durchgang auf Start, Check und Detailseite bestätigt (Fußzeile auf jeder Seite, Check-Hinweistext). Nicht auf jeder einzelnen Unterseite geprüft |
-| CONTENT-02 Herkunft + Stand | Verantwortlicher, Stand und Aktualisierungsregel je Pilz | 🟡 | Nur globaler Stand „September 2026“. Kein Datum je Pilz, kein Verantwortlicher genannt |
+| CONTENT-02 Herkunft + Stand | Verantwortlicher, Stand und Aktualisierungsregel je Pilz | ✅ | Jede Detailseite zeigt jetzt unter „Quellen“: Verantwortlich (Link zum Impressum, damit der Name nur einmal gepflegt wird), Stand der Einstufung, Aktualisierungsregel (25.09.2026, im Browser geprüft). Stand ist noch für alle Pilze gleich, weil noch keiner einzeln nachbearbeitet wurde — wird individuell, sobald das passiert |
 | CONTENT-03 Evidenz vs. Meinung vs. Werbung | E/F/T/S je Aussage; Shops klar als redaktionelle Auswahl | ✅ | Kern der App. Radar-Treffer als „nicht eingestuft“ markiert |
 | CLAIM-02 Health Claims / HWG | Eigene Texte (Hero, Finder-Kacheln, Zusammenfassungen) auf Wirkversprechen prüfen | ✅ | KONZEPT.md §9 (25.09.2026): Hero, Finder, Zusammenfassungen, Shop- und Rezepttexte gegen Reizwortliste geprüft, keine Heilversprechen gefunden. Shop-Liste als verbleibendes Risiko benannt, keine Regel erzwingt das bisher, nur Gewohnheit. Keine Rechtsberatung |
 | CLAIM-03 Aussagenregister | Jede Wirkungsaussage: Text, Stufe, Beleg, Stand | 🟡 | `effects` je Pilz haben Text, Stufe, Begründung. Quellen nur je Pilz, nicht je Aussage. Datenqualität jetzt per Test geprüft (TEST-01) |
@@ -87,7 +87,7 @@ durchlaufen).
 | SYNC-03 Browser-Speicher | Hinweis „kann gelöscht werden, Sicherung speichern“ bei Tagebuch und Arzt-Karte | ✅ | Tagebuch hat Warnhinweis plus Export/Import. Arzt-Karte hat jetzt denselben Warnhinweis, als Sicherung dient der vorhandene „Drucken oder als PDF sichern“-Knopf (kein zusätzlicher JSON-Export gebaut, da die Karte für den Druck gedacht ist) (25.09.2026, im Browser geprüft) |
 | LEGAL-01 Rechtsprofil | Einmal schriftlich: Betreiber, Zielmarkt DE, Datenarten, externe Abrufe, Impressumsfrage | 🟡 | KONZEPT.md §8 (25.09.2026): Profil geschrieben, Ergebnis **Impressum und Datenschutzerklärung sind vermutlich schon jetzt Pflicht** (nicht erst bei Verkauf, wie §6 bisher annahm), fehlen aber noch live auf der Seite. Entwürfe für beide liegen in §8 mit Platzhaltern. Impressum und Datenschutz sind als Ansichten gebaut (`#/impressum`, `#/datenschutz`, im Fuß verlinkt), Angaben kommen aus `pilzhandel/betreiber.js`. Fehlt nur: Name/Anschrift/E-Mail dort eintragen, `VERSION` in `sw.js` erhöhen; der todo-Test in `test.mjs` wird dann grün. Nicht nach `main` bringen, solange er todo ist. Keine Rechtsberatung |
 | DOC-01 Doku im Repo | README, KONZEPT.md, CLAUDE.md bei jeder wesentlichen Änderung nachziehen | ✅ | CLAUDE.md nachgeführt. KONZEPT.md §3 war bereits aktuell (Palette Pfifferling seit Schritt 6). §5 (Funktionsliste) um Meldeweg, Rückgängig-Funktion, Bildrechte, Tests, Kennzahlen-Skript und Impressum/Datenschutz-Ansichten ergänzt (25.09.2026) |
-| OPS-06 Pflegeplan | Fester Rhythmus für Radar, Inhalte, Links, Fotos | 🟡 | Rhythmus als Vorschlag dokumentiert (Arbeitsplan-Schritt 9), nicht automatisiert — Stephan muss ihn tatsächlich einhalten oder später die geplante GitHub Action (KONZEPT.md §5) bauen lassen |
+| OPS-06 Pflegeplan | Fester Rhythmus für Radar, Inhalte, Links, Fotos | ✅ | Rhythmus dokumentiert (Arbeitsplan-Schritt 9). Der monatliche Radar-Teil läuft jetzt automatisch: `.github/workflows/studien-radar.yml` (25.09.2026), öffnet bei neuen Treffern einen PR zum Sichten, stuft nichts selbst ein. Braucht einmalig eine Einstellung von Stephan, siehe Kommentar oben in der Datei. Shop-/Infolinks (vierteljährlich) und Einstufungen (jährlich) bleiben bewusst Handarbeit |
 | TEST-01 Tests nach Risiko | Tests für Check-Logik, Datenaufbereitung, Tagebuch-Import | ✅ | `pilzhandel/tools/test.mjs`, 20 Tests (einer todo, bis `betreiber.js` ausgefüllt ist), `node --test tools/test.mjs`. Prüft Datenqualität aller 21 Pilze (Stufen, Punktwert, Flags, Quellen), `checkHits()` (Stufe = Maximum, nicht Summe) und `parseDiaryImport()` (ungültige/doppelte Einträge, Wertebereiche). Beide Funktionen sind nach `pilzhandel/logic.js` ausgelagert und werden von `app.js` und dem Test benutzt, kein Kopie-Risiko |
 
 ## Arbeitsplan (Reihenfolge nach Schaden)
@@ -158,13 +158,15 @@ durchlaufen).
    beim Einstufen in `heilpilze.html` vermerkt werden, macht das Skript nicht von selbst).
    **Offen, Entscheidung bei Stephan:** ob diese drei Zahlen die richtigen sind und welche
    Zielwerte/Schwellen gelten sollen — das Skript liefert nur die Messung, nicht das Urteil.
-9. 🟡 **Pflegeplan (OPS-06), Vorschlag** (erledigt 25.09.2026, nicht automatisiert): monatlich
-   `node pilzhandel/tools/kennzahlen.js` und `node pilzhandel/tools/studien-radar.js` laufen
-   lassen, Treffer sichten; vierteljährlich Shop- und Infolinks in `tools/build-data.js` und
-   `KONZEPT.md` auf tote Links prüfen; jährlich Einstufungen und Stand je Pilz erneuern, dabei
-   `data-2026-09` als grobe Marke im Kopf behalten. **Bewusst nicht gebaut:** eine GitHub Action,
-   die das monatliche Radar automatisch laufen lässt und einen Pull Request öffnet, steht schon
-   als eigener Punkt in KONZEPT.md §5 (Stufe 2) — das ist ein eigenständiges Feature mit eigenen
-   Fragen (PubMed-Ratenlimits, Bot-Rechte zum Öffnen von PRs), keine Nebenarbeit dieses Schritts.
+9. ✅ **Pflegeplan (OPS-06)** (Vorschlag 25.09.2026, Radar-Teil automatisiert 25.09.2026):
+   monatlich `node pilzhandel/tools/kennzahlen.js` laufen lassen; vierteljährlich Shop- und
+   Infolinks in `tools/build-data.js` und `KONZEPT.md` auf tote Links prüfen; jährlich
+   Einstufungen und Stand je Pilz erneuern, dabei `data-2026-09` als grobe Marke im Kopf
+   behalten. Der Radar-Teil läuft jetzt automatisch: `.github/workflows/studien-radar.yml`
+   ruft `studien-radar.js` monatlich auf und öffnet bei neuen Treffern einen Pull Request zum
+   Sichten (Label `inhalt`), stuft aber nichts selbst ein — das bleibt Handarbeit. Braucht
+   einmalig eine Einstellung von Stephan (Repo-Einstellungen → Actions → General → Workflow
+   permissions → PRs erlauben, Kommentar in der Workflow-Datei), sonst läuft der Radar-Schritt
+   durch, nur der letzte Schritt (PR öffnen) schlägt fehl.
 
 Nach jedem erledigten Punkt die Tabelle oben aktualisieren.

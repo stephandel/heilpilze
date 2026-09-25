@@ -595,6 +595,7 @@ function detail(el, r){
           <p style="margin-top:.8rem;font-size:.9rem"><a href="${pubmedUrl(m)}" target="_blank" rel="noopener">Aktuelle Humanstudien in PubMed ↗</a></p>
           <p class="muted" style="font-size:.8rem;margin-top:.8rem">Foto: ${(m.imgs || []).map((n, i) => `<a href="${filePage(n)}" target="_blank" rel="noopener">Wikimedia Commons${m.imgs.length > 1 ? " " + (i + 1) : ""}</a>${imgCredit(n)}`).join(", ")} · vollständige Angaben auf der jeweiligen Dateiseite. Lädt das Foto nicht, siehst du eine Illustration.</p>
           <p style="margin-top:.8rem;font-size:.85rem"><a href="${issueUrl(m.name, "Pilz: " + m.name + "\nWas ist falsch, und woher weißt du das?\n\n")}" target="_blank" rel="noopener">Fehler bei diesem Pilz melden ↗</a></p>
+          <p class="muted" style="font-size:.8rem;margin-top:.8rem">Verantwortlich: <a href="#/impressum">siehe Impressum</a> · Stand dieser Einstufung: September 2026 · Aktualisierung: bei neu eingestuften Treffern aus dem Studien-Radar, sonst mindestens jährlich.</p>
         </section>
       </div>
       <aside class="dside">

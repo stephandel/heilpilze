@@ -1,0 +1,58 @@
+name: Studien-Radar
+
+# Läuft monatlich und bei Bedarf per Hand (Reiter "Actions" → "Studien-Radar" → "Run workflow").
+# Holt neue Humanstudien aus PubMed (pilzhandel/tools/studien-radar.js) und öffnet, falls sich
+# radar.js ändert, einen Pull Request zum Sichten. Nichts wird automatisch in heilpilze.html
+# eingestuft — das bleibt Handarbeit, siehe CLAUDE.md.
+#
+# Voraussetzung (einmalig, von Stephan zu setzen): Repo-Einstellungen → Actions → General →
+# "Workflow permissions" → "Allow GitHub Actions to create and approve pull requests" aktivieren.
+# Ohne das schlägt der letzte Schritt fehl, der Rest läuft trotzdem gefahrlos durch.
+
+on:
+  schedule:
+    - cron: "0 6 1 * *" # 1. jedes Monats, 06:00 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  radar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Studien-Radar laufen lassen
+        run: node pilzhandel/tools/studien-radar.js
+
+      - name: Prüfen, ob sich etwas geändert hat
+        id: diff
+        run: |
+          if git diff --quiet -- pilzhandel/radar.js; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Pull Request öffnen
+        if: steps.diff.outputs.changed == 'true'
+        uses: peter-evans/create-pull-request@v7
+        with:
+          commit-message: "Studien-Radar: neue Treffer"
+          title: "Studien-Radar: neue Treffer zum Sichten"
+          body: |
+            Automatischer Lauf von `pilzhandel/tools/studien-radar.js`. Neue oder veränderte
+            Treffer stehen ab jetzt in `pilzhandel/radar.js` und erscheinen in der App als
+            „noch nicht eingestuft“.
+
+            Nächster Schritt (Handarbeit): Treffer sichten und relevante Studien in
+            `heilpilze.html` einstufen, siehe CLAUDE.md.
+          branch: studien-radar/auto-update
+          add-paths: pilzhandel/radar.js
+          labels: inhalt
