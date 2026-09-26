@@ -6,14 +6,17 @@
 :root{
   /* Pfifferling-Palette, siehe CLAUDE.md und Stilwahl-Artifact vom 25.09.2026 */
   --bg:#FBF5E4; --bg-2:#F3EACF; --surface:#FFFDF6; --surface-2:#F6EDD6;
-  --ink:#23241A; --ink-2:#575844; --ink-3:#88886F; --line:#E8DDBE; --line-2:#C5BCA0;
+  /* --ink-3 war #88886F (Stilwahl) = nur 3,1–3,6:1 auf den hellen Gründen, obwohl es
+     für kleine Hilfsschrift (.muted, lateinische Namen, Beschriftungen) dient. Jetzt ≥ 4,5:1,
+     geprüft per Test in tools/test.mjs (26.09.2026). */
+  --ink:#23241A; --ink-2:#575844; --ink-3:#6A6B54; --line:#E8DDBE; --line-2:#C5BCA0;
   --brand:#2F3322; --brand-ink:#FBF6E6;
   --accent:#C9761A; --accent-2:#D18B3C; --accent-bg:#F8E2BE;
   /* --accent-ink: dieselbe Markenfarbe, aber abgedunkelt für Fließtext/Links auf hellem
      Grund — die reine --accent erreicht dort nur 3,2:1, nicht die geforderten 4,5:1.
      --on-accent: fester, themenunabhängiger dunkler Ton für Text/Icons AUF der
      Akzentfarbe (Buttons) — weißer Text erreicht darauf nur 3,45:1 (dunkel: 2:1). */
-  --accent-ink:#975D1A;
+  --accent-ink:#955B18; /* war #975D1A: auf --bg-2 (Fußzeile) nur 4,49:1 */
   --on-accent:#23241A;
   --moss:#667A36; --moss-bg:#E7ECCF;
   --plum:#6B4E71;

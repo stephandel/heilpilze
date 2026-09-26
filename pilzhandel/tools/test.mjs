@@ -177,6 +177,104 @@ describe("Tagebuch-Import (parseDiaryImport, aus logic.js)", () => {
   });
 });
 
+// ---------------------------------------------------------------------------
+// Regel-Nachweise: prüfen, ob das, was die Tabelle in CLAUDE.md als ✅ behauptet,
+// im Code noch stimmt. Selbst eingetragener Status veraltet, ein Test nicht.
+// Die Quelltext-Prüfungen stellen nur sicher, dass Text/Element vorhanden ist,
+// nicht dass es im Browser richtig aussieht — dafür bleibt der Browsertest.
+// ---------------------------------------------------------------------------
+const read = f => readFileSync(join(root, f), "utf8");
+const APP = read("app.js"), HTML = read("index.html"), CSS = read("app.css"), SW = read("sw.js");
+
+// Quelltext einer Ansichts-Funktion aus app.js, bis zur nächsten Funktion auf oberster Ebene
+function fnSrc(name){
+  const start = APP.indexOf(`\nfunction ${name}(`);
+  assert.ok(start >= 0, `Funktion ${name}() nicht in app.js gefunden`);
+  const end = APP.indexOf("\nfunction ", start + 1);
+  return APP.slice(start, end < 0 ? undefined : end);
+}
+
+describe("Regel-Nachweise im Quelltext (CLAUDE.md-Tabelle)", () => {
+  test("CONTENT-01: Fußzeile sagt, dass die App keine ärztliche Beratung ersetzt", () => {
+    assert.match(HTML, /ersetzt keine ärztliche Beratung/);
+  });
+
+  test("CONTENT-02: jede Detailseite nennt Verantwortlich, Stand und Aktualisierungsregel", () => {
+    const d = fnSrc("detail");
+    assert.match(d, /Verantwortlich:.*#\/impressum/);
+    assert.match(d, /Stand dieser Einstufung/);
+    assert.match(d, /Aktualisierung:/);
+  });
+
+  test("EXPLAIN-01: Top-Evidenz und Katalog-Sortierung sagen, wonach sie ordnen", () => {
+    assert.match(fnSrc("home"), /Sortiert nach Humanevidenz/);
+    assert.match(fnSrc("catalog"), /„Evidenz ↓“ sortiert nach/);
+  });
+
+  test("SYNC-03: Tagebuch und Arzt-Karte warnen, dass die Daten nur im Browser liegen", () => {
+    assert.match(fnSrc("tagebuch"), /nur in diesem Browser/);
+    assert.match(fnSrc("arztkarte"), /nur in diesem Browser/);
+  });
+
+  test("UX-03: Löschen/Leeren bietet Rückgängig an (mind. drei Stellen)", () => {
+    assert.ok((APP.match(/onUndo/g) || []).length >= 3);
+  });
+
+  test("DQ-04 + LEGAL-01: Fußzeile verlinkt Fehler melden, Impressum und Datenschutz; Detailseite hat Meldelink", () => {
+    for(const s of ["#/impressum", "#/datenschutz", "labels=inhalt"]) assert.ok(HTML.includes(s), `Fußzeile ohne ${s}`);
+    assert.match(fnSrc("detail"), /issueUrl\(/);
+  });
+
+  test("A11Y-02: Sprunglink, main-Landmark und Live-Region vorhanden", () => {
+    assert.match(HTML, /class="skip" href="#main"/);
+    assert.match(HTML, /<main id="main"/);
+    assert.match(HTML, /aria-live="polite"/);
+  });
+
+  test("OPS-06: Studien-Radar läuft als monatliche GitHub Action", () => {
+    const wf = readFileSync(join(root, "..", ".github", "workflows", "studien-radar.yml"), "utf8");
+    assert.match(wf, /cron:/);
+    assert.match(wf, /studien-radar\.js/);
+  });
+});
+
+describe("Offline-Fähigkeit (sw.js)", () => {
+  test("jede in index.html eingebundene lokale Datei steht im App-Cache (SHELL)", () => {
+    const shell = new Function("return " + SW.match(/const SHELL = (\[[\s\S]*?\]);/)[1])();
+    const used = [...HTML.matchAll(/<(?:script|link)[^>]+(?:src|href)="([^"]+)"/g)]
+      .map(m => m[1]).filter(u => !/^(https?:|#|data:)/.test(u));
+    const missing = used.filter(u => !shell.includes(u));
+    assert.deepEqual(missing, [], `fehlt im SHELL von sw.js: ${missing.join(", ")} — offline sonst kaputt`);
+  });
+});
+
+describe("Farbkontrast (app.css, WCAG AA)", () => {
+  const vars = block => Object.fromEntries([...block.matchAll(/--([\w-]+):\s*(#[0-9A-Fa-f]{6})/g)].map(m => [m[1], m[2]]));
+  const light = vars(CSS.match(/:root\{([^}]*)\}/)[1]);
+  const darkSys = { ...light, ...vars(CSS.match(/:root:not\(\[data-theme="light"\]\)\{([^}]*)\}/)[1]) };
+  const darkSet = { ...light, ...vars(CSS.match(/:root\[data-theme="dark"\]\{([^}]*)\}/)[1]) };
+  const lum = h => { const c = [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16) / 255).map(v => v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4); return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2]; };
+  const ratio = (a, b) => { const x = lum(a), y = lum(b); return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05); };
+
+  test("die beiden Dunkel-Blöcke (System und Umschalter) haben dieselben Farben", () => {
+    assert.deepEqual(darkSys, darkSet, "Dunkelmodus per System und per Umschalter weichen voneinander ab");
+  });
+
+  for(const [name, t] of [["hell", light], ["dunkel", darkSys]]){
+    test(`${name}: jede Textfarbe erreicht auf jedem Grund mindestens 4,5:1`, () => {
+      const low = [];
+      for(const fg of ["ink", "ink-2", "ink-3", "accent-ink"])
+        for(const bg of ["bg", "bg-2", "surface", "surface-2"]){
+          const r = ratio(t[fg], t[bg]);
+          if(r < 4.5) low.push(`${fg} auf ${bg}: ${r.toFixed(2)}:1`);
+        }
+      const r = ratio(t["on-accent"], t.accent);
+      if(r < 4.5) low.push(`on-accent auf accent: ${r.toFixed(2)}:1`);
+      assert.deepEqual(low, []);
+    });
+  }
+});
+
 describe("Impressum & Datenschutz (betreiber.js, LEGAL-01)", () => {
   const sandbox = { window: {} };
   vm.createContext(sandbox);

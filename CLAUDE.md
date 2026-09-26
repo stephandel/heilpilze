@@ -31,11 +31,41 @@ Sicherheit und Einkauf achten müssen.
 - Studien-Radar: `node pilzhandel/tools/studien-radar.js [Tage]`. Treffer gelten als
   „nicht eingestuft“, bis sie in `heilpilze.html` bewertet sind.
 - Vor jedem Commit: `node --test pilzhandel/tools/test.mjs`.
+- Browsertest: `python3 -m http.server` im Repo-Ordner, dann `/pilzhandel/` öffnen. Vorher den
+  Service Worker abmelden und hart neu laden (Cmd+Shift+R), sonst zeigt der Browser alte Dateien.
+
+## Was Claude allein entscheiden darf
+
+Stand 26.09.2026, von Stephan anpassbar. Im Zweifel fragen.
+
+**Allein, ohne Rückfrage:**
+- Fehler beheben, Barrierefreiheit und Kontrast verbessern, Tests ergänzen, Doku (README,
+  KONZEPT.md, diese Datei) nachziehen.
+- Bedien-, Erklär- und Hinweistexte in der App, solange sie keine Wirkung versprechen.
+- Kleine Designkorrekturen innerhalb der Pfifferling-Tokens.
+- Commit und Push auf Nebenzweige (z. B. `ausbau-stufe-1`), nach `node --test` und Browsertest.
+
+**Nur mit Stephans OK:**
+- Alles, was nach `main` geht — das ist sofort live.
+- Gesundheitsinhalte in `heilpilze.html`: Wirkungsaussagen, Evidenzstufen, Punktwerte,
+  Dosierung, Sicherheitshinweise, Quellen. Auch Studien-Radar-Treffer einstufen. Claude darf
+  Vorschläge machen, trägt sie aber nicht selbst ein.
+- Rechtstexte und persönliche Daten (Impressum, Datenschutz, `betreiber.js`).
+- Neue Funktionen oder Ansichten, neue externe Dienste, Shop-/Affiliate-Links.
+- Konto- und Repo-Einstellungen, Zugänge, alles, was Geld kostet.
+
+**Offene Entscheidungen bei Stephan** (gesammelt, damit nicht jede Sitzung neu fragt):
+1. Impressum: Name, ladungsfähige Anschrift, E-Mail in `pilzhandel/betreiber.js` (LEGAL-01).
+2. Kennzahlen-Ziele bestätigen: `bestaetigt: true` in `tools/kennzahlen.js` (PROD-04).
+3. Handtest Barrierefreiheit am echten Telefon, Checkliste KONZEPT.md §12 (A11Y-03).
+4. Vertagt am 25.09.2026: Quellen je Aussage (CLAIM-03), zweites Produkt nach diesem Muster.
 
 ## Design
 
-Stilwahl vom 25.09.2026 (Artifact „Stilwahl“). **Noch nicht in `app.css` umgesetzt**; dort und
-in KONZEPT.md §3 steht noch die alte Palette „Waldboden“ (Creme, Erdbraun, Terrakotta).
+Stilwahl vom 25.09.2026 (Artifact „Stilwahl“), in `app.css` und KONZEPT.md §3 umgesetzt.
+Abweichungen von der Stilwahl wegen Kontrast: `--ink-3` hell `#6A6B54` statt `#88886F`,
+zusätzlich `--accent-ink` (hell `#955B18`) für Links/Beschriftung und `--on-accent` für Text auf
+der Akzentfarbe. Der Kontrast aller Text/Grund-Paare wird per Test geprüft (`tools/test.mjs`).
 
 - **Schrift:** Fraunces 600 für Überschriften, DM Sans für Text, lokal in `pilzhandel/fonts/`.
 - **Palette „Pfifferling“:** Buttergelb, Oliv, Orange. Ecken 6 px (Karten) / 4 px (klein),
@@ -45,14 +75,14 @@ in KONZEPT.md §3 steht noch die alte Palette „Waldboden“ (Creme, Erdbraun, 
 |---|---|---|
 | bg / bg2 | `#FBF5E4` / `#F3EACF` | `#14140E` / `#1A1A12` |
 | surface / surface2 | `#FFFDF6` / `#F6EDD6` | `#202016` / `#29291D` |
-| ink / ink2 / ink3 | `#23241A` / `#575844` / `#88886F` | `#F2EEDC` / `#C9C3A6` / `#999379` |
+| ink / ink2 / ink3 | `#23241A` / `#575844` / `#6A6B54` | `#F2EEDC` / `#C9C3A6` / `#999379` |
 | line | `#E8DDBE` | `#36352A` |
 | brand / brandInk | `#2F3322` / `#FBF6E6` | `#F2EEDC` / `#1E1E14` |
 | accent / accentBg | `#C9761A` / `#F8E2BE` | `#F0A850` / `#3A2C14` |
 | moss / mossBg | `#667A36` / `#E7ECCF` | `#B8C985` / `#2A301B` |
 
-Beim Umsetzen Kontrast prüfen: Text mindestens 4,5:1, große Schrift und Bedienelemente 3:1.
-Verdächtig sind `ink3` auf `bg` und `accent` als Textfarbe im hellen Schema.
+Kontrast: Text mindestens 4,5:1, große Schrift und Bedienelemente 3:1. Neue Farb-Tokens für
+Text in den Kontrasttest in `tools/test.mjs` aufnehmen.
 
 ## Regeln (Pilot-Kern) und Ist-Stand
 
@@ -63,6 +93,11 @@ auf echte Impressum-Daten. Schritt 8+9 sind Vorschläge mit Basiswerten, Ziele/R
 Stephan bestätigen oder anpassen — damit ist der komplette Arbeitsplan mindestens einmal
 durchlaufen).
 ✅ erfüllt · 🟡 teilweise · ❌ offen. Eine Regel gilt erst als erfüllt, wenn der Nachweis vorliegt.
+
+**Test schlägt Tabelle:** Für CONTENT-01, CONTENT-02, EXPLAIN-01, SYNC-03, UX-03, DQ-04,
+LEGAL-01 (Links), A11Y-02, OPS-06, VIS-04 und den Farbkontrast prüft `tools/test.mjs` den
+Nachweis automatisch. Widerspricht der Test dieser Tabelle, gilt der Test. Die Tabelle ist
+selbst eingetragen und war am 26.09.2026 an drei Stellen veraltet.
 
 | Regel | Was sie hier konkret heißt | Stand | Nachweis / Lücke |
 |---|---|---|---|
@@ -88,7 +123,7 @@ durchlaufen).
 | LEGAL-01 Rechtsprofil | Einmal schriftlich: Betreiber, Zielmarkt DE, Datenarten, externe Abrufe, Impressumsfrage | 🟡 | KONZEPT.md §8 (25.09.2026): Profil geschrieben, Ergebnis **Impressum und Datenschutzerklärung sind vermutlich schon jetzt Pflicht** (nicht erst bei Verkauf, wie §6 bisher annahm), fehlen aber noch live auf der Seite. Entwürfe für beide liegen in §8 mit Platzhaltern. Impressum und Datenschutz sind als Ansichten gebaut (`#/impressum`, `#/datenschutz`, im Fuß verlinkt), Angaben kommen aus `pilzhandel/betreiber.js`. Fehlt nur: Name/Anschrift/E-Mail dort eintragen, `VERSION` in `sw.js` erhöhen; der todo-Test in `test.mjs` wird dann grün. Nicht nach `main` bringen, solange er todo ist. Keine Rechtsberatung |
 | DOC-01 Doku im Repo | README, KONZEPT.md, CLAUDE.md bei jeder wesentlichen Änderung nachziehen | ✅ | CLAUDE.md nachgeführt. KONZEPT.md §3 war bereits aktuell (Palette Pfifferling seit Schritt 6). §5 (Funktionsliste) um Meldeweg, Rückgängig-Funktion, Bildrechte, Tests, Kennzahlen-Skript und Impressum/Datenschutz-Ansichten ergänzt (25.09.2026) |
 | OPS-06 Pflegeplan | Fester Rhythmus für Radar, Inhalte, Links, Fotos | ✅ | Rhythmus dokumentiert (Arbeitsplan-Schritt 9). Der monatliche Radar-Teil läuft jetzt automatisch: `.github/workflows/studien-radar.yml` (25.09.2026), öffnet bei neuen Treffern einen PR zum Sichten, stuft nichts selbst ein. Nötige Repo-Einstellung war beim Prüfen schon aktiv. Shop-/Infolinks (vierteljährlich) und Einstufungen (jährlich) bleiben bewusst Handarbeit |
-| TEST-01 Tests nach Risiko | Tests für Check-Logik, Datenaufbereitung, Tagebuch-Import | ✅ | `pilzhandel/tools/test.mjs`, 20 Tests (einer todo, bis `betreiber.js` ausgefüllt ist), `node --test tools/test.mjs`. Prüft Datenqualität aller 21 Pilze (Stufen, Punktwert, Flags, Quellen), `checkHits()` (Stufe = Maximum, nicht Summe) und `parseDiaryImport()` (ungültige/doppelte Einträge, Wertebereiche). Beide Funktionen sind nach `pilzhandel/logic.js` ausgelagert und werden von `app.js` und dem Test benutzt, kein Kopie-Risiko |
+| TEST-01 Tests nach Risiko | Tests für Check-Logik, Datenaufbereitung, Tagebuch-Import | ✅ | `pilzhandel/tools/test.mjs`, 32 Tests (einer todo, bis `betreiber.js` ausgefüllt ist), `node --test tools/test.mjs`. Seit 26.09.2026 zusätzlich Regel-Nachweise im Quelltext, Offline-Cache-Vollständigkeit und Farbkontrast hell/dunkel — der Kontrasttest fand sofort zwei echte Lücken (`--ink-3` hell nur 3,1–3,6:1, `--accent-ink` auf Fußzeile 4,49:1), beide behoben. Prüft Datenqualität aller 21 Pilze (Stufen, Punktwert, Flags, Quellen), `checkHits()` (Stufe = Maximum, nicht Summe) und `parseDiaryImport()` (ungültige/doppelte Einträge, Wertebereiche). Beide Funktionen sind nach `pilzhandel/logic.js` ausgelagert und werden von `app.js` und dem Test benutzt, kein Kopie-Risiko |
 
 ## Arbeitsplan (Reihenfolge nach Schaden)
 
