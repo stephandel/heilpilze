@@ -37,6 +37,34 @@ const EXTRA = {
   agarikon:   {shape:"bracket", color:"#E9E0CC", imgs:["Fomitopsis_officinalis_32014.JPG","Fomitopsis_officinalis_OPN.jpg"], flags:{}, buy:["extrakt"]}
 };
 
+/* Hintergrundfotos der Startseite, gleiche Herkunft und Nachweispflicht wie die Pilzfotos oben. */
+const HERO = ["A_little_mushroom_scene_in_the_woods_(30559452831).jpg", "Pilze-im-Moos.jpg", "Mushroom_Forest.jpg"];
+
+/* pubmed: Suchbegriff für Studien-Radar und PubMed-Links (Titel/Abstract) */
+const PUBMED = {
+  "reishi": "\"Ganoderma lucidum\" OR \"Ganoderma lingzhi\" OR reishi OR lingzhi",
+  "shiitake": "\"Lentinula edodes\" OR shiitake OR lentinan",
+  "coriolus": "\"Trametes versicolor\" OR \"Coriolus versicolor\" OR \"polysaccharide-K\" OR \"polysaccharide K\"",
+  "pleurotus": "\"Pleurotus ostreatus\" OR \"oyster mushroom\"",
+  "hericium": "\"Hericium erinaceus\" OR \"lion's mane\"",
+  "cordyceps": "Cordyceps OR Ophiocordyceps",
+  "agaricus": "\"Agaricus blazei\" OR \"Agaricus subrufescens\" OR \"Agaricus brasiliensis\"",
+  "maitake": "\"Grifola frondosa\" OR maitake",
+  "chaga": "\"Inonotus obliquus\" OR chaga",
+  "auricularia": "Auricularia",
+  "polyporus": "\"Polyporus umbellatus\"",
+  "coprinus": "\"Coprinus comatus\"",
+  "tremella": "\"Tremella fuciformis\"",
+  "phellinus": "\"Phellinus linteus\" OR Sanghuangporus",
+  "poria": "\"Wolfiporia\" OR \"Poria cocos\"",
+  "antrodia": "\"Antrodia cinnamomea\" OR \"Antrodia camphorata\" OR \"Taiwanofungus\"",
+  "sparassis": "\"Sparassis crispa\"",
+  "enoki": "\"Flammulina velutipes\" OR \"Flammulina filiformis\" OR enoki",
+  "champignon": "\"Agaricus bisporus\" OR \"button mushroom\"",
+  "fomes": "\"Fomes fomentarius\"",
+  "agarikon": "\"Fomitopsis officinalis\" OR \"Laricifomes officinalis\""
+};
+
 const FLAGS = {
   gerinnung: {label:"Gerinnungs\u00adhemmer", sub:"ASS, Clopidogrel, Marcumar, DOAK", icon:"🩸"},
   op:        {label:"Operation geplant", sub:"in den nächsten 2–3 Wochen", icon:"🏥"},
@@ -113,16 +141,82 @@ const LINKS = [
   ]}
 ];
 
+/* Rezepte mit Speisepilzen. Küchenideen, keine Therapie: bewusst ohne Wirkversprechen.
+   safe: Sicherheitshinweis aus den Pilzdaten, der beim Kochen zählt */
+const RECIPES = [
+  {id:"shiitake-pakchoi", title:"Shiitake-Pfanne mit Pak Choi und Ingwer", pilze:["shiitake"], zeit:20, portionen:2, art:"Hauptgericht",
+   zutaten:["250 g frische Shiitake","2 kleine Pak Choi","1 Stück Ingwer (daumengroß)","2 Knoblauchzehen","2 EL Sojasauce","1 TL geröstetes Sesamöl","1 EL neutrales Öl","Reis oder Nudeln als Beilage"],
+   schritte:["Harte Stiele der Shiitake abschneiden (für eine Brühe aufheben), Hüte in Streifen schneiden.","Ingwer und Knoblauch fein hacken, Pak Choi längs vierteln.","Öl stark erhitzen, Shiitake 5–6 Minuten unter Wenden braten, bis sie gebräunt und durchgegart sind.","Ingwer und Knoblauch 1 Minute mitbraten, dann Pak Choi dazu und 2–3 Minuten garen.","Mit Sojasauce ablöschen, Sesamöl darüber, mit Reis servieren."],
+   tipp:"Shiitake nicht waschen, nur mit Küchenpapier abreiben. Sie saugen sonst Wasser und werden zäh.",
+   safe:"Shiitake immer vollständig durchgaren. Roh oder halbgar kann er einen stark juckenden, streifigen Ausschlag auslösen (Shiitake-Dermatitis)."},
+  {id:"shiitake-bruehe", title:"Shiitake-Brühe aus getrockneten Pilzen", pilze:["shiitake"], zeit:50, portionen:4, art:"Grundrezept",
+   zutaten:["30 g getrocknete Shiitake (oder Stiele frischer Shiitake)","1 Stück Kombu-Alge (optional)","1 Zwiebel","1 Stück Ingwer","1,5 l Wasser","Sojasauce oder Salz"],
+   schritte:["Getrocknete Shiitake 30 Minuten in 300 ml kaltem Wasser einweichen, Einweichwasser aufheben.","Pilze, Einweichwasser, restliches Wasser, halbierte Zwiebel, Ingwer und Kombu aufsetzen.","Kombu vor dem Kochen herausnehmen, alles 30–40 Minuten leise köcheln lassen.","Abseihen, mit Sojasauce oder Salz abschmecken. Pilze in Streifen schneiden und in die Suppe zurückgeben."],
+   tipp:"Langes Köcheln ist nichts anderes als eine Heißwasser-Extraktion, so wie sie auch Pilzextrakte nutzen. Die Brühe lässt sich portionsweise einfrieren.",
+   safe:"Eingeweichte Pilze am selben Tag verarbeiten und nicht lange bei Raumtemperatur stehen lassen."},
+  {id:"austernpilz-gyros", title:"Austernpilz-Gyros mit Joghurtsoße", pilze:["pleurotus"], zeit:25, portionen:2, art:"Hauptgericht",
+   zutaten:["400 g Austernpilze","1 rote Zwiebel","2 EL Olivenöl","1 TL Paprika edelsüß","1 TL Oregano","½ TL Kreuzkümmel","2 Knoblauchzehen","150 g Joghurt","½ Gurke","Salz, Pfeffer, Zitrone","Fladenbrot"],
+   schritte:["Austernpilze mit den Händen in Streifen reißen, Zwiebel in Ringe schneiden.","Pilze in Öl bei hoher Hitze ohne Rühren anbraten, bis sie kross sind, dann wenden (8–10 Minuten).","Zwiebel, Gewürze und 1 gehackte Knoblauchzehe dazugeben, 2 Minuten weiterbraten, salzen.","Gurke raspeln, ausdrücken, mit Joghurt, der zweiten Knoblauchzehe, Salz und Zitrone verrühren.","Pilze mit Soße im warmen Fladenbrot servieren."],
+   tipp:"Die Pfanne nicht überfüllen. Liegen die Pilze zu eng, dünsten sie im eigenen Saft statt zu bräunen.",
+   safe:"Gut durchbraten. Austernpilze sind roh schwer verdaulich."},
+  {id:"igelstachelbart-butter", title:"Igelstachelbart in Salbeibutter", pilze:["hericium"], zeit:15, portionen:2, art:"Vorspeise",
+   zutaten:["250 g frischer Igelstachelbart (Hericium)","2 EL Butter","1 EL Öl","6 Salbeiblätter","1 Knoblauchzehe","Salz, Pfeffer","Zitrone","Baguette oder Risotto"],
+   schritte:["Den Pilz in 1,5 cm dicke Scheiben schneiden.","Scheiben in einer trockenen Pfanne bei mittlerer Hitze andrücken, bis Wasser austritt und verdampft (3–4 Minuten).","Öl dazu, Scheiben von beiden Seiten goldbraun braten.","Butter, Salbei und angedrückten Knoblauch zugeben, die Scheiben mit der schäumenden Butter übergießen.","Salzen, pfeffern, mit etwas Zitrone servieren."],
+   tipp:"Durch das Andrücken ohne Fett wird die Textur fest, ähnlich wie bei Jakobsmuscheln.",
+   safe:"Selten allergische Reaktionen beschrieben. Beim ersten Mal eine kleine Portion probieren."},
+  {id:"maitake-ofen", title:"Maitake aus dem Ofen mit Miso-Glasur", pilze:["maitake"], zeit:30, portionen:2, art:"Beilage",
+   zutaten:["300 g Maitake (Klapperschwamm)","1 EL helle Misopaste","1 EL Honig oder Ahornsirup","1 EL Reisessig","2 EL Öl","Frühlingszwiebel, Sesam"],
+   schritte:["Ofen auf 220 °C (Umluft 200 °C) vorheizen.","Maitake in handgroße Büschel teilen und auf ein Blech mit Backpapier legen.","Miso, Honig, Essig und Öl verrühren und die Büschel damit einpinseln.","20–25 Minuten rösten, bis die Ränder dunkel und knusprig sind.","Mit Frühlingszwiebel und Sesam bestreuen."],
+   tipp:"Maitake gibt es frisch im Herbst auf Wochenmärkten und bei Edelpilz-Zuchten.",
+   safe:"Kann den Blutzucker senken. Wer Diabetes-Medikamente nimmt, isst ihn als Speisepilz unproblematisch, sollte bei Extrakten aber Rücksprache halten."},
+  {id:"miso-enoki-judasohr", title:"Miso-Suppe mit Enoki und Judasohr", pilze:["enoki","auricularia"], zeit:20, portionen:2, art:"Suppe",
+   zutaten:["100 g Enoki","5 g getrocknetes Judasohr (Mu-Err)","200 g Tofu","2 EL Misopaste","700 ml Brühe (z. B. Shiitake-Brühe)","1 Frühlingszwiebel","1 Handvoll Spinat"],
+   schritte:["Judasohr 15 Minuten in warmem Wasser einweichen, abspülen, harte Stellen entfernen, in Streifen schneiden.","Enoki vom Wurzelballen trennen, Tofu würfeln.","Brühe aufkochen, Judasohr und Enoki darin 4–5 Minuten sprudelnd kochen.","Tofu und Spinat dazu, Hitze reduzieren.","Miso mit etwas Brühe glatt rühren und einrühren, nicht mehr kochen lassen. Mit Frühlingszwiebel servieren."],
+   tipp:"Miso zum Schluss einrühren, beim Kochen verliert es Aroma.",
+   safe:"Enoki immer durchkochen: Rohe Enoki waren Ursache mehrerer Listeriose-Ausbrüche. Judasohr nach dem Einweichen sofort verwenden, nie über Stunden stehen lassen. Judasohr hemmt die Gerinnung: bei Blutverdünnern oder vor Operationen Rücksprache halten."},
+  {id:"champignon-linsen", title:"Champignon-Linsen-Ragout", pilze:["champignon"], zeit:35, portionen:3, art:"Hauptgericht",
+   zutaten:["400 g braune Champignons","150 g Berglinsen oder Beluga-Linsen","1 Zwiebel","1 Karotte","2 Zweige Thymian","1 EL Tomatenmark","100 ml Rotwein oder Brühe","400 ml Gemüsebrühe","2 EL Olivenöl","Salz, Pfeffer, Petersilie"],
+   schritte:["Linsen abspülen. Zwiebel und Karotte fein würfeln, Champignons vierteln.","Champignons in Öl kräftig anbraten und herausnehmen.","Zwiebel und Karotte anschwitzen, Tomatenmark kurz mitrösten, mit Rotwein ablöschen.","Linsen, Brühe und Thymian dazu, 20–25 Minuten köcheln, bis die Linsen weich sind.","Champignons zurückgeben, 3 Minuten ziehen lassen, abschmecken, mit Petersilie servieren."],
+   tipp:"Passt zu Polenta, Kartoffelpüree oder einfach Brot.",
+   safe:"Champignons gegart essen, roh nur in kleinen Mengen. Pilze und Linsen sind purinreich: bei Gicht die Portion anpassen."},
+  {id:"pilz-risotto", title:"Risotto mit gemischten Edelpilzen", pilze:["pleurotus","shiitake","hericium"], zeit:40, portionen:3, art:"Hauptgericht",
+   zutaten:["400 g gemischte Edelpilze (Austernpilz, Shiitake, Igelstachelbart)","250 g Risottoreis","1 Schalotte","100 ml Weißwein","1 l heiße Brühe","40 g Parmesan oder Hefeflocken","2 EL Butter","2 EL Olivenöl","Salz, Pfeffer, Petersilie"],
+   schritte:["Pilze putzen, in mundgerechte Stücke schneiden oder reißen und portionsweise in Öl scharf anbraten, salzen, beiseitestellen.","Schalotte fein würfeln und in 1 EL Butter glasig dünsten, Reis dazu und 1 Minute rühren.","Mit Wein ablöschen, dann nach und nach Brühe angießen und unter Rühren 18–20 Minuten garen.","Pilze unterheben, Hitze aus, restliche Butter und Parmesan einrühren, 2 Minuten ruhen lassen.","Mit Pfeffer und Petersilie servieren."],
+   tipp:"Die Pilze getrennt braten und erst am Ende dazugeben, dann bleiben sie aromatisch und bissfest.",
+   safe:"Alle Pilze vollständig durchgaren (besonders Shiitake)."}
+];
+
 const MUSHROOMS = base.MUSHROOMS.map(m => {
   const x = EXTRA[m.id];
   if (!x) throw new Error("Zusatzdaten fehlen für " + m.id);
-  return Object.assign({}, m, x, {flags: Object.assign({schwanger:1}, x.flags)});
+  if (!PUBMED[m.id]) throw new Error("PubMed-Suchbegriff fehlt für " + m.id);
+  return Object.assign({}, m, x, {pubmed: PUBMED[m.id], flags: Object.assign({schwanger:1}, x.flags)});
 });
 
-const out = "/* Automatisch erzeugt von tools/build-data.js — nicht von Hand bearbeiten. Stand: September 2026 */\n" +
-  "window.PH = " + JSON.stringify({
-    LEVELS: base.LEVELS, SCORE_LBL: base.SCORE_LBL, TAGS: base.TAGS, TAG_ICONS, FLAGS, BUY,
-    MUSHROOMS, REFERENCE: base.REFERENCE, SHOPS, LINKS
-  }) + ";\n";
-fs.writeFileSync(path.join(__dirname, "..", "data.js"), out);
-console.log("data.js geschrieben:", MUSHROOMS.length, "Pilze,", (out.length/1024).toFixed(0), "KB");
+/* Bildrechte (VIS-04): tools/fetch-image-credits.js holt Urheber und Lizenz von Wikimedia
+   Commons und schreibt image-credits.json. build-data.js liest nur diesen Cache, ruft die
+   API selbst nicht auf — Bauen bleibt offline möglich, auch ohne aktuelle Fotos. */
+function loadImgCredits(){
+  const creditsPath = path.join(__dirname, "image-credits.json");
+  const allFiles = [...new Set([...Object.values(EXTRA).flatMap(x => x.imgs || []), ...HERO])];
+  let cache = {};
+  try { cache = JSON.parse(fs.readFileSync(creditsPath, "utf8")); }
+  catch(e){ console.warn("Kein image-credits.json gefunden — Fotos ohne Urheber/Lizenz-Anzeige. Zum Beheben: node pilzhandel/tools/fetch-image-credits.js"); }
+  const missing = allFiles.filter(f => !cache[f]);
+  if (missing.length) console.warn(`Bildrechte fehlen für ${missing.length} Foto(s): ${missing.join(", ")}. Zum Beheben: node pilzhandel/tools/fetch-image-credits.js`);
+  return Object.fromEntries(allFiles.filter(f => cache[f]).map(f => [f, cache[f]]));
+}
+
+function build(){
+  const IMG_CREDITS = loadImgCredits();
+  const out = "/* Automatisch erzeugt von tools/build-data.js — nicht von Hand bearbeiten. Stand: September 2026 */\n" +
+    "window.PH = " + JSON.stringify({
+      LEVELS: base.LEVELS, SCORE_LBL: base.SCORE_LBL, TAGS: base.TAGS, TAG_ICONS, FLAGS, BUY,
+      MUSHROOMS, REFERENCE: base.REFERENCE, SHOPS, LINKS, RECIPES, HERO, IMG_CREDITS
+    }) + ";\n";
+  fs.writeFileSync(path.join(__dirname, "..", "data.js"), out);
+  console.log("data.js geschrieben:", MUSHROOMS.length, "Pilze,", (out.length/1024).toFixed(0), "KB");
+}
+
+if (require.main === module) build();
+module.exports = { EXTRA, HERO, PUBMED };

@@ -21,6 +21,6 @@
     <circle cx="56" cy="33" r="1.6" fill="#fff" opacity=".18"/>
     <path d="M18 72 q4 -6 8 0 M52 72 q4 -7 9 0" fill="none" stroke="#6E8452" stroke-width="2.4" stroke-linecap="round"/>
   </g>
-  <text x="104" y="56" font-family="Fraunces, Georgia, 'Times New Roman', serif" font-size="44" font-weight="600" fill="#2A211B" letter-spacing="-0.5">Pilz <tspan font-style="italic" font-weight="500" fill="#B4602E">Handel</tspan></text>
+  <text x="104" y="56" font-family="Fraunces, Georgia, 'Times New Roman', serif" font-size="44" font-weight="600" fill="#2F3322" letter-spacing="-0.5">Pilz <tspan font-style="italic" font-weight="500" fill="#C9761A">Handel</tspan></text>
   <text x="106" y="80" font-family="'DM Sans', 'Helvetica Neue', Arial, sans-serif" font-size="12.5" font-weight="600" fill="#7A6D60" letter-spacing="1.6">HEILPILZE · EVIDENZ · EINKAUF</text>
 </svg>

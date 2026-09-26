@@ -27,17 +27,46 @@ const saveFavs = () => { store.set("ph-favs", [...favs]); syncBadges(); };
 const saveCmp = () => { store.set("ph-cmp", cmp); syncTray(); };
 
 /* ---------- Toast ---------- */
-let toastT;
-function toast(msg){
-  const t = $("#toast"); t.textContent = msg; t.classList.add("show");
-  clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove("show"), 2200);
+let toastT, toastUndoT;
+function toast(msg, opts){
+  const t = $("#toast");
+  clearTimeout(toastT); clearTimeout(toastUndoT);
+  // opacity:0 allein entfernt einen Knopf nicht aus der Tab-Reihenfolge: ohne das hier
+  // bliebe "Rückgängig" nach dem Ausblenden unsichtbar, aber per Tastatur weiter erreichbar.
+  const clearWhenHidden = () => setTimeout(() => { if(!t.classList.contains("show")) t.innerHTML = ""; }, 260);
+  if(opts && opts.onUndo){
+    t.innerHTML = `<span>${esc(msg)}</span> <button type="button" class="undo">${esc(opts.undoLabel || "Rückgängig")}</button>`;
+    const done = () => { t.classList.remove("show"); clearWhenHidden(); };
+    $("button.undo", t).addEventListener("click", () => { done(); opts.onUndo(); });
+    t.classList.add("show", "has-action");
+    // Fokus auf den Rückgängig-Knopf: alle Aufrufer lösen den Toast über einen Klick aus
+    // (Löschen, Auswahl leeren), nie mitten in einer Texteingabe, darum ist das hier sicher.
+    // setTimeout statt direktem .focus(): der Browser fokussiert den geklickten Auslöser-Knopf
+    // nativ nach dem Event-Handler und würde unseren Fokus sonst sofort wieder überschreiben.
+    setTimeout(() => { const u = $("button.undo", t); if(u) u.focus(); }, 0);
+    toastUndoT = setTimeout(done, opts.duration || 6000);
+  } else {
+    t.textContent = msg;
+    t.classList.remove("has-action");
+    t.classList.add("show");
+    toastT = setTimeout(() => { t.classList.remove("show"); clearWhenHidden(); }, 2200);
+  }
 }
 
 /* ---------- Bilder ---------- */
 const COMMONS = "https://commons.wikimedia.org/wiki/";
 const fileUrl = (name, w) => `${COMMONS}Special:FilePath/${encodeURIComponent(name.replace(/ /g, "_"))}?width=${w}`;
 const filePage = name => `${COMMONS}File:${encodeURIComponent(name.replace(/ /g, "_"))}`;
-const HERO = ["A_little_mushroom_scene_in_the_woods_(30559452831).jpg", "Pilze-im-Moos.jpg", "Mushroom_Forest.jpg"];
+const issueUrl = (subject, body) => `https://github.com/stephandel/heilpilze/issues/new?labels=inhalt&title=${encodeURIComponent("Fehler bei " + subject)}${body ? `&body=${encodeURIComponent(body)}` : ""}`;
+const HERO = D.HERO || [];
+/* Urheber und Lizenz eines Fotos, sofern tools/fetch-image-credits.js sie ermitteln konnte.
+   Sonst leerer String: der umgebende Text verweist dann weiter auf die Dateiseite. */
+const imgCredit = name => {
+  const c = D.IMG_CREDITS && D.IMG_CREDITS[name];
+  if(!c) return "";
+  const bits = [c.artist, c.license].filter(Boolean);
+  return bits.length ? ` (${bits.map(esc).join(", ")})` : "";
+};
 
 function art(m, fit="slice"){
   const c = m.color, st = "rgba(40,25,15,.22)";
@@ -225,7 +254,11 @@ sug.addEventListener("click", () => { closeSuggest(); gq.value = ""; });
 $("#searchToggle").addEventListener("click", () => { $("#gsearch").classList.add("open"); gq.focus(); });
 document.addEventListener("keydown", e => {
   if(e.key === "/" && !/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName)){ e.preventDefault(); if(innerWidth < 700) $("#gsearch").classList.add("open"); gq.focus(); }
-  if(e.key === "Escape"){ pop.classList.remove("show"); }
+  if(e.key === "Escape" && pop.classList.contains("show")){
+    const inside = pop.contains(document.activeElement);
+    pop.classList.remove("show"); $("#settingsBtn").setAttribute("aria-expanded", "false");
+    if(inside) $("#settingsBtn").focus();
+  }
 });
 
 /* ---------- Merkliste & Vergleich (delegiert) ---------- */
@@ -236,7 +269,7 @@ document.addEventListener("click", e => {
     if(favs.has(id)){ favs.delete(id); toast(m.name + " von der Merkliste entfernt"); } else { favs.add(id); toast(m.name + " gemerkt"); }
     saveFavs();
     $$(`[data-fav="${id}"]`).forEach(b => { const on = favs.has(id); b.setAttribute("aria-pressed", on); b.querySelector("use").setAttribute("href", on ? "#i-heart-f" : "#i-heart"); });
-    if(route().path === "merkliste") render();
+    if(["merkliste", "arztkarte"].includes(route().path)) render();
     return;
   }
   const c = e.target.closest("[data-cmp]");
@@ -255,7 +288,17 @@ function syncTray(){
   $("#tray").classList.toggle("show", show);
   $("#trayText").textContent = cmp.length === 1 ? "1 Pilz ausgewählt" : cmp.length + " Pilze ausgewählt";
 }
-$("#trayClear").addEventListener("click", () => { cmp = []; saveCmp(); $$("[data-cmp]").forEach(b => b.setAttribute("aria-pressed", "false")); });
+$("#trayClear").addEventListener("click", () => {
+  if(!cmp.length) return;
+  const prev = cmp;
+  cmp = []; saveCmp(); $$("[data-cmp]").forEach(b => b.setAttribute("aria-pressed", "false"));
+  if(route().path === "vergleich") render();
+  toast("Vergleich geleert", { onUndo: () => {
+    cmp = prev; saveCmp();
+    $$("[data-cmp]").forEach(b => b.setAttribute("aria-pressed", cmp.includes(b.dataset.cmp)));
+    if(route().path === "vergleich") render();
+  } });
+});
 
 /* ---------- Router ---------- */
 function route(){
@@ -264,7 +307,7 @@ function route(){
   const parts = p.split("/").filter(Boolean);
   return { path: parts[0] || "", arg: parts[1] ? decodeURIComponent(parts[1]) : "", params: new URLSearchParams(qs || "") };
 }
-const VIEWS = { "":home, pilze:catalog, pilz:detail, vergleich:compare, check, merkliste:favorites, shops, wissen, ueber:about };
+const VIEWS = { "":home, pilze:catalog, pilz:detail, vergleich:compare, check, merkliste:favorites, shops, wissen, ueber:about, impressum, datenschutz, rezepte:recipes, arztkarte, tagebuch, radar };
 let lastPath = null;
 function render(){
   const r = route();
@@ -311,7 +354,7 @@ function home(el){
         <span>${icon("leaf")} Keine Heilversprechen</span>
       </div>
     </div>
-    <a class="credit" href="${filePage(HERO[0])}" target="_blank" rel="noopener">Foto: Wikimedia Commons</a>
+    <a class="credit" href="${filePage(HERO[0])}" target="_blank" rel="noopener">Foto: Wikimedia Commons${imgCredit(HERO[0])}</a>
   </section>
 
   <section class="section container">
@@ -320,7 +363,7 @@ function home(el){
   </section>
 
   <section class="section container" style="padding-top:0">
-    <div class="sechead"><div><div class="eyebrow">Am besten belegt</div><h2 class="h2">Wo die Forschung am weitesten ist</h2></div><a class="link-more" href="#/pilze?sort=score">Alle ansehen</a></div>
+    <div class="sechead"><div><div class="eyebrow">Am besten belegt</div><h2 class="h2">Wo die Forschung am weitesten ist</h2><p>Sortiert nach Humanevidenz: dem Punktwert (0–4) der am besten belegten Wirkung je Pilz.</p></div><a class="link-more" href="#/pilze?sort=score">Alle ansehen</a></div>
     <div class="scroller">${top.map(m => card(m)).join("")}</div>
   </section>
 
@@ -347,7 +390,17 @@ function home(el){
   </section>
 
   <section class="section container" style="padding-top:0">
-    <div class="sechead"><div><div class="eyebrow">Aus Wald und Küche</div><h2 class="h2">Frisch kaufen statt Kapseln</h2><p>Diese Heilpilze gibt es als Speisepilz. Zwei bis drei Portionen pro Woche sind das, was Beobachtungsstudien überhaupt stützen.</p></div><a class="link-more" href="#/shops">Wo kaufen</a></div>
+    <div class="sechead"><div><div class="eyebrow">Werkzeuge</div><h2 class="h2">Für den Alltag</h2></div></div>
+    <div class="tools4">
+      <a class="tile" href="#/arztkarte"><span class="ic" aria-hidden="true">🩺</span><b>Arzt-Karte</b><small>„Das nehme ich, bitte prüfen“ zum Ausdrucken</small></a>
+      <a class="tile" href="#/tagebuch"><span class="ic" aria-hidden="true">📓</span><b>Einnahme-Tagebuch</b><small>Menge und Befinden notieren, Kalender-Erinnerung</small></a>
+      <a class="tile" href="#/rezepte"><span class="ic" aria-hidden="true">🍳</span><b>Rezepte</b><small>${R.length} Gerichte mit frischen Edelpilzen</small></a>
+      <a class="tile" href="#/radar"><span class="ic" aria-hidden="true">📡</span><b>Studien-Radar</b><small>Neue Studien aus PubMed, noch nicht eingestuft</small></a>
+    </div>
+  </section>
+
+  <section class="section container" style="padding-top:0">
+    <div class="sechead"><div><div class="eyebrow">Aus Wald und Küche</div><h2 class="h2">Frisch kaufen statt Kapseln</h2><p>Diese Heilpilze gibt es als Speisepilz. Zwei bis drei Portionen pro Woche sind das, was Beobachtungsstudien überhaupt stützen.</p></div><span style="display:flex;gap:1rem"><a class="link-more" href="#/rezepte">Rezepte</a><a class="link-more" href="#/shops">Wo kaufen</a></span></div>
     <div class="scroller">${fresh.map(m => card(m)).join("")}</div>
   </section>`;
   $("#heroSearch").addEventListener("submit", e => { e.preventDefault(); location.hash = "#/pilze?q=" + encodeURIComponent($("#heroQ").value.trim()); });
@@ -394,7 +447,7 @@ function catalog(el, r, same){
   <div class="container pagehead">
     <div class="eyebrow">Katalog</div>
     <h1 class="h2">Alle Heilpilze</h1>
-    <p class="lead">Filtere nach Anliegen, Evidenzstufe und Bezugsart. Die Stufen-Filter blenden einzelne Wirkungsaussagen aus.</p>
+    <p class="lead">Filtere nach Anliegen, Evidenzstufe und Bezugsart. Die Stufen-Filter blenden einzelne Wirkungsaussagen aus. „Evidenz ↓“ sortiert nach dem Punktwert (0–4) der am besten belegten Wirkung, „Risiken/Verträglichste zuerst“ nach dem Ausmaß dokumentierter Sicherheitsprobleme (0–3).</p>
   </div>
   <div class="filterbar"><div class="container">
     <div class="hscroll" id="tagbar" aria-label="Anliegen">
@@ -531,10 +584,18 @@ function detail(el, r){
           <div class="shopgrid">${shops.slice(0, 4).map(shopCard).join("")}</div>
           <p class="muted" style="font-size:.85rem;margin-top:.8rem">Die Shops führen nicht zwingend genau diesen Pilz. Bitte Sortiment prüfen. <a href="#/shops">Einkaufs-Checkliste ansehen</a>.</p>
         </section>
+        ${R.some(x => x.pilze.includes(m.id)) ? `<section class="dsec">
+          <h2>In der Küche</h2>
+          <div class="scroller">${R.filter(x => x.pilze.includes(m.id)).map(recipeCard).join("")}</div>
+        </section>` : ""}
         <section class="dsec">
           <h2>Quellen</h2>
           <ol class="srcs">${m.sources.map(s => `<li><a href="${esc(s.u)}" target="_blank" rel="noopener">${esc(s.t)}</a></li>`).join("")}</ol>
-          <p class="muted" style="font-size:.8rem;margin-top:.8rem">Foto: ${(m.imgs || []).map((n, i) => `<a href="${filePage(n)}" target="_blank" rel="noopener">Wikimedia Commons${m.imgs.length > 1 ? " " + (i + 1) : ""}</a>`).join(", ")} · Urheber und Lizenz auf der Dateiseite. Lädt das Foto nicht, siehst du eine Illustration.</p>
+          ${RD && RD.items[m.id] && RD.items[m.id].list.length ? `<details class="acc" style="margin-top:1rem"><summary>Neu in PubMed, noch nicht eingestuft (${RD.items[m.id].count})</summary><div class="body"><ul class="studies">${RD.items[m.id].list.slice(0, 5).map(studyRow).join("")}</ul><p><a href="#/radar">Zum Studien-Radar</a></p></div></details>` : ""}
+          <p style="margin-top:.8rem;font-size:.9rem"><a href="${pubmedUrl(m)}" target="_blank" rel="noopener">Aktuelle Humanstudien in PubMed ↗</a></p>
+          <p class="muted" style="font-size:.8rem;margin-top:.8rem">Foto: ${(m.imgs || []).map((n, i) => `<a href="${filePage(n)}" target="_blank" rel="noopener">Wikimedia Commons${m.imgs.length > 1 ? " " + (i + 1) : ""}</a>${imgCredit(n)}`).join(", ")} · vollständige Angaben auf der jeweiligen Dateiseite. Lädt das Foto nicht, siehst du eine Illustration.</p>
+          <p style="margin-top:.8rem;font-size:.85rem"><a href="${issueUrl(m.name, "Pilz: " + m.name + "\nWas ist falsch, und woher weißt du das?\n\n")}" target="_blank" rel="noopener">Fehler bei diesem Pilz melden ↗</a></p>
+          <p class="muted" style="font-size:.8rem;margin-top:.8rem">Verantwortlich: <a href="#/impressum">siehe Impressum</a> · Stand dieser Einstufung: September 2026 · Aktualisierung: bei neu eingestuften Treffern aus dem Studien-Radar, sonst mindestens jährlich.</p>
         </section>
       </div>
       <aside class="dside">
@@ -648,6 +709,7 @@ function check(el, r){
     <div class="frow2" style="margin-top:1rem">
       <label class="fchip" style="cursor:pointer"><input type="checkbox" id="onlyFav" ${onlyFav ? "checked" : ""} style="accent-color:var(--accent)"> Nur Pilze auf meiner Merkliste (${favs.size})</label>
       <button class="btn sm soft" id="ckReset">Auswahl leeren</button>
+      <a class="btn sm soft" href="#/arztkarte">${icon("print")} Als Arzt-Karte drucken</a>
     </div>
     <div id="ckOut" aria-live="polite"></div>
     <p class="notice info" style="margin-top:1.5rem"><b>Wichtig:</b> Der Check fasst bekannte Fallberichte und theoretische Risiken aus der Literatur zusammen. Er ist kein medizinischer Interaktionscheck und ersetzt nicht das Gespräch mit Arzt oder Apotheke.</p>
@@ -658,8 +720,8 @@ function check(el, r){
     if(!sel.length){ $("#ckOut").innerHTML = `<div class="empty"><div class="big" aria-hidden="true">🛡️</div><p>Wähle oben mindestens einen Punkt aus.</p></div>`; return; }
     if(!pool.length){ $("#ckOut").innerHTML = `<div class="empty"><p>Deine Merkliste ist leer.</p></div>`; return; }
     const res = pool.map(m => {
-      const hits = sel.filter(k => m.flags[k]).map(k => ({k, v: m.flags[k]}));
-      return {m, hits, lvl: hits.reduce((a, h) => Math.max(a, h.v), 0)};
+      const {hits, lvl} = checkHits(m.flags, sel);
+      return {m, hits, lvl};
     }).sort((a, b) => b.lvl - a.lvl || b.hits.length - a.hits.length || coll.compare(a.m.name, b.m.name));
     const n2 = res.filter(x => x.lvl === 2).length, n1 = res.filter(x => x.lvl === 1).length, n0 = res.length - n1 - n2;
     const ST = ["Kein bekannter Konflikt","Beachten","Ärztlich abklären"];
@@ -683,7 +745,16 @@ function check(el, r){
     i.checked ? flags.add(i.value) : flags.delete(i.value); store.set("ph-flags", [...flags]); out();
   }));
   $("#onlyFav").addEventListener("change", out);
-  $("#ckReset").addEventListener("click", () => { flags.clear(); store.set("ph-flags", []); $$(".ck input", el).forEach(i => i.checked = false); out(); });
+  $("#ckReset").addEventListener("click", () => {
+    if(!flags.size) return;
+    const prev = new Set(flags);
+    flags.clear(); store.set("ph-flags", []); $$(".ck input", el).forEach(i => i.checked = false); out();
+    toast("Auswahl geleert", { onUndo: () => {
+      flags = new Set(prev); store.set("ph-flags", [...flags]);
+      $$(".ck input", el).forEach(i => i.checked = flags.has(i.value));
+      out();
+    } });
+  });
   out();
   return "Wechselwirkungs-Check";
 }
@@ -703,6 +774,8 @@ function favorites(el, r){
     ${list.length ? `
       <div class="frow2" style="margin-bottom:1rem">
         <a class="btn sm" href="#/check?fav=1">${icon("shield")} Wechselwirkungen prüfen</a>
+        <a class="btn sm soft" href="#/arztkarte">${icon("print")} Arzt-Karte</a>
+        <a class="btn sm soft" href="#/tagebuch">📓 Tagebuch</a>
         <button class="btn sm soft" id="favCmp">${icon("compare")} Vergleichen</button>
         <button class="btn sm soft" id="favShare">${icon("share")} Teilen</button>
         <button class="btn sm soft" onclick="window.print()">${icon("print")} Drucken</button>
@@ -799,11 +872,336 @@ function about(el){
       <div><h4>Unabhängigkeit</h4><p>Keine Werbepartner, keine Provisionen. Shops werden nach offengelegten Kriterien aufgenommen.</p></div>
       <div><h4>Quellen</h4><p>Cochrane-Reviews, randomisierte Studien, Fallberichte und Behördeninformationen. Jede Quelle ist beim jeweiligen Pilz verlinkt.</p></div>
       <div><h4>Grenzen</h4><p>Studien zu Heilpilzen sind oft klein, herstellerfinanziert oder nur für ein bestimmtes Präparat aussagekräftig. Neue Studien können Einstufungen ändern.</p></div>
-      <div><h4>Datenschutz</h4><p>Merkliste, Vergleich, Check-Auswahl und Anzeige-Einstellungen bleiben lokal in deinem Browser. Es gibt kein Konto und kein Tracking. Fotos werden von Wikimedia Commons, Schriften von Google Fonts geladen.</p></div>
+      <div><h4>Datenschutz</h4><p>Merkliste, Vergleich, Check-Auswahl, Tagebuch, Arzt-Karte und Anzeige-Einstellungen bleiben lokal in deinem Browser. Es gibt kein Konto und kein Tracking. Nur die Fotos werden von Wikimedia Commons geladen; die Schriften liegen in der App selbst.</p></div>
       <div><h4>Stand</h4><p>Recherche September 2026. Diese App ersetzt keine ärztliche Beratung.</p></div>
     </div>
+    <p style="margin-top:1.25rem"><a href="#/impressum">Impressum</a> · <a href="#/datenschutz">Datenschutzerklärung</a></p>
   </div>`;
   return "Über";
+}
+
+/* ---------- Impressum & Datenschutz (LEGAL-01), Angaben aus betreiber.js ---------- */
+const BT = window.PH_BETREIBER || {};
+const BT_FIELDS = { name: "Name", strasse: "Straße und Hausnummer", plzOrt: "PLZ und Ort", email: "E-Mail-Adresse" };
+const btMissing = () => Object.keys(BT_FIELDS).filter(k => !String(BT[k] || "").trim());
+const bt = k => String(BT[k] || "").trim() ? esc(BT[k]) : `<mark class="todo">[fehlt noch: ${BT_FIELDS[k]}]</mark>`;
+const btMail = () => String(BT.email || "").trim() ? `<a href="mailto:${esc(BT.email)}">${esc(BT.email)}</a>` : bt("email");
+const btDraft = () => btMissing().length ? `<p class="notice" role="note"><b>Entwurf:</b> Die Betreiberangaben sind noch nicht vollständig. Diese Seite darf so nicht veröffentlicht werden.</p>` : "";
+const btAddress = () => `${bt("name")}<br>${bt("strasse")}<br>${bt("plzOrt")}<br>Deutschland`;
+
+function impressum(el){
+  el.innerHTML = `
+  <div class="container pagehead">
+    <div class="eyebrow">Anbieterkennzeichnung</div>
+    <h1 class="h2">Impressum</h1>
+  </div>
+  <div class="container prose" style="max-width:48rem">
+    ${btDraft()}
+    <h2 class="h3">Angaben gemäß § 5 DDG</h2>
+    <p>${btAddress()}</p>
+    <p>E-Mail: ${btMail()}</p>
+    <h2 class="h3">Verantwortlich für den Inhalt nach § 18 Abs. 2 MStV</h2>
+    <p>${bt("name")}, Anschrift wie oben</p>
+    <h2 class="h3">Hinweis</h2>
+    <p>Pilz Handel ist ein privates, werbefreies Informationsprojekt. Alle Wirkungsaussagen sind nach Evidenzstufe gekennzeichnet und ersetzen keine ärztliche Beratung. Für die Inhalte verlinkter externer Seiten sind ausschließlich deren Betreiber verantwortlich.</p>
+    <p><a href="#/datenschutz">Zur Datenschutzerklärung</a></p>
+  </div>`;
+  return "Impressum";
+}
+
+function datenschutz(el){
+  el.innerHTML = `
+  <div class="container pagehead">
+    <div class="eyebrow">Datenschutz</div>
+    <h1 class="h2">Datenschutzerklärung</h1>
+    <p class="lead">Kurz gesagt: Kein Konto, keine Cookies, kein Tracking. Was du in der App speicherst, bleibt auf deinem Gerät.</p>
+  </div>
+  <div class="container prose" style="max-width:48rem">
+    ${btDraft()}
+    <h2 class="h3">Verantwortlicher</h2>
+    <p>${btAddress()}<br>E-Mail: ${btMail()}</p>
+
+    <h2 class="h3">Daten, die nur auf deinem Gerät liegen</h2>
+    <p>Merkliste, Vergleich, Check-Auswahl, Einnahme-Tagebuch, Arzt-Karte und Anzeige-Einstellungen speichert ausschließlich dein Browser (im sogenannten lokalen Speicher). Diese Daten werden nicht übertragen und erreichen den Betreiber nie. Du kannst sie jederzeit löschen, indem du die Websitedaten dieser Seite in deinem Browser entfernst.</p>
+
+    <h2 class="h3">Hosting über GitHub Pages</h2>
+    <p>Die App wird über GitHub Pages bereitgestellt (GitHub Inc., USA). Beim Aufruf verarbeitet GitHub technisch notwendige Daten, insbesondere deine IP-Adresse, und speichert sie in Server-Protokollen. Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO; das berechtigte Interesse liegt in der sicheren und zuverlässigen Bereitstellung der App. Der Betreiber selbst hat keinen Zugriff auf diese Protokolle. Näheres: <a href="https://docs.github.com/de/site-policy/privacy-policies/github-general-privacy-statement" target="_blank" rel="noopener">Datenschutzerklärung von GitHub</a>.</p>
+
+    <h2 class="h3">Fotos von Wikimedia Commons</h2>
+    <p>Die Pilzfotos lädt dein Browser direkt von Servern der Wikimedia Foundation (USA). Dabei erhält die Wikimedia Foundation deine IP-Adresse. Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO; das berechtigte Interesse liegt darin, frei lizenzierte Fotos mit korrekter Urheberangabe zu zeigen, ohne sie selbst zu hosten. Es handelt sich um eine Übermittlung in ein Drittland außerhalb der EU. Näheres: <a href="https://foundation.wikimedia.org/wiki/Policy:Privacy_policy/de" target="_blank" rel="noopener">Datenschutzerklärung der Wikimedia Foundation</a>.</p>
+
+    <h2 class="h3">Fehler melden</h2>
+    <p>Wenn du über „Fehler melden“ einen inhaltlichen Fehler meldest, geschieht das freiwillig über GitHub Issues. Dafür brauchst du ein GitHub-Konto, und deine Meldung ist öffentlich sichtbar. Es gilt die Datenschutzerklärung von GitHub.</p>
+
+    <h2 class="h3">Schriften</h2>
+    <p>Die Schriften sind in der App selbst enthalten. Es werden keine Schriftdienste Dritter aufgerufen.</p>
+
+    <h2 class="h3">Deine Rechte</h2>
+    <p>Du hast das Recht auf Auskunft, Berichtigung, Löschung, Einschränkung der Verarbeitung und Widerspruch (Art. 15–18 und 21 DSGVO). Wende dich dafür an die oben genannte E-Mail-Adresse. Außerdem kannst du dich bei einer Datenschutz-Aufsichtsbehörde beschweren (Art. 77 DSGVO).</p>
+
+    <p class="muted">Stand: September 2026</p>
+  </div>`;
+  return "Datenschutz";
+}
+
+/* ---------- Rezepte ---------- */
+const R = D.RECIPES || [];
+function recipeCard(x){
+  const ms = x.pilze.map(id => byId[id]);
+  return `<article class="mcard rcard">
+    <a class="media" href="#/rezepte/${x.id}" tabindex="-1" aria-hidden="true">${pimg(ms[0], 640, false)}</a>
+    <div class="body">
+      <h3><a href="#/rezepte/${x.id}">${esc(x.title)}</a></h3>
+      <div class="latin">${ms.map(m => esc(m.name.split(" / ")[0])).join(", ")}</div>
+      <div class="foot"><span class="chip">⏱ ${x.zeit} Min.</span><span class="chip">${esc(x.art)}</span></div>
+    </div>
+  </article>`;
+}
+function recipes(el, r){
+  const x = R.find(y => y.id === r.arg);
+  if(r.arg && !x) return notFound(el);
+  if(!x){
+    const pilz = r.params.get("pilz") || "";
+    const withR = [...new Set(R.flatMap(y => y.pilze))].map(id => byId[id]);
+    const list = R.filter(y => !pilz || y.pilze.includes(pilz));
+    el.innerHTML = `
+    <div class="container pagehead">
+      <div class="eyebrow">Aus der Küche</div>
+      <h1 class="h2">Rezepte mit Speisepilzen</h1>
+      <p class="lead">Viele Heilpilze sind zuerst einmal gute Speisepilze. Frisch gekocht sind sie die einfachste und sicherste Art, sie in den Alltag zu holen. Das sind Küchenideen, keine Therapie.</p>
+    </div>
+    <div class="container">
+      <div class="hscroll" style="margin-bottom:1.2rem" role="group" aria-label="Nach Pilz filtern">
+        <a class="fchip" href="#/rezepte" aria-pressed="${!pilz}" style="text-decoration:none">Alle</a>
+        ${withR.map(m => `<a class="fchip" href="#/rezepte?pilz=${m.id}" aria-pressed="${pilz === m.id}" style="text-decoration:none">${esc(m.name.split(" / ")[0])}</a>`).join("")}
+      </div>
+      <div class="grid">${list.map(recipeCard).join("")}</div>
+      <p class="notice info" style="margin-top:1.5rem"><b>Grundregel:</b> Speisepilze immer gut durchgaren, eingeweichte Trockenpilze am selben Tag verarbeiten und Reste rasch kühlen. Frische Edelpilze gibt es bei Zuchtbetrieben, auf Wochenmärkten oder als Zuchtset. <a href="#/shops?cat=frisch">Bezugsquellen</a></p>
+    </div>`;
+    return "Rezepte";
+  }
+  const ms = x.pilze.map(id => byId[id]);
+  el.innerHTML = `
+  <div class="container pagehead recipe">
+    <a class="chip" href="#/rezepte">← Alle Rezepte</a>
+    <div class="eyebrow" style="margin-top:1rem">${esc(x.art)} · ${x.zeit} Minuten · ${x.portionen} Portionen</div>
+    <h1 class="h2">${esc(x.title)}</h1>
+    <div class="chips" style="margin-top:.6rem">${ms.map(m => `<a class="chip" href="#/pilz/${m.id}">🍄 ${esc(m.name)}</a>`).join("")}</div>
+  </div>
+  <div class="container recipe">
+    <div class="rlayout">
+      <div class="card"><h3>Zutaten</h3><ul class="ingr">${x.zutaten.map(z => `<li><label><input type="checkbox"> ${esc(z)}</label></li>`).join("")}</ul></div>
+      <div>
+        <h2 class="h2" style="font-size:1.35rem;margin-bottom:.8rem">Zubereitung</h2>
+        <ol class="steps">${x.schritte.map(s => `<li>${esc(s)}</li>`).join("")}</ol>
+        ${x.tipp ? `<p class="notice info" style="margin-top:1rem"><b>Tipp:</b> ${esc(x.tipp)}</p>` : ""}
+        <p class="notice" style="margin-top:.8rem"><b>Sicherheit:</b> ${esc(x.safe)}</p>
+        <div class="frow2" style="margin-top:1rem"><button class="btn sm soft" onclick="window.print()">${icon("print")} Drucken</button></div>
+      </div>
+    </div>
+  </div>`;
+  return x.title;
+}
+
+/* ---------- Arzt-Karte ---------- */
+function arztkarte(el){
+  const list = [...favs].map(id => byId[id]);
+  const info = store.get("ph-arzt", {name:"", meds:"", dose:{}});
+  const sel = [...flags];
+  const today = new Date().toLocaleDateString("de-DE", {day:"2-digit", month:"2-digit", year:"numeric"});
+  const ST = ["kein bekannter Konflikt","beachten","ärztlich abklären"];
+  el.innerHTML = `
+  <div class="container pagehead noprint">
+    <div class="eyebrow">Arzt-Karte</div>
+    <h1 class="h2">„Das nehme ich, bitte prüfen“</h1>
+    <p class="lead">Eine Seite für Arztpraxis oder Apotheke: deine Pilze aus der Merkliste, was du einnimmst und die Punkte aus dem Wechselwirkungs-Check. Alles bleibt auf diesem Gerät.</p>
+    <div class="frow2" style="margin-top:1rem">
+      <button class="btn sm accent" onclick="window.print()">${icon("print")} Drucken oder als PDF sichern</button>
+      <a class="btn sm soft" href="#/check">${icon("shield")} Check anpassen (${sel.length})</a>
+      <a class="btn sm soft" href="#/pilze">${icon("heart")} Pilze hinzufügen</a>
+    </div>
+    <p class="notice noprint" style="margin-top:1rem">Name, Medikamente und Dosierung liegen nur in diesem Browser, nicht auf einem Server. Bei einem Gerätewechsel, geleertem Speicher oder einer Neuinstallation sind sie weg. Drucke die Karte oder sichere sie als PDF, bevor du sie brauchst.</p>
+  </div>
+  <div class="container">
+    ${list.length ? "" : `<div class="notice noprint" style="margin-bottom:1rem"><b>Noch keine Pilze gemerkt.</b> Wähle hier aus, was du nimmst oder nehmen möchtest:</div>`}
+    <div class="picker noprint" role="group" aria-label="Pilze für die Karte auswählen" style="margin-bottom:1.2rem">${M.slice().sort((a, b) => coll.compare(a.name, b.name)).map(m => `<button class="fchip" data-fav="${m.id}" aria-pressed="${favs.has(m.id)}">${esc(m.name)}</button>`).join("")}</div>
+    <article class="akarte">
+      <header>
+        <div><div class="eyebrow">Pilz Handel · Arzt-Karte</div><h2>Heilpilze: bitte auf Verträglichkeit prüfen</h2></div>
+        <div class="muted">Stand ${today}</div>
+      </header>
+      <div class="afields">
+        <label>Name<input id="akName" value="${esc(info.name)}" placeholder="Vor- und Nachname"></label>
+        <label>Meine Medikamente<textarea id="akMeds" rows="2" placeholder="z. B. Marcumar 3 mg, Metformin 1000 mg">${esc(info.meds)}</textarea></label>
+      </div>
+      ${sel.length ? `<p><b>Angaben aus dem Check:</b> ${sel.map(k => esc(D.FLAGS[k].label.replace(/­/g, ""))).join(" · ")}</p>` : `<p class="muted">Im Wechselwirkungs-Check ist nichts ausgewählt.</p>`}
+      ${list.length ? `<table class="atable">
+        <thead><tr><th>Pilz</th><th>Präparat und Dosis</th><th>Hinweise</th></tr></thead>
+        <tbody>${list.map(m => {
+          const hits = sel.filter(k => m.flags[k]).sort((a, b) => m.flags[b] - m.flags[a]);
+          const lvl = hits.reduce((a, k) => Math.max(a, m.flags[k]), 0);
+          return `<tr class="l${lvl}">
+            <td><b>${esc(m.name)}</b><br><i>${esc(m.latin)}</i><br><small>Evidenz: ${esc(D.SCORE_LBL[m.score])}</small></td>
+            <td><input data-dose="${m.id}" value="${esc(info.dose[m.id] || "")}" placeholder="Produkt, Menge, seit wann"></td>
+            <td>${sel.length ? `<b class="ast">${ST[lvl]}</b>` : ""}${hits.length ? `<ul>${hits.map(k => `<li>${esc(D.FLAGS[k].label.replace(/­/g, ""))}: ${esc(FLAG_NOTE[k])}</li>`).join("")}</ul>` : ""}<ul class="asafe">${m.safety.slice(0, 2).map(s => `<li>${esc(s)}</li>`).join("")}</ul></td>
+          </tr>`;
+        }).join("")}</tbody>
+      </table>` : ""}
+      <div class="aq"><b>Fragen an Arzt oder Apotheke</b>
+        <ul>
+          <li>Verträgt sich das mit meinen Medikamenten?</li>
+          <li>Sollten Werte kontrolliert werden, etwa Leber, Niere, Blutzucker oder Gerinnung (INR)?</li>
+          <li>Muss ich vor einer Operation oder Untersuchung pausieren?</li>
+          <li>Wie lange ist die Einnahme sinnvoll?</li>
+        </ul>
+      </div>
+      <p class="fine">Heilpilze sind in Deutschland Lebensmittel bzw. Nahrungsergänzungsmittel. Die Hinweise fassen Fallberichte und theoretische Risiken aus der Literatur zusammen und sind kein vollständiger Interaktionscheck. Quelle: Pilz Handel, stephandel.github.io/heilpilze</p>
+    </article>
+  </div>`;
+  const save = () => {
+    info.name = $("#akName").value; info.meds = $("#akMeds").value;
+    $$("[data-dose]", el).forEach(i => { if(i.value) info.dose[i.dataset.dose] = i.value; else delete info.dose[i.dataset.dose]; });
+    store.set("ph-arzt", info);
+  };
+  $$("input:not([type=checkbox]),textarea", $(".akarte")).forEach(i => i.addEventListener("input", save));
+  return "Arzt-Karte";
+}
+
+/* ---------- Einnahme-Tagebuch ---------- */
+const MOOD = ["😣","🙁","😐","🙂","😄"];
+const isoDay = d => new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
+function tagebuch(el){
+  let log = store.get("ph-diary", []).filter(e => e && byId[e.m]);
+  const last = log[0] || {};
+  const opts = M.slice().sort((a, b) => (favs.has(b.id) - favs.has(a.id)) || coll.compare(a.name, b.name));
+  el.innerHTML = `
+  <div class="container pagehead">
+    <div class="eyebrow">Einnahme-Tagebuch</div>
+    <h1 class="h2">Was nehme ich, und wie geht es mir?</h1>
+    <p class="lead">Notiere Pilz, Menge und Befinden. Nach einigen Wochen siehst du, ob sich etwas verändert, und hast alles für das Arztgespräch beisammen. Die Einträge bleiben auf diesem Gerät.</p>
+  </div>
+  <div class="container">
+    <form class="card diaryform" id="dForm">
+      <div class="dgrid">
+        <label>Datum<input type="date" id="dDate" required value="${isoDay(new Date())}" max="${isoDay(new Date())}"></label>
+        <label>Pilz<select id="dPilz" class="select">${opts.map(m => `<option value="${m.id}" ${m.id === last.m ? "selected" : ""}>${favs.has(m.id) ? "♥ " : ""}${esc(m.name)}</option>`).join("")}</select></label>
+        <label>Präparat<input id="dProd" placeholder="z. B. Extrakt Kapseln" value="${esc(last.p || "")}"></label>
+        <label>Menge<input id="dAmt" placeholder="z. B. 2 × 500 mg" value="${esc(last.a || "")}"></label>
+      </div>
+      <fieldset class="mood"><legend>Befinden</legend>${MOOD.map((e, i) => `<label><input type="radio" name="mood" value="${i + 1}" ${i === 2 ? "checked" : ""}><span aria-label="${i + 1} von 5">${e}</span></label>`).join("")}</fieldset>
+      <label>Notiz<input id="dNote" placeholder="Schlaf, Verdauung, Nebenwirkungen …"></label>
+      <button class="btn accent" type="submit">${icon("check")} Eintragen</button>
+    </form>
+    <div id="dOut"></div>
+    <section class="card" style="margin-top:1.5rem">
+      <h3>Erinnerung im Kalender</h3>
+      <p class="muted" style="font-size:.9rem">Erzeugt einen täglichen Termin für deinen Kalender (iPhone, Android, Outlook). Studien laufen meist 8 bis 16 Wochen; danach erinnert dich der Kalender an eine Pause und ein Gespräch mit Arzt oder Apotheke.</p>
+      <div class="frow2">
+        <label class="sr" for="rTime">Uhrzeit</label><input type="time" id="rTime" class="select" value="08:00">
+        <label class="sr" for="rWeeks">Dauer</label><select id="rWeeks" class="select"><option value="4">4 Wochen</option><option value="8" selected>8 Wochen</option><option value="12">12 Wochen</option><option value="16">16 Wochen</option></select>
+        <button class="btn sm" id="rIcs" type="button">📅 Termin herunterladen</button>
+      </div>
+    </section>
+    <p class="notice">Diese Einträge liegen nur in diesem Browser, nicht auf einem Server. Bei einem Gerätewechsel, geleertem Speicher oder einer Neuinstallation sind sie weg. Lade regelmäßig eine Sicherung herunter, besonders vor dem Arztgespräch.</p>
+    <section class="frow2" style="margin:1.5rem 0">
+      <button class="btn sm soft" id="dCsv" type="button">Als Tabelle (CSV) exportieren</button>
+      <button class="btn sm soft" id="dJson" type="button">Sicherung speichern</button>
+      <button class="btn sm soft" id="dImpBtn" type="button">Sicherung laden</button>
+      <input type="file" id="dImp" accept=".json,application/json" hidden>
+    </section>
+  </div>`;
+  const save = () => { log.sort((a, b) => b.d.localeCompare(a.d) || b.t - a.t); store.set("ph-diary", log); out(); };
+  const out = () => {
+    if(!log.length){ $("#dOut").innerHTML = `<div class="empty"><div class="big" aria-hidden="true">📓</div><p>Noch keine Einträge.</p></div>`; return; }
+    const since = isoDay(new Date(Date.now() - 29 * 864e5));
+    const recent = log.filter(e => e.d >= since);
+    const days = new Set(recent.map(e => e.d)).size;
+    const per = {}; log.forEach(e => { per[e.m] = per[e.m] || {n:0, first:e.d, mood:[]}; per[e.m].n++; per[e.m].first = e.d < per[e.m].first ? e.d : per[e.m].first; per[e.m].mood.push(e.s); });
+    const fmt = d => new Date(d + "T12:00").toLocaleDateString("de-DE", {weekday:"short", day:"numeric", month:"short"});
+    const byDay = {}; log.forEach(e => (byDay[e.d] = byDay[e.d] || []).push(e));
+    $("#dOut").innerHTML = `
+      <div class="facts" style="margin-top:1.5rem">
+        <div class="fact"><div class="k">Letzte 30 Tage</div><div class="v">${days} ${days === 1 ? "Tag" : "Tage"} mit Einnahme</div></div>
+        ${Object.entries(per).map(([id, p]) => `<div class="fact"><div class="k">${esc(byId[id].name)}</div><div class="v" style="font-size:.9rem">${p.n} ${p.n === 1 ? "Eintrag" : "Einträge"} seit ${fmt(p.first)} · Ø ${MOOD[Math.round(p.mood.reduce((a, b) => a + b, 0) / p.mood.length) - 1]}</div></div>`).join("")}
+      </div>
+      <div class="dlog">${Object.entries(byDay).slice(0, 60).map(([d, es]) => `<div class="dday"><h4>${fmt(d)}</h4>${es.map(e => `<div class="dentry"><span class="dm" title="Befinden ${e.s} von 5">${MOOD[e.s - 1]}</span><div><b>${esc(byId[e.m].name)}</b>${e.p || e.a ? ` · ${esc([e.p, e.a].filter(Boolean).join(", "))}` : ""}${e.n ? `<br><small>${esc(e.n)}</small>` : ""}</div><button class="iconbtn" data-del="${e.t}" aria-label="Eintrag löschen">${icon("x")}</button></div>`).join("")}</div>`).join("")}</div>
+      ${Object.keys(byDay).length > 60 ? `<p class="muted">Ältere Einträge sind im Export enthalten.</p>` : ""}`;
+    $$("[data-del]", el).forEach(b => b.addEventListener("click", () => {
+      const removed = log.find(e => String(e.t) === b.dataset.del);
+      log = log.filter(e => String(e.t) !== b.dataset.del);
+      save();
+      toast("Eintrag gelöscht", { onUndo: () => { log.push(removed); save(); toast("Eintrag wiederhergestellt"); } });
+    }));
+  };
+  $("#dForm").addEventListener("submit", e => {
+    e.preventDefault();
+    log.push({t: Date.now(), d: $("#dDate").value, m: $("#dPilz").value, p: $("#dProd").value.trim(), a: $("#dAmt").value.trim(), s: +($("input[name=mood]:checked", el) || {value:3}).value, n: $("#dNote").value.trim()});
+    $("#dNote").value = ""; save(); toast("Eingetragen");
+  });
+  const download = (name, type, text) => {
+    const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([text], {type})); a.download = name;
+    document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500);
+  };
+  const csvCell = v => /[";\n]/.test(v) ? `"${String(v).replace(/"/g, '""')}"` : v;
+  $("#dCsv").addEventListener("click", () => {
+    if(!log.length) return toast("Noch keine Einträge");
+    const rows = [["Datum","Pilz","Präparat","Menge","Befinden (1-5)","Notiz"], ...log.map(e => [e.d, byId[e.m].name, e.p, e.a, e.s, e.n])];
+    download("pilz-tagebuch.csv", "text/csv;charset=utf-8", "﻿" + rows.map(r => r.map(v => csvCell(String(v ?? ""))).join(";")).join("\r\n"));
+  });
+  $("#dJson").addEventListener("click", () => download(`pilz-tagebuch-${isoDay(new Date())}.json`, "application/json", JSON.stringify({app:"pilzhandel", version:1, diary:log}, null, 1)));
+  $("#dImpBtn").addEventListener("click", () => $("#dImp").click());
+  $("#dImp").addEventListener("change", async e => {
+    const f = e.target.files[0]; if(!f) return;
+    try{
+      const data = JSON.parse(await f.text());
+      const add = parseDiaryImport(data, log, id => !!byId[id]);
+      log = log.concat(add); save(); toast(add.length + " Einträge übernommen");
+    }catch(err){ toast("Datei konnte nicht gelesen werden"); }
+    e.target.value = "";
+  });
+  $("#rIcs").addEventListener("click", () => {
+    const m = byId[$("#dPilz").value], [hh, mm] = ($("#rTime").value || "08:00").split(":"), weeks = +$("#rWeeks").value;
+    const d0 = new Date(); d0.setHours(+hh, +mm, 0, 0); if(d0 < new Date()) d0.setDate(d0.getDate() + 1);
+    const dEnd = new Date(d0.getTime() + weeks * 7 * 864e5);
+    const f = d => `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, "0")}${String(d.getDate()).padStart(2, "0")}T${String(d.getHours()).padStart(2, "0")}${String(d.getMinutes()).padStart(2, "0")}00`;
+    const f15 = d => f(new Date(d.getTime() + 15 * 60000));
+    const txt = s => s.replace(/[\\;,]/g, c => "\\" + c).replace(/\n/g, "\\n");
+    const amt = $("#dAmt").value.trim(), url = location.href.split("#")[0] + "#/tagebuch";
+    const stamp = new Date().toISOString().replace(/[-:]/g, "").slice(0, 15) + "Z";
+    const ics = ["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//Pilz Handel//Tagebuch//DE","CALSCALE:GREGORIAN",
+      "BEGIN:VEVENT", `UID:ph-${Date.now()}-a@pilzhandel`, `DTSTAMP:${stamp}`, `DTSTART:${f(d0)}`, `DTEND:${f15(d0)}`, `RRULE:FREQ=DAILY;COUNT=${weeks * 7}`,
+      `SUMMARY:${txt(m.name + (amt ? " · " + amt : ""))}`, `DESCRIPTION:${txt("Einnahme im Pilz-Tagebuch notieren: " + url)}`,
+      "BEGIN:VALARM","ACTION:DISPLAY",`DESCRIPTION:${txt(m.name)}`,"TRIGGER:PT0M","END:VALARM","END:VEVENT",
+      "BEGIN:VEVENT", `UID:ph-${Date.now()}-b@pilzhandel`, `DTSTAMP:${stamp}`, `DTSTART:${f(dEnd)}`, `DTEND:${f15(dEnd)}`,
+      `SUMMARY:${txt(m.name + ": Pause und Bilanz")}`, `DESCRIPTION:${txt(weeks + " Wochen sind um. Tagebuch ansehen, Pause einlegen und mit Arzt oder Apotheke besprechen: " + url)}`,
+      "END:VEVENT","END:VCALENDAR"].join("\r\n");
+    download(`erinnerung-${m.id}.ics`, "text/calendar;charset=utf-8", ics);
+  });
+  out();
+  return "Tagebuch";
+}
+
+/* ---------- Studien-Radar ---------- */
+const RD = window.PH_RADAR;
+const pubmedUrl = (m, years=2) => "https://pubmed.ncbi.nlm.nih.gov/?term=" + encodeURIComponent("(" + m.pubmed.split(/\s+OR\s+/).map(t => t + "[tiab]").join(" OR ") + ")") + `&filter=pubt.meta-analysis&filter=pubt.randomizedcontrolledtrial&filter=pubt.systematicreview&filter=datesearch.y_${years}&sort=date`;
+const studyRow = s => `<li><a href="https://pubmed.ncbi.nlm.nih.gov/${esc(s.pmid)}/" target="_blank" rel="noopener">${esc(s.title)}</a><br><small class="muted">${esc(s.journal)} · ${esc(s.date)}${s.type ? ` · <b>${esc(s.type)}</b>` : ""}</small></li>`;
+function radar(el){
+  const stand = RD ? new Date(RD.stand + "T12:00").toLocaleDateString("de-DE", {day:"numeric", month:"long", year:"numeric"}) : "";
+  const list = RD ? M.map(m => ({m, r: RD.items[m.id] || {count:0, list:[]}})).sort((a, b) => b.r.count - a.r.count || coll.compare(a.m.name, b.m.name)) : [];
+  el.innerHTML = `
+  <div class="container pagehead">
+    <div class="eyebrow">Studien-Radar</div>
+    <h1 class="h2">Neu in der Forschung</h1>
+    <p class="lead">Neue Studien am Menschen und Übersichtsarbeiten aus PubMed, automatisch gesammelt${RD ? ` am ${stand} für die letzten ${RD.tage} Tage` : ""}. Die Treffer sind <b>noch nicht eingestuft</b>: Erst wenn eine Studie gelesen und bewertet ist, fließt sie in die Evidenzstufen ein.</p>
+  </div>
+  <div class="container">
+    ${RD ? list.map(({m, r}) => `<details class="acc"><summary><span>${esc(m.name)}</span> <span class="chip" style="margin-left:auto">${r.count} Treffer</span></summary><div class="body">
+        ${r.list.length ? `<ul class="studies">${r.list.map(studyRow).join("")}</ul>` : `<p class="muted">Keine neuen Treffer im Zeitraum.</p>`}
+        <p style="margin-top:.6rem"><a href="${pubmedUrl(m)}" target="_blank" rel="noopener">Live in PubMed suchen ↗</a> · <a href="#/pilz/${m.id}">Zum Pilz</a></p>
+      </div></details>`).join("") : `<div class="empty"><p>Der Radar wurde noch nicht erstellt.</p></div>`}
+    <p class="notice info" style="margin-top:1.5rem"><b>So funktioniert es:</b> Gesucht wird nach dem Artnamen in Titel und Zusammenfassung, kombiniert mit Studientypen wie randomisierte Studie, Meta-Analyse oder Übersichtsarbeit; reine Tier- und Zellstudien im Titel werden ausgeschlossen. Nicht jeder Treffer handelt vorrangig vom Pilz. Aktualisiert wird mit <code>node pilzhandel/tools/studien-radar.js</code>.</p>
+  </div>`;
+  return "Studien-Radar";
 }
 
 function notFound(el){

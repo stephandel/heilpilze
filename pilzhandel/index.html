@@ -6,16 +6,14 @@
 <title>Pilz Handel · Heilpilze ehrlich eingeordnet</title>
 <meta name="description" content="Pilz Handel: 21 Heil- und Vitalpilze mit evidenzbasierter Einstufung jeder Wirkung, Wechselwirkungs-Check, Vergleich, Einkaufsratgeber und seriösen Shops.">
 <meta name="robots" content="noindex, nofollow">
-<meta name="theme-color" content="#F7F1E8" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#15110E" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#FBF5E4" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#14140E" media="(prefers-color-scheme: dark)">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Pilz Handel">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="icons/icon-192.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,600;0,9..40,700;0,9..40,800;1,9..40,400&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,400;1,9..144,500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="fonts/fonts.css">
 <script>
   /* Theme und Schriftgröße vor dem ersten Rendern setzen, damit nichts flackert */
   (function(){
@@ -128,14 +126,14 @@
       </div>
       <div>
         <h4>Entdecken</h4>
-        <ul><li><a href="#/pilze">Alle Pilze</a></li><li><a href="#/check">Wechselwirkungs-Check</a></li><li><a href="#/vergleich">Vergleich</a></li><li><a href="#/merkliste">Merkliste</a></li></ul>
+        <ul><li><a href="#/pilze">Alle Pilze</a></li><li><a href="#/check">Wechselwirkungs-Check</a></li><li><a href="#/vergleich">Vergleich</a></li><li><a href="#/merkliste">Merkliste</a></li><li><a href="#/rezepte">Rezepte</a></li></ul>
       </div>
       <div>
         <h4>Ratgeber</h4>
-        <ul><li><a href="#/shops">Einkaufen &amp; Shops</a></li><li><a href="#/wissen">Wissen &amp; Methode</a></li><li><a href="#/ueber">Über Pilz Handel</a></li></ul>
+        <ul><li><a href="#/shops">Einkaufen &amp; Shops</a></li><li><a href="#/wissen">Wissen &amp; Methode</a></li><li><a href="#/arztkarte">Arzt-Karte</a></li><li><a href="#/tagebuch">Einnahme-Tagebuch</a></li><li><a href="#/radar">Studien-Radar</a></li><li><a href="#/ueber">Über Pilz Handel</a></li><li><a href="#/impressum">Impressum</a></li><li><a href="#/datenschutz">Datenschutz</a></li><li><a href="https://github.com/stephandel/heilpilze/issues/new?labels=inhalt&amp;title=Fehler%20in%20Pilz%20Handel" target="_blank" rel="noopener">Fehler melden</a></li></ul>
       </div>
     </div>
-    <p class="fine">Diese App dient der Information und ersetzt keine ärztliche Beratung. Heilpilze sind in Deutschland Lebensmittel bzw. Nahrungsergänzungsmittel, keine zugelassenen Arzneimittel. Fotos: Wikimedia Commons, Urheber und Lizenzen auf der jeweils verlinkten Dateiseite. Stand der Recherche: September 2026.</p>
+    <p class="fine">Diese App dient der Information und ersetzt keine ärztliche Beratung. Heilpilze sind in Deutschland Lebensmittel bzw. Nahrungsergänzungsmittel, keine zugelassenen Arzneimittel. Schriften: Fraunces und DM Sans (SIL Open Font License), lokal eingebunden. Fotos: Wikimedia Commons, Urheber und Lizenzen auf der jeweils verlinkten Dateiseite. Stand der Recherche: September 2026.</p>
   </div>
 </footer>
 
@@ -155,6 +153,9 @@
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script src="data.js"></script>
+<script src="radar.js"></script>
+<script src="logic.js"></script>
+<script src="betreiber.js"></script>
 <script src="app.js"></script>
 </body>
 </html>
