@@ -55,14 +55,21 @@ Stand 26.09.2026, von Stephan anpassbar. Im Zweifel fragen.
 - Konto- und Repo-Einstellungen, Zugänge, alles, was Geld kostet.
 
 **Offene Entscheidungen bei Stephan** (gesammelt, damit nicht jede Sitzung neu fragt):
-1. Impressum: Name, ladungsfähige Anschrift, E-Mail in `pilzhandel/betreiber.js` (LEGAL-01).
+1. Impressum: Name, ladungsfähige Anschrift, E-Mail in `pilzhandel/betreiber.js` (LEGAL-01). Blockiert
+   den Merge von PR #1 (`ausbau-stufe-1` → `main`); Stephan hat am 27.09.2026 entschieden, erst
+   nach dem Ausfüllen zu mergen.
 2. Kennzahlen-Ziele bestätigen: `bestaetigt: true` in `tools/kennzahlen.js` (PROD-04).
 3. Handtest Barrierefreiheit am echten Telefon, Checkliste KONZEPT.md §12 (A11Y-03).
 4. Vertagt am 25.09.2026: Quellen je Aussage (CLAIM-03), zweites Produkt nach diesem Muster.
+5. Eigene Domain: Favorit **heilpilzwissen.de**, dazu heilpilz-wissen.de als Weiterleitung. Beide
+   am 25.09.2026 bei DENIC frei; vergeben sind heilpilze.de, heilpilz.de, heil-pilze.de,
+   pilzwissen.de, pilz-wissen.de, pilzhandel.de. „Vitalpilz“ verworfen, weil selbst ein
+   Marketingbegriff. Registrieren macht Stephan; danach CNAME-Datei und DNS für GitHub Pages.
 
 ## Design
 
-Stilwahl vom 25.09.2026 (Artifact „Stilwahl“), in `app.css` und KONZEPT.md §3 umgesetzt.
+Stilwahl vom 25.09.2026 (Artifact „Pilz Handel Stilwahl“, https://claude.ai/artifact/M4NxV1JQi7a9AWkv4hT3h4 —
+20 Schriftpaare, 14 Paletten; gespeicherte Wahl per ArtifactData `auswahl/aktuell` lesbar), in `app.css` und KONZEPT.md §3 umgesetzt.
 Abweichungen von der Stilwahl wegen Kontrast: `--ink-3` hell `#6A6B54` statt `#88886F`,
 zusätzlich `--accent-ink` (hell `#955B18`) für Links/Beschriftung und `--on-accent` für Text auf
 der Akzentfarbe. Der Kontrast aller Text/Grund-Paare wird per Test geprüft (`tools/test.mjs`).
