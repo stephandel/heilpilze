@@ -595,7 +595,7 @@ function detail(el, r){
           <p style="margin-top:.8rem;font-size:.9rem"><a href="${pubmedUrl(m)}" target="_blank" rel="noopener">Aktuelle Humanstudien in PubMed ↗</a></p>
           <p class="muted" style="font-size:.8rem;margin-top:.8rem">Foto: ${(m.imgs || []).map((n, i) => `<a href="${filePage(n)}" target="_blank" rel="noopener">Wikimedia Commons${m.imgs.length > 1 ? " " + (i + 1) : ""}</a>${imgCredit(n)}`).join(", ")} · vollständige Angaben auf der jeweiligen Dateiseite. Lädt das Foto nicht, siehst du eine Illustration.</p>
           <p style="margin-top:.8rem;font-size:.85rem"><a href="${issueUrl(m.name, "Pilz: " + m.name + "\nWas ist falsch, und woher weißt du das?\n\n")}" target="_blank" rel="noopener">Fehler bei diesem Pilz melden ↗</a></p>
-          <p class="muted" style="font-size:.8rem;margin-top:.8rem">Verantwortlich: <a href="#/impressum">siehe Impressum</a> · Stand dieser Einstufung: September 2026 · Aktualisierung: bei neu eingestuften Treffern aus dem Studien-Radar, sonst mindestens jährlich.</p>
+          <p class="muted" style="font-size:.8rem;margin-top:.8rem">Verantwortlich: ${btMissing().length ? "Pilz Handel (Angaben folgen vor dem öffentlichen Start)" : `<a href="#/impressum">siehe Impressum</a>`} · Stand dieser Einstufung: September 2026 · Aktualisierung: bei neu eingestuften Treffern aus dem Studien-Radar, sonst mindestens jährlich.</p>
         </section>
       </div>
       <aside class="dside">
@@ -875,7 +875,7 @@ function about(el){
       <div><h4>Datenschutz</h4><p>Merkliste, Vergleich, Check-Auswahl, Tagebuch, Arzt-Karte und Anzeige-Einstellungen bleiben lokal in deinem Browser. Es gibt kein Konto und kein Tracking. Nur die Fotos werden von Wikimedia Commons geladen; die Schriften liegen in der App selbst.</p></div>
       <div><h4>Stand</h4><p>Recherche September 2026. Diese App ersetzt keine ärztliche Beratung.</p></div>
     </div>
-    <p style="margin-top:1.25rem"><a href="#/impressum">Impressum</a> · <a href="#/datenschutz">Datenschutzerklärung</a></p>
+    ${btMissing().length ? "" : `<p style="margin-top:1.25rem"><a href="#/impressum">Impressum</a> · <a href="#/datenschutz">Datenschutzerklärung</a></p>`}
   </div>`;
   return "Über";
 }
@@ -887,6 +887,8 @@ const btMissing = () => Object.keys(BT_FIELDS).filter(k => !String(BT[k] || "").
 const bt = k => String(BT[k] || "").trim() ? esc(BT[k]) : `<mark class="todo">[fehlt noch: ${BT_FIELDS[k]}]</mark>`;
 const btMail = () => String(BT.email || "").trim() ? `<a href="mailto:${esc(BT.email)}">${esc(BT.email)}</a>` : bt("email");
 const btDraft = () => btMissing().length ? `<p class="notice" role="note"><b>Entwurf:</b> Die Betreiberangaben sind noch nicht vollständig. Diese Seite darf so nicht veröffentlicht werden.</p>` : "";
+// Solange Angaben fehlen (Testphase, noindex), verlinkt der Fuß den Impressum-Entwurf nicht.
+if(btMissing().length) $$("[data-bt]").forEach(e => { e.hidden = true; });
 const btAddress = () => `${bt("name")}<br>${bt("strasse")}<br>${bt("plzOrt")}<br>Deutschland`;
 
 function impressum(el){

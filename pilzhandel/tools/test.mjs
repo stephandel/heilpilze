@@ -225,6 +225,12 @@ describe("Regel-Nachweise im Quelltext (CLAUDE.md-Tabelle)", () => {
     assert.match(fnSrc("detail"), /issueUrl\(/);
   });
 
+  test("LEGAL-01: Impressum-/Datenschutz-Links sind ausgeblendet, solange betreiber.js leer ist", () => {
+    assert.match(HTML, /<li data-bt><a href="#\/impressum">/);
+    assert.match(HTML, /<li data-bt><a href="#\/datenschutz">/);
+    assert.match(APP, /if\(btMissing\(\)\.length\) \$\$\("\[data-bt\]"\)/);
+  });
+
   test("A11Y-02: Sprunglink, main-Landmark und Live-Region vorhanden", () => {
     assert.match(HTML, /class="skip" href="#main"/);
     assert.match(HTML, /<main id="main"/);
@@ -283,7 +289,7 @@ describe("Impressum & Datenschutz (betreiber.js, LEGAL-01)", () => {
   const missing = ["name", "strasse", "plzOrt", "email"].filter(k => !String(BT[k] || "").trim());
 
   // Als "todo" markiert, solange Angaben fehlen: blockiert keine Commits, wird aber bei jedem
-  // Testlauf angezeigt. Vor dem Zusammenführen nach main muss dieser Test grün sein.
+  // Testlauf angezeigt. Seit 03.11.2026 kein Merge-Hindernis mehr; vor dem öffentlichen Start grün machen.
   test("alle Betreiberangaben sind ausgefüllt", missing.length ? { todo: `fehlt noch: ${missing.join(", ")}` } : {}, () => {
     assert.deepEqual(missing, []);
   });
