@@ -1,3 +1,5 @@
 .DS_Store
 .vscode/
 .idea/
+# Bildschirmfotos der Browser-Prüfungen (begleiter/tools/browser-pruefung.cjs, Fable-Prüfung) bleiben lokal
+pruefung/
