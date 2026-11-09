@@ -37,7 +37,17 @@ function toast(text, rueckgaengig){
   if(rueckgaengig) t.querySelector("button").onclick = () => { rueckgaengig(); t.hidden = true; };
   clearTimeout(toastZeit); toastZeit = setTimeout(() => t.hidden = true, rueckgaengig ? 7000 : 3500);
 }
+// Datei weitergeben. Auf Touch-Geräten über das Teilen-Blatt (Web Share mit Datei, Bibliothek M105): in der
+// iOS-Home-Bildschirm-App tut ein Download-Link sonst nichts (Apple-Forum 95911, WebKit-Bug 275288). Sonst Download.
 function datei(name, typ, inhalt){
+  const f = new File([inhalt], name, {type: typ});
+  if(matchMedia("(pointer: coarse)").matches && navigator.canShare && navigator.canShare({files: [f]})){
+    navigator.share({files: [f], title: name}).catch(e => { if(e.name !== "AbortError") herunterladen(name, typ, inhalt); });
+    return;
+  }
+  herunterladen(name, typ, inhalt);
+}
+function herunterladen(name, typ, inhalt){
   const a = document.createElement("a");
   a.href = URL.createObjectURL(new Blob([inhalt], {type: typ})); a.download = name;
   document.body.append(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
@@ -99,7 +109,7 @@ function plan(){
   const naechste = L.naechsteErinnerung(S.plan, jetzt(), gen);
   v.innerHTML = `<div class="eyebrow">Woche ${st.woche} von ${st.wochen}${S.plan.pause ? " · Pause" : ""}</div>
     <h2>${esc(p.name)}, um ${S.plan.uhr} Uhr</h2>
-    <p class="lead">${st.vorStart ? `Startet am ${datumLang(S.plan.start)}.` : `Seit ${datumLang(S.plan.start, {day:"numeric", month:"long"})}, noch ${st.restTage} Tage.`}</p>
+    <p class="lead">${st.vorStart ? `Startet am ${datumLang(S.plan.start)}.` : `Seit ${datumLang(S.plan.start, {day:"numeric", month:"long"})}, ${st.restTage === 0 ? "heute ist der letzte Tag" : st.restTage === 1 ? "noch 1 Tag" : `noch ${st.restTage} Tage`}.`}</p>
     <div class="karte heute">
       <button class="haken" type="button" aria-pressed="${gen}" id="haken" aria-label="Heute genommen">✓</button>
       <div><b>Heute genommen?</b><br><span class="klein" id="hakenText">${gen ? "Erledigt. Bis morgen!" : "Ein Tipp genügt. Vergessen ist kein Problem."}</span></div>
@@ -111,10 +121,12 @@ function plan(){
       <div class="zeile"><label for="frage">Befinden abfragen</label><input class="schalter" type="checkbox" id="frage" role="switch" ${S.plan.befinden ? "checked" : ""}></div>
     </div>
     ${S.plan.erinnern ? `<div class="karte"><h3>Erinnerung</h3>
-      <p class="klein">${naechste ? `Nächste: ${naechste.toLocaleDateString("de-DE", {weekday:"long"})}, ${S.plan.uhr} Uhr.` : "Keine weitere Erinnerung in diesem Plan."}</p>
-      <p>Der Begleiter kann noch keine Mitteilungen schicken. Speichere die Erinnerung in deinem Kalender – sie kommt dann jeden Tag zur gewählten Uhrzeit, bis der Plan endet.</p>
+      <p class="klein">${naechste ? `Nächste: ${naechste.toLocaleDateString("de-DE", {weekday:"long"})}, ${S.plan.uhr} Uhr.` : (S.plan.pause ? "Pause – der Begleiter plant gerade keine Erinnerung." : "Keine weitere Erinnerung in diesem Plan.")}</p>
+      <p>Der Begleiter kann keine Mitteilungen schicken. Speichere die Erinnerung in deinem Kalender – sie kommt dann jeden Tag zur gewählten Uhrzeit, bis der Plan endet.</p>
+      <p class="klein">Am iPhone: Datei über das Teilen-Blatt in „Dateien“ sichern, dort antippen und in den Kalender übernehmen. Eine gespeicherte Kalender-Serie läuft bei Pause, Uhrzeitwechsel oder Planende weiter – lösche sie dann im Kalender.</p>
       <button class="knopf zwei" type="button" id="ics">Kalender-Erinnerung speichern</button></div>` : ""}
     ${installiert() ? "" : `<p class="hinweis">Tipp: Leg den Begleiter auf den Home-Bildschirm (Safari: Teilen, dann „Zum Home-Bildschirm“). Dann öffnet er sich wie eine App und funktioniert auch ohne Internet.</p>`}
+    <p class="hinweis">Allgemeine Information, kein medizinischer Rat. Bei Beschwerden: Einnahme beenden und ärztlich abklären.</p>
     <div class="knoepfe">
       <button class="knopf zwei" type="button" id="pause">${S.plan.pause ? "Pause beenden" : "Pause machen"}</button>
       <button class="knopf zwei" type="button" id="beenden">Plan beenden</button>
@@ -125,14 +137,14 @@ function plan(){
     speichern(); plan();
     if(an && S.plan.befinden && !S.eintraege[heute()]) toast("Abgehakt. Magst du kurz ins Tagebuch?");
   };
-  $("#uhr").onchange = e => { if(L.gueltigeUhr(e.target.value)){ S.plan.uhr = e.target.value; speichern(); plan(); toast("Uhrzeit geändert. Kalender-Erinnerung bitte neu speichern."); } };
+  $("#uhr").onchange = e => { if(L.gueltigeUhr(e.target.value)){ S.plan.uhr = e.target.value; speichern(); plan(); toast("Uhrzeit geändert. Alte Serie im Kalender löschen, Erinnerung neu speichern."); } };
   $("#erinn").onchange = e => { S.plan.erinnern = e.target.checked; speichern(); plan(); };
   $("#frage").onchange = e => { S.plan.befinden = e.target.checked; speichern(); plan(); };
   if($("#ics")) $("#ics").onclick = () => datei(`erinnerung-${p.id}.ics`, "text/calendar;charset=utf-8", L.icsErinnerung(S.plan, p.name));
-  $("#pause").onclick = () => { S.plan.pause = !S.plan.pause; speichern(); plan(); toast(S.plan.pause ? "Pause. Dein Tagebuch bleibt erhalten." : "Weiter geht's."); };
+  $("#pause").onclick = () => { S.plan.pause = !S.plan.pause; speichern(); plan(); toast(S.plan.pause ? "Pause. Tagebuch bleibt; eine Kalender-Serie läuft weiter." : "Weiter geht's."); };
   $("#beenden").onclick = () => {
     const vorher = S.plan.beendet; S.plan.beendet = heute(); speichern(); render();
-    toast("Plan beendet.", () => { S.plan.beendet = vorher; speichern(); render(); });
+    toast("Plan beendet. Kalender-Serie bei Bedarf im Kalender löschen.", () => { S.plan.beendet = vorher; speichern(); render(); });
   };
 }
 
@@ -162,7 +174,7 @@ function planAnlegen(v){
         <div class="zeile"><label for="erinn">Erinnerung um ${z.uhr} Uhr</label><input class="schalter" type="checkbox" id="erinn" role="switch" ${z.erinnern ? "checked" : ""}></div>
         <div class="zeile"><label for="frage">Danach kurz fragen, wie es dir geht</label><input class="schalter" type="checkbox" id="frage" role="switch" ${z.befinden ? "checked" : ""}></div>
       </div>
-      <p class="hinweis">Die Erinnerung kommt über deinen Kalender: Nach dem Speichern bekommst du eine Kalender-Datei, die du mit einem Tipp übernimmst.</p>
+      <p class="hinweis">Die Erinnerung kommt über deinen Kalender: Nach dem Speichern bekommst du eine Kalender-Datei (.ics) für deine Kalender-App. Der Begleiter selbst kann keine Mitteilungen schicken.</p>
       <p class="hinweis">Allgemeine Information, kein medizinischer Rat. Bei Beschwerden: Einnahme beenden und ärztlich abklären.</p>`
   };
   v.innerHTML = `<div class="eyebrow">Schritt ${schritt} von 3</div>
@@ -205,6 +217,7 @@ function tagebuch(){
     <h3 style="margin-top:20px">Letzte Tage</h3>
     ${tage.length ? `<div class="karte" style="padding:4px 16px">${tage.map(d => { const x = S.eintraege[d]; return `<div class="eintrag"><div class="tag">${datumLang(d, {weekday:"short", day:"numeric", month:"numeric"})}</div><div>${BEFINDEN[x.befinden-1][0]} ${BEFINDEN[x.befinden-1][1]}${S.plan ? (S.einnahmen[d] ? " · genommen" : " · nicht abgehakt") : ""}${x.vertraeglich && x.vertraeglich !== "keine" ? ` · Verträglichkeit: ${VERTR.find(y => y[0] === x.vertraeglich)[1]}` : ""}${x.notiz ? `<br><span class="klein">„${esc(x.notiz)}“</span>` : ""}</div></div>`; }).join("")}</div>`
       : '<p class="klein">Noch keine Einträge. Dein erster Eintrag erscheint hier.</p>'}
+    <p class="hinweis">Allgemeine Information, kein medizinischer Rat. Das Tagebuch hilft dir beim Beobachten, es bewertet nichts.</p>
     <p class="hinweis">Deine Einträge bleiben nur auf diesem Gerät. Der Browser kann sie löschen, zum Beispiel beim Aufräumen von Website-Daten. Speichere ab und zu eine Sicherung.</p>
     <div class="knoepfe"><button class="knopf zwei" type="button" id="sichern">Sicherung speichern</button>
       <button class="knopf zwei" type="button" id="ladenK">Sicherung laden</button>
