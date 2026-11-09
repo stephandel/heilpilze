@@ -43,6 +43,19 @@ Konzept und Ausbauplan: [`pilzhandel/KONZEPT.md`](pilzhandel/KONZEPT.md).
 - Urheber und Lizenz je Foto sichtbar, nicht nur verlinkt (`pilzhandel/tools/fetch-image-credits.js`)
 - Schriften lokal eingebunden, kein Abruf bei Google
 
+## Pilz-Begleiter (Stufe 1, Zweig `begleiter-2026-11-09`, noch nicht live)
+
+[`begleiter/`](begleiter/) — eigener Plan mit einem Pilz, tägliches Abhaken, Tagebuch, Rückblick.
+
+- Atlas mit den 21 Pilzen aus `pilzhandel/data.js` (Steckbrief, Sicherheit, Link zur vollen Seite)
+- Plan in 3 Schritten (Pilz, Uhrzeit, 4 oder 8 Wochen), danach Übersicht mit Haken für heute
+- Erinnerung als Kalender-Datei (.ics, täglich bis Planende); echte Mitteilungen bräuchten einen Server
+- Tagebuch: Befinden in 5 Stufen, Verträglichkeit und Notiz freiwillig, Sicherung als Datei
+- Rückblick nach 4/8 Wochen, neutral („zeigt, wie es dir ging – nicht, warum“), Druck/PDF
+- Daten nur in `localStorage` (`pb-v1`), offline per `begleiter/sw.js` (`VERSION` bei Änderungen hochzählen)
+- Tests: `node --test begleiter/tools/test.mjs`; Browser: `python3 -m http.server 8817`, dann
+  `node begleiter/tools/browser-pruefung.cjs pruefung` (nutzt Playwright aus `Wetter Apps/Wetterlage`)
+
 ## Herkunft
 
 Diese Dateien lagen bis zum 24. September 2026 im Repository
