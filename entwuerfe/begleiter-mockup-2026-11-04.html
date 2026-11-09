@@ -1,0 +1,489 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#FBF5E4" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#14140E" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<title>Pilz-Begleiter Entwurf</title>
+<style>
+/* Entwurf „Begleiter“ 04.11.2026 – Farbwelt Pfifferling aus der bestehenden App (CLAUDE.md, Tabelle Design) */
+:root{
+  color-scheme:light;
+  --hg:#FBF5E4; --hg2:#F3EACF; --flaeche:#FFFDF6; --flaeche2:#F6EDD6;
+  --text:#23241A; --text2:#575844; --text3:#6A6B54; --linie:#E8DDBE;
+  --marke:#2F3322; --marke-kontrast:#FBF6E6;
+  --akzent:#C9761A; --akzent-text:#955B18; --akzent-hg:#F8E2BE; --akzent-kontrast:#23241A;
+  --moos:#667A36; --moos-text:#4E5E27; --moos-hg:#E7ECCF;
+  --glas:rgba(255,253,246,.72); --schatten:0 1px 2px rgba(35,36,26,.06),0 6px 20px rgba(35,36,26,.06);
+  --r:14px; --r-klein:8px;
+  --serif:ui-serif,"New York",Georgia,"Times New Roman",serif;
+  --sans:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  color-scheme:dark;
+  --hg:#14140E; --hg2:#1A1A12; --flaeche:#202016; --flaeche2:#29291D;
+  --text:#F2EEDC; --text2:#C9C3A6; --text3:#A8A288; --linie:#36352A;
+  --marke:#F2EEDC; --marke-kontrast:#1E1E14;
+  --akzent:#F0A850; --akzent-text:#F0A850; --akzent-hg:#3A2C14; --akzent-kontrast:#1E1E14;
+  --moos:#B8C985; --moos-text:#B8C985; --moos-hg:#2A301B;
+  --glas:rgba(32,32,22,.72); --schatten:0 1px 2px rgba(0,0,0,.3),0 6px 20px rgba(0,0,0,.25);
+}}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --hg:#14140E; --hg2:#1A1A12; --flaeche:#202016; --flaeche2:#29291D;
+  --text:#F2EEDC; --text2:#C9C3A6; --text3:#A8A288; --linie:#36352A;
+  --marke:#F2EEDC; --marke-kontrast:#1E1E14;
+  --akzent:#F0A850; --akzent-text:#F0A850; --akzent-hg:#3A2C14; --akzent-kontrast:#1E1E14;
+  --moos:#B8C985; --moos-text:#B8C985; --moos-hg:#2A301B;
+  --glas:rgba(32,32,22,.72); --schatten:0 1px 2px rgba(0,0,0,.3),0 6px 20px rgba(0,0,0,.25);
+}
+:root[data-glas="aus"]{--glas:var(--flaeche)}
+@media (prefers-contrast:more){:root{--glas:var(--flaeche)}}
+*{box-sizing:border-box}
+html{background:var(--hg)}
+body{margin:0;background:var(--hg);color:var(--text);font:17px/1.47 var(--sans);-webkit-text-size-adjust:100%}
+button,input,select,textarea{font:inherit;color:inherit}
+h1,h2,h3{font-family:var(--serif);font-weight:600;line-height:1.2;margin:0}
+h1{font-size:1.75rem} h2{font-size:1.3rem} h3{font-size:1.06rem}
+p{margin:.4rem 0}
+a{color:var(--akzent-text)}
+.app{max-width:440px;margin:0 auto;min-height:100dvh;position:relative;padding-bottom:calc(88px + env(safe-area-inset-bottom))}
+@media (min-width:600px){.app{border-left:1px solid var(--linie);border-right:1px solid var(--linie)}}
+
+/* Entwurfsleiste: gehört nicht zur App */
+.entwurf{display:flex;align-items:center;gap:8px;padding:calc(6px + env(safe-area-inset-top)) 16px 6px;background:var(--marke);color:var(--marke-kontrast);font-size:.8rem}
+.entwurf b{font-weight:600}
+.entwurf button{margin-left:auto;min-height:44px;padding:0 14px;border-radius:999px;border:1px solid currentColor;background:transparent;color:inherit;font-size:.85rem}
+
+/* Kopfzeile mit Glas */
+.kopf{position:sticky;top:0;z-index:5;padding:10px 16px;background:var(--glas);-webkit-backdrop-filter:blur(18px) saturate(1.4);backdrop-filter:blur(18px) saturate(1.4);border-bottom:1px solid var(--linie);display:flex;align-items:center;gap:8px;min-height:56px}
+.kopf h1{font-size:1.15rem;flex:1}
+.zurueck{min-width:48px;min-height:48px;margin-left:-12px;border:0;background:none;color:var(--akzent-text);font-size:1rem;display:none;align-items:center;gap:2px}
+.zurueck.an{display:flex}
+.inhalt{padding:16px}
+.ansicht{display:none}.ansicht.an{display:block}
+.eyebrow{font-size:.75rem;letter-spacing:.06em;text-transform:uppercase;color:var(--akzent-text);font-weight:600;margin-bottom:4px}
+.lead{color:var(--text2)}
+.karte{background:var(--flaeche);border:1px solid var(--linie);border-radius:var(--r);padding:16px;margin:12px 0;box-shadow:var(--schatten)}
+.hinweis{font-size:.82rem;color:var(--text2);background:var(--flaeche2);border-radius:var(--r-klein);padding:10px 12px;margin:12px 0}
+.klein{font-size:.82rem;color:var(--text3)}
+.knopf{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:50px;border-radius:var(--r);border:0;background:var(--akzent);color:var(--akzent-kontrast);font-weight:600;font-size:1rem;cursor:pointer}
+.knopf.zwei{background:var(--flaeche2);color:var(--text);border:1px solid var(--linie)}
+.reihe{display:flex;gap:8px;flex-wrap:wrap}
+.chip{min-height:44px;padding:0 16px;border-radius:999px;border:1px solid var(--linie);background:var(--flaeche);display:inline-flex;align-items:center;gap:6px;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--akzent-hg);border-color:var(--akzent);color:var(--text);font-weight:600}
+.stufe{display:inline-block;font-size:.72rem;font-weight:700;padding:2px 8px;border-radius:999px;background:var(--moos-hg);color:var(--moos-text)}
+.stufe.f{background:var(--akzent-hg);color:var(--akzent-text)}
+:focus-visible{outline:3px solid var(--akzent);outline-offset:2px}
+#main:focus{outline:none}
+
+/* Atlas */
+.suche{width:100%;min-height:48px;border-radius:var(--r);border:1px solid var(--linie);background:var(--flaeche);padding:0 14px;margin:12px 0 4px}
+.raster{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.pilz{text-align:left;border:1px solid var(--linie);background:var(--flaeche);border-radius:var(--r);padding:12px;min-height:120px;cursor:pointer;display:flex;flex-direction:column;gap:6px}
+.pilz .bild{height:56px;border-radius:var(--r-klein);background:linear-gradient(135deg,var(--akzent-hg),var(--moos-hg));display:grid;place-items:center}
+.pilz b{font-family:var(--serif);font-size:1rem}
+.pilz span{font-size:.78rem;color:var(--text3);font-style:italic}
+.planband{display:flex;gap:12px;align-items:center;background:var(--moos-hg);border-radius:var(--r);padding:14px;margin:12px 0;border:0;width:100%;text-align:left;cursor:pointer;min-height:64px}
+.planband .kreis{width:40px;height:40px;border-radius:50%;background:var(--moos);color:var(--hg);display:grid;place-items:center;flex:none;font-weight:700}
+
+/* Plan */
+.schritte{display:flex;gap:6px;margin:8px 0 14px}
+.schritte i{flex:1;height:4px;border-radius:2px;background:var(--linie)}
+.schritte i.an{background:var(--akzent)}
+.wahl{display:flex;align-items:center;gap:12px;width:100%;min-height:60px;border:1px solid var(--linie);background:var(--flaeche);border-radius:var(--r);padding:10px 14px;margin:8px 0;text-align:left;cursor:pointer}
+.wahl[aria-pressed="true"]{border-color:var(--akzent);background:var(--akzent-hg)}
+.wahl .punkt{width:22px;height:22px;border-radius:50%;border:2px solid var(--text3);flex:none}
+.wahl[aria-pressed="true"] .punkt{border:7px solid var(--akzent)}
+.zeile{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:52px;border-bottom:1px solid var(--linie)}
+.zeile:last-child{border-bottom:0}
+.schalter{appearance:none;width:51px;height:31px;border-radius:999px;background:var(--linie);box-shadow:inset 0 0 0 1.5px var(--text3);position:relative;cursor:pointer;flex:none;transition:background .2s}
+.schalter::after{content:"";position:absolute;top:2px;left:2px;width:27px;height:27px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.3);transition:transform .2s}
+.schalter:checked{background:var(--moos);box-shadow:none}
+.schalter:checked::after{transform:translateX(20px)}
+input[type="time"],select{min-height:44px;border-radius:var(--r-klein);border:1px solid var(--linie);background:var(--flaeche2);padding:0 10px}
+.heute{display:flex;align-items:center;gap:12px}
+.heute .haken{width:48px;height:48px;border-radius:50%;border:2px solid var(--moos);background:transparent;color:var(--moos-text);font-size:1.3rem;cursor:pointer;flex:none}
+.heute .haken[aria-pressed="true"]{background:var(--moos);color:var(--hg)}
+
+/* Tagebuch */
+.stufen{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin:10px 0}
+.stufen button{min-height:64px;border:1px solid var(--linie);border-radius:var(--r-klein);background:var(--flaeche);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:.72rem;cursor:pointer;padding:4px 2px}
+.stufen button span{font-size:1.4rem;line-height:1}
+.stufen button[aria-pressed="true"]{border-color:var(--akzent);background:var(--akzent-hg);font-weight:600}
+textarea{width:100%;min-height:80px;border-radius:var(--r-klein);border:1px solid var(--linie);background:var(--flaeche2);padding:10px}
+.eintrag{display:flex;gap:12px;padding:10px 0;border-bottom:1px solid var(--linie)}
+.eintrag:last-child{border-bottom:0}
+.eintrag .tag{width:54px;flex:none;font-size:.8rem;color:var(--text3)}
+.frage{margin:12px 0}
+.frage label{display:block;font-weight:600;margin-bottom:4px}
+.drei{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.drei button{min-height:48px;border:1px solid var(--linie);border-radius:var(--r-klein);background:var(--flaeche);cursor:pointer}
+.drei button[aria-pressed="true"]{border-color:var(--akzent);background:var(--akzent-hg);font-weight:600}
+
+/* Rückblick */
+.seg{display:flex;background:var(--flaeche2);border-radius:10px;padding:3px;margin:12px 0}
+.seg button{flex:1;min-height:44px;border:0;border-radius:8px;background:transparent;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--flaeche);box-shadow:var(--schatten);font-weight:600}
+.zahlen{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.zahl{background:var(--flaeche);border:1px solid var(--linie);border-radius:var(--r);padding:12px}
+.zahl b{display:block;font-size:1.6rem;font-family:var(--serif)}
+.zahl span{font-size:.8rem;color:var(--text2)}
+svg text{fill:var(--text2);font:11px var(--sans)}
+
+/* Einzelseite */
+.krume{font-size:.8rem;color:var(--text3);margin-bottom:8px}
+.steck{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;font-size:.9rem}
+.steck dt{color:var(--text3)} .steck dd{margin:0}
+.google{border:1px dashed var(--text3);border-radius:var(--r-klein);padding:12px;font-family:Arial,sans-serif;margin-top:16px}
+.google .u{font-size:.78rem;color:var(--text2)} .google .t{color:#1a0dab;font-size:1.05rem} .google .d{font-size:.85rem;color:var(--text2)}
+:root[data-theme="dark"] .google .t{color:#8ab4f8}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .google .t{color:#8ab4f8}}
+details.mehr{border-top:1px solid var(--linie);padding:4px 0}
+details.mehr summary{min-height:48px;display:flex;align-items:center;cursor:pointer;font-weight:600}
+
+/* Tab-Leiste mit Glas */
+.tabs{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(440px,100%);z-index:6;display:grid;grid-template-columns:repeat(4,1fr);padding:6px 8px calc(6px + env(safe-area-inset-bottom));background:var(--glas);-webkit-backdrop-filter:blur(18px) saturate(1.4);backdrop-filter:blur(18px) saturate(1.4);border-top:1px solid var(--linie)}
+.tabs button{min-height:52px;border:0;background:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:.7rem;color:var(--text3);cursor:pointer}
+.tabs button svg{width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:1.8}
+.tabs button[aria-current="page"]{color:var(--akzent-text);font-weight:600}
+
+/* Entwurfs-Blatt */
+dialog{border:0;border-radius:20px 20px 0 0;padding:20px 16px calc(20px + env(safe-area-inset-bottom));width:min(440px,100%);max-width:100%;margin:auto auto 0;background:var(--flaeche);color:var(--text);max-height:85dvh}
+dialog::backdrop{background:rgba(0,0,0,.35)}
+dialog h2{margin-bottom:6px}
+.variante{margin:14px 0}
+.variante p{font-size:.85rem;color:var(--text2)}
+.empf{font-size:.8rem;color:var(--moos-text);background:var(--moos-hg);border-radius:6px;padding:6px 10px;margin-top:6px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="entwurf" role="note"><span><b>Entwurf</b> · Pilz-Begleiter, nur zum Ansehen. Daten sind Beispiele.</span><button id="entwurfAuf" type="button">Varianten</button></div>
+
+  <header class="kopf">
+    <button class="zurueck" id="zurueck" type="button" aria-label="Zurück zum Atlas">‹ Atlas</button>
+    <h1 id="titel">Atlas</h1>
+  </header>
+
+  <main class="inhalt" id="main" tabindex="-1">
+
+    <!-- ATLAS -->
+    <section class="ansicht an" id="v-atlas" data-titel="Atlas">
+      <div class="eyebrow">Heilpilze ehrlich eingeordnet</div>
+      <h2>21 Pilze, jede Aussage mit Studienlage</h2>
+      <p class="lead">Schlag nach, was untersucht ist – und was nicht. Wenn du einen Pilz ausprobierst, hilft dir der Begleiter, den Überblick zu behalten.</p>
+      <button class="planband" type="button" data-geh="plan">
+        <span class="kreis" aria-hidden="true">R</span>
+        <span><b>Mein Pilz-Plan: Reishi</b><br><span class="klein">Abends um 20:00 · Woche 3 von 8 · heute noch offen</span></span>
+      </button>
+      <input class="suche" type="search" placeholder="Pilz suchen, z. B. Reishi" aria-label="Pilz suchen" id="suche">
+      <div class="raster" id="raster"></div>
+      <p class="hinweis">Allgemeine Information, keine Beratung. Heilpilze sind in Deutschland Lebensmittel oder Nahrungsergänzungsmittel, keine Arzneimittel.</p>
+    </section>
+
+    <!-- EINZELSEITE -->
+    <section class="ansicht" id="v-pilz" data-titel="Reishi">
+      <nav class="krume" aria-label="Pfad">Atlas › Heilpilze › Reishi</nav>
+      <div class="eyebrow">Steckbrief</div>
+      <h2 style="font-size:1.6rem">Reishi (Glänzender Lackporling)</h2>
+      <p class="lead"><i>Ganoderma lucidum / G. lingzhi</i> – in der traditionellen chinesischen Medizin seit Langem verwendet. Was Studien beim Menschen untersucht haben, steht unten mit Evidenzstufe.</p>
+      <div class="karte">
+        <dl class="steck">
+          <dt>Übliche Form</dt><dd>Pulver, Extrakt, Tee</dd>
+          <dt>Rechtlich</dt><dd>Lebensmittel bzw. Nahrungsergänzung</dd>
+          <dt>Studienlage</dt><dd><span class="stufe f">F</span> überwiegend Labor und kleine Humanstudien</dd>
+        </dl>
+      </div>
+      <h3 style="margin-top:18px">Was untersucht wurde</h3>
+      <p>Beispieltext: Einzelne kleine Studien haben Befinden und Laborwerte gemessen. Die Ergebnisse sind uneinheitlich, oft herstellerfinanziert und nur für ein bestimmtes Präparat aussagekräftig.</p>
+      <p class="klein">Evidenzstufen und Quellen kommen 1:1 aus dem bestehenden Atlas (heilpilze.html), hier nur Platzhalter.</p>
+      <details class="mehr"><summary>Sicherheit und Wechselwirkungen</summary>
+        <p>Beispieltext: Bei blutverdünnenden oder blutzuckersenkenden Mitteln vorher ärztlich abklären. In Schwangerschaft und Stillzeit nicht ohne Rücksprache.</p></details>
+      <details class="mehr"><summary>Wie Menschen Reishi einnehmen</summary>
+        <p>Menschen berichten, dass sie Reishi meist abends als Tee oder Pulver einnehmen und es über mehrere Wochen ausprobieren. Das beschreibt Gewohnheiten, keine Wirkung.</p></details>
+      <details class="mehr"><summary>Quellen</summary>
+        <p class="klein">Platzhalter: Cochrane-Review, Verbraucherzentrale, BfR – je mit Link und Stand.</p></details>
+      <div class="karte" style="background:var(--moos-hg);border:0">
+        <h3>Reishi selbst ausprobieren?</h3>
+        <p class="klein" style="color:var(--text2)">Der Begleiter erinnert dich an deinen selbst gewählten Plan und hält fest, wie es dir geht. Er sagt nicht, ob Reishi für dich passt.</p>
+        <button class="knopf" type="button" data-geh="plan" style="margin-top:8px">Plan mit Reishi anlegen</button>
+      </div>
+      <div class="google" aria-label="So erscheint die Seite bei Google (Beispiel)">
+        <div class="klein" style="margin-bottom:6px">SEO: eigene Adresse je Pilz, so erscheint sie bei Google</div>
+        <div class="u">heilpilzwissen.de › reishi</div>
+        <div class="t">Reishi (Glänzender Lackporling): Studienlage, Sicherheit</div>
+        <div class="d">Was Studien zu Reishi untersucht haben – mit Evidenzstufe, Wechselwirkungen und Quellen. Unabhängig, ohne Verkauf.</div>
+      </div>
+    </section>
+
+    <!-- PLAN -->
+    <section class="ansicht" id="v-plan" data-titel="Mein Pilz-Plan">
+      <div id="planA">
+        <div class="eyebrow" id="schrittText">Schritt 1 von 3</div>
+        <div class="schritte" aria-hidden="true"><i class="an"></i><i></i><i></i></div>
+        <div data-schritt="1">
+          <h2>Welchen Pilz möchtest du ausprobieren?</h2>
+          <p class="lead">Wähle einen. Mehrere gleichzeitig machen es schwer, im Tagebuch etwas zu erkennen.</p>
+          <div id="wahlPilz"></div>
+        </div>
+        <div data-schritt="2" hidden>
+          <h2>Wann nimmst du ihn?</h2>
+          <p class="lead">Eine feste Zeit hilft beim Dranbleiben. Übliche Mengen stehen auf der Packung.</p>
+          <div class="reihe" id="tageszeit" role="group" aria-label="Tageszeit">
+            <button class="chip" type="button" aria-pressed="false" data-zeit="08:00">Morgens</button>
+            <button class="chip" type="button" aria-pressed="false" data-zeit="12:30">Mittags</button>
+            <button class="chip" type="button" aria-pressed="true" data-zeit="20:00">Abends</button>
+          </div>
+          <div class="karte"><div class="zeile"><label for="uhr">Uhrzeit</label><input type="time" id="uhr" value="20:00"></div>
+            <div class="zeile"><label for="dauer">Ausprobieren für</label><select id="dauer"><option>4 Wochen</option><option selected>8 Wochen</option></select></div></div>
+        </div>
+        <div data-schritt="3" hidden>
+          <h2>Soll der Begleiter dich erinnern?</h2>
+          <div class="karte">
+            <div class="zeile"><label for="erinn">Erinnerung um <span class="uhrText">20:00</span></label><input class="schalter" type="checkbox" id="erinn" role="switch" checked></div>
+            <div class="zeile"><label for="frage">Danach kurz fragen, wie es dir geht</label><input class="schalter" type="checkbox" id="frage" role="switch" checked></div>
+          </div>
+          <p class="hinweis">Mitteilungen gehen am iPhone nur, wenn der Begleiter auf dem Home-Bildschirm liegt. Ohne das bekommst du eine Kalender-Erinnerung zum Speichern.</p>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:16px">
+          <button class="knopf zwei" type="button" id="schrittZurueck" style="flex:1" hidden>Zurück</button>
+          <button class="knopf" type="button" id="schrittWeiter" style="flex:2">Weiter</button>
+        </div>
+      </div>
+
+      <div id="planB" hidden>
+        <div class="eyebrow">Alles auf einen Blick</div>
+        <h2>Mein Pilz-Plan</h2>
+        <div class="karte heute">
+          <button class="haken" type="button" aria-pressed="false" id="hakenB" aria-label="Heute genommen">✓</button>
+          <div><b>Heute, 20:00 · Reishi</b><br><span class="klein" id="hakenText">noch offen</span></div>
+        </div>
+        <div class="karte">
+          <div class="zeile"><span>Pilz</span><select aria-label="Pilz" id="pilzB"></select></div>
+          <div class="zeile"><label for="uhrB">Uhrzeit</label><input type="time" id="uhrB" value="20:00"></div>
+          <div class="zeile"><label for="dauerB">Dauer</label><select id="dauerB"><option>4 Wochen</option><option selected>8 Wochen</option></select></div>
+          <div class="zeile"><label for="erinnB">Erinnerung</label><input class="schalter" type="checkbox" id="erinnB" role="switch" checked></div>
+          <div class="zeile"><label for="frageB">Befinden abfragen</label><input class="schalter" type="checkbox" id="frageB" role="switch" checked></div>
+        </div>
+        <p class="klein">Woche 3 von 8 · Rückblick nach 4 Wochen ist fertig.</p>
+      </div>
+
+      <div id="planFertig" hidden>
+        <div class="eyebrow">Dein Plan steht</div>
+        <h2 id="fertigTitel">Reishi, abends um 20:00</h2>
+        <p class="lead">Ab heute für 8 Wochen. Nach 4 und nach 8 Wochen zeigt dir der Rückblick deine Einträge.</p>
+        <div class="karte heute">
+          <button class="haken" type="button" aria-pressed="false" id="hakenA" aria-label="Heute genommen">✓</button>
+          <div><b>Heute genommen?</b><br><span class="klein">Ein Tipp genügt. Vergessen ist kein Problem.</span></div>
+        </div>
+        <button class="knopf zwei" type="button" id="neuPlan">Plan ändern</button>
+      </div>
+    </section>
+
+    <!-- TAGEBUCH -->
+    <section class="ansicht" id="v-tagebuch" data-titel="Tagebuch">
+      <div class="eyebrow">Heute, Mittwoch 4. November</div>
+      <h2>Wie geht es dir?</h2>
+      <div id="tbA">
+        <p class="lead">Ein Tipp reicht. Eine Notiz ist freiwillig.</p>
+        <div class="stufen" role="group" aria-label="Befinden heute">
+          <button type="button" aria-pressed="false"><span aria-hidden="true">😣</span>schlecht</button>
+          <button type="button" aria-pressed="false"><span aria-hidden="true">😕</span>mäßig</button>
+          <button type="button" aria-pressed="false"><span aria-hidden="true">😐</span>okay</button>
+          <button type="button" aria-pressed="true"><span aria-hidden="true">🙂</span>gut</button>
+          <button type="button" aria-pressed="false"><span aria-hidden="true">😄</span>sehr gut</button>
+        </div>
+      </div>
+      <div id="tbB" hidden>
+        <p class="lead">Drei kurze Fragen, je ein Tipp.</p>
+        <div class="frage"><label>Schlaf</label><div class="drei" role="group" aria-label="Schlaf"><button type="button" aria-pressed="false">schlecht</button><button type="button" aria-pressed="true">mittel</button><button type="button" aria-pressed="false">gut</button></div></div>
+        <div class="frage"><label>Energie</label><div class="drei" role="group" aria-label="Energie"><button type="button" aria-pressed="false">wenig</button><button type="button" aria-pressed="false">mittel</button><button type="button" aria-pressed="true">viel</button></div></div>
+        <div class="frage"><label>Verträglichkeit</label><div class="drei" role="group" aria-label="Verträglichkeit"><button type="button" aria-pressed="false">Beschwerden</button><button type="button" aria-pressed="false">etwas</button><button type="button" aria-pressed="true">keine</button></div></div>
+      </div>
+      <label for="notiz" class="klein" style="display:block;margin-top:8px">Notiz (freiwillig)</label>
+      <textarea id="notiz" placeholder="z. B. Tee schmeckt bitter, lieber Pulver im Joghurt"></textarea>
+      <button class="knopf" type="button" id="speichern" style="margin-top:12px">Speichern</button>
+      <p class="klein" role="status" id="gespeichert"></p>
+      <h3 style="margin-top:20px">Letzte Tage</h3>
+      <div class="karte" style="padding:4px 16px">
+        <div class="eintrag"><div class="tag">Di 3.11.</div><div>🙂 gut · genommen<br><span class="klein">„Pulver im Joghurt geht gut.“</span></div></div>
+        <div class="eintrag"><div class="tag">Mo 2.11.</div><div>😐 okay · genommen</div></div>
+        <div class="eintrag"><div class="tag">So 1.11.</div><div>🙂 gut · vergessen</div></div>
+      </div>
+      <p class="hinweis">Deine Einträge bleiben nur auf diesem Gerät. Bei Beschwerden: Einnahme beenden und ärztlich abklären.</p>
+    </section>
+
+    <!-- RÜCKBLICK -->
+    <section class="ansicht" id="v-rueckblick" data-titel="Rückblick">
+      <div class="eyebrow">Reishi seit 7. Oktober</div>
+      <h2 id="rbTitel">Deine ersten 4 Wochen</h2>
+      <div class="seg" role="group" aria-label="Zeitraum">
+        <button type="button" aria-pressed="true" data-wochen="4">Nach 4 Wochen</button>
+        <button type="button" aria-pressed="false" data-wochen="8">Nach 8 Wochen</button>
+      </div>
+      <div class="zahlen">
+        <div class="zahl"><b id="rbTage">25 von 28</b><span>Tagen genommen</span></div>
+        <div class="zahl"><b id="rbEintr">22</b><span>Tagebuch-Einträge</span></div>
+      </div>
+      <div class="karte">
+        <h3>Befinden je Woche</h3>
+        <p class="klein">Mittelwert deiner Einträge (1 = schlecht, 5 = sehr gut)</p>
+        <svg id="rbBild" viewBox="0 0 320 150" width="100%" role="img" aria-label="Balken: Befinden je Woche"></svg>
+      </div>
+      <p class="hinweis"><b>Wichtig:</b> Der Rückblick zeigt, wie es dir ging – nicht, warum. Schlaf, Wetter, Stress und vieles mehr spielen mit. Ob Reishi etwas damit zu tun hat, kann ein Tagebuch nicht sagen.</p>
+      <div class="karte">
+        <h3>Wie geht es weiter?</h3>
+        <p class="klein" style="color:var(--text2)">Du entscheidest. Der Begleiter empfiehlt nichts.</p>
+        <div style="display:grid;gap:8px;margin-top:8px">
+          <button class="knopf zwei" type="button">Weiter wie bisher</button>
+          <button class="knopf zwei" type="button">Pause machen</button>
+          <button class="knopf zwei" type="button">Plan beenden</button>
+          <button class="knopf" type="button">Als PDF fürs Arztgespräch</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <nav class="tabs" aria-label="Hauptbereiche">
+    <button type="button" data-tab="atlas" aria-current="page"><svg viewBox="0 0 24 24"><path d="M4 5h6a2 2 0 0 1 2 2v13a2 2 0 0 0-2-2H4zM20 5h-6a2 2 0 0 0-2 2v13a2 2 0 0 1 2-2h6z"/></svg>Atlas</button>
+    <button type="button" data-tab="plan"><svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 3v4M16 3v4M4 10h16M9 15l2 2 4-4"/></svg>Plan</button>
+    <button type="button" data-tab="tagebuch"><svg viewBox="0 0 24 24"><path d="M6 3h11a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1H6zM6 3v18M10 8h5M10 12h5"/></svg>Tagebuch</button>
+    <button type="button" data-tab="rueckblick"><svg viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>Rückblick</button>
+  </nav>
+</div>
+
+<dialog id="entwurf" aria-labelledby="entwurfTitel">
+  <h2 id="entwurfTitel">Varianten zum Wählen</h2>
+  <p class="klein">Nur im Entwurf. Stephan wählt, die App bekommt eine Variante.</p>
+  <div class="variante">
+    <h3>1 · Plan anlegen</h3>
+    <div class="seg" role="group" aria-label="Plan-Variante">
+      <button type="button" data-var="plan" data-wert="A" aria-pressed="true">A · Schritt für Schritt</button>
+      <button type="button" data-var="plan" data-wert="B" aria-pressed="false">B · Ein Blatt</button>
+    </div>
+    <p>A: drei Fragen nacheinander, dann „Dein Plan steht“. B: alle Einstellungen auf einer Seite, oben der Haken für heute.</p>
+    <div class="empf">Empfehlung A für das erste Anlegen (eine Frage je Bildschirm, passt zu Einsteigern 40–65); danach zeigt der Plan-Reiter die Übersicht wie in B.</div>
+  </div>
+  <div class="variante">
+    <h3>2 · Tagebuch</h3>
+    <div class="seg" role="group" aria-label="Tagebuch-Variante">
+      <button type="button" data-var="tb" data-wert="A" aria-pressed="true">A · Ein Tipp</button>
+      <button type="button" data-var="tb" data-wert="B" aria-pressed="false">B · Drei Fragen</button>
+    </div>
+    <p>A: Befinden in fünf Stufen (Gesicht plus Wort). B: Schlaf, Energie, Verträglichkeit.</p>
+    <div class="empf">Empfehlung A: ein Tipp am Tag hält man 8 Wochen durch. „Verträglichkeit“ aus B als freiwillige Zusatzfrage.</div>
+  </div>
+  <div class="variante">
+    <h3>Ansicht</h3>
+    <div class="seg" role="group" aria-label="Hell oder dunkel">
+      <button type="button" data-var="theme" data-wert="auto" aria-pressed="true">Automatisch</button>
+      <button type="button" data-var="theme" data-wert="light" aria-pressed="false">Hell</button>
+      <button type="button" data-var="theme" data-wert="dark" aria-pressed="false">Dunkel</button>
+    </div>
+    <div class="zeile"><label for="glasAus">Weniger Transparenz</label><input class="schalter" type="checkbox" id="glasAus" role="switch"></div>
+  </div>
+  <button class="knopf" type="button" id="entwurfZu">Fertig</button>
+</dialog>
+
+<script>
+const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
+const PILZE = [
+  ["reishi","Reishi","Glänzender Lackporling","F"],["shiitake","Shiitake","Lentinula edodes","F"],
+  ["coriolus","Coriolus","Schmetterlingstramete","E"],["hericium","Hericium","Igelstachelbart","F"],
+  ["cordyceps","Cordyceps","Raupenkeulenpilz","F"],["maitake","Maitake","Klapperschwamm","F"],
+  ["austernpilz","Austernpilz","Pleurotus ostreatus","F"],["chaga","Chaga","Schiefer Schillerporling","F"]];
+const STUFE = {E:"E · Studien am Menschen",F:"F · v. a. Labor/klein"};
+const pilzSvg = '<svg width="34" height="34" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 12a9 7 0 0 1 18 0z"/><path d="M10 12v6a2 2 0 0 0 4 0v-6"/></svg>';
+function raster(f=""){
+  $("#raster").innerHTML = PILZE.filter(p => (p[1]+p[2]).toLowerCase().includes(f.toLowerCase())).map(p =>
+    `<button class="pilz" type="button" data-pilz="${p[0]}"><span class="bild" style="color:var(--akzent-text)">${pilzSvg}</span><b>${p[1]}</b><span>${p[2]}</span><span class="stufe ${p[3]==="F"?"f":""}">${STUFE[p[3]]}</span></button>`).join("")
+    || '<p class="klein">Kein Pilz gefunden. Versuch den deutschen oder lateinischen Namen.</p>';
+}
+raster();
+$("#suche").addEventListener("input", e => raster(e.target.value));
+$("#raster").addEventListener("click", e => { if(e.target.closest(".pilz")) zeige("pilz"); });
+
+let gewählt = "reishi";
+$("#wahlPilz").innerHTML = PILZE.slice(0,5).map(p => `<button class="wahl" type="button" data-p="${p[0]}" aria-pressed="${p[0]===gewählt}"><span class="punkt" aria-hidden="true"></span><span><b>${p[1]}</b><br><span class="klein">${p[2]}</span></span></button>`).join("");
+$("#pilzB").innerHTML = PILZE.map(p => `<option>${p[1]}</option>`).join("");
+$("#wahlPilz").addEventListener("click", e => { const b = e.target.closest(".wahl"); if(!b) return; gewählt = b.dataset.p; $$("#wahlPilz .wahl").forEach(x => x.setAttribute("aria-pressed", x === b)); });
+
+function einzeln(gruppe){ gruppe.addEventListener("click", e => { const b = e.target.closest("button"); if(!b || !gruppe.contains(b)) return; [...gruppe.querySelectorAll("button")].forEach(x => x.setAttribute("aria-pressed", x === b)); }); }
+$$(".stufen,.drei,#tageszeit").forEach(einzeln);
+$("#tageszeit").addEventListener("click", e => { const b = e.target.closest("[data-zeit]"); if(b){ $("#uhr").value = b.dataset.zeit; } });
+
+let schritt = 1;
+function schrittZeigen(){
+  $$("#planA [data-schritt]").forEach(d => d.hidden = +d.dataset.schritt !== schritt);
+  $$("#planA .schritte i").forEach((i, n) => i.classList.toggle("an", n < schritt));
+  $("#schrittText").textContent = `Schritt ${schritt} von 3`;
+  $("#schrittZurueck").hidden = schritt === 1;
+  $("#schrittWeiter").textContent = schritt === 3 ? "Plan speichern" : "Weiter";
+  $$(".uhrText").forEach(s => s.textContent = $("#uhr").value);
+}
+$("#schrittWeiter").onclick = () => {
+  if(schritt < 3){ schritt++; schrittZeigen(); return; }
+  const p = PILZE.find(x => x[0] === gewählt);
+  $("#fertigTitel").textContent = `${p[1]}, um ${$("#uhr").value} Uhr`;
+  $("#planA").hidden = true; $("#planFertig").hidden = false;
+};
+$("#schrittZurueck").onclick = () => { schritt--; schrittZeigen(); };
+$("#neuPlan").onclick = () => { schritt = 1; schrittZeigen(); $("#planA").hidden = false; $("#planFertig").hidden = true; };
+function haken(b, t){ b.onclick = () => { const an = b.getAttribute("aria-pressed") !== "true"; b.setAttribute("aria-pressed", an); if(t) t.textContent = an ? "genommen um " + new Date().toTimeString().slice(0,5) : "noch offen"; }; }
+haken($("#hakenA")); haken($("#hakenB"), $("#hakenText"));
+
+$("#speichern").onclick = () => { $("#gespeichert").textContent = "Gespeichert. Bis morgen!"; };
+
+const WERTE = {4:[3.4,3.6,3.9,3.8], 8:[3.4,3.6,3.9,3.8,3.5,3.9,4.0,3.7]};
+function rueckblick(w){
+  $("#rbTitel").textContent = w == 4 ? "Deine ersten 4 Wochen" : "Deine 8 Wochen";
+  $("#rbTage").textContent = w == 4 ? "25 von 28" : "49 von 56";
+  $("#rbEintr").textContent = w == 4 ? "22" : "41";
+  const v = WERTE[w], bw = 300 / v.length;
+  $("#rbBild").innerHTML = v.map((x, i) => { const h = x / 5 * 110; return `<rect x="${12 + i*bw + bw*.18}" y="${120-h}" width="${bw*.64}" height="${h}" rx="4" fill="var(--moos)"/><text x="${12 + i*bw + bw/2}" y="${114-h}" text-anchor="middle">${x.toFixed(1).replace(".",",")}</text><text x="${12 + i*bw + bw/2}" y="138" text-anchor="middle">W${i+1}</text>`; }).join("") + '<line x1="10" x2="314" y1="120" y2="120" stroke="var(--linie)"/>';
+}
+$$("[data-wochen]").forEach(b => b.onclick = () => { $$("[data-wochen]").forEach(x => x.setAttribute("aria-pressed", x === b)); rueckblick(b.dataset.wochen); });
+rueckblick(4);
+
+function zeige(v){
+  $$(".ansicht").forEach(s => s.classList.toggle("an", s.id === "v-" + v));
+  $("#titel").textContent = $("#v-" + v).dataset.titel;
+  $("#zurueck").classList.toggle("an", v === "pilz");
+  const tab = v === "pilz" ? "atlas" : v;
+  $$(".tabs button").forEach(b => b.dataset.tab === tab ? b.setAttribute("aria-current","page") : b.removeAttribute("aria-current"));
+  window.scrollTo(0, 0); $("#main").focus({preventScroll:true});
+}
+$$(".tabs button").forEach(b => b.onclick = () => zeige(b.dataset.tab));
+$$("[data-geh]").forEach(b => b.onclick = () => zeige(b.dataset.geh));
+$("#zurueck").onclick = () => zeige("atlas");
+
+const dlg = $("#entwurf");
+$("#entwurfAuf").onclick = () => dlg.showModal();
+$("#entwurfZu").onclick = () => dlg.close();
+dlg.addEventListener("click", e => { if(e.target === dlg) dlg.close(); });
+$$("[data-var]").forEach(b => b.onclick = () => {
+  $$(`[data-var="${b.dataset.var}"]`).forEach(x => x.setAttribute("aria-pressed", x === b));
+  const w = b.dataset.wert;
+  if(b.dataset.var === "plan"){ $("#planA").hidden = w !== "A"; $("#planFertig").hidden = true; $("#planB").hidden = w !== "B"; if(w === "A"){ schritt = 1; schrittZeigen(); } }
+  if(b.dataset.var === "tb"){ $("#tbA").hidden = w !== "A"; $("#tbB").hidden = w !== "B"; }
+  if(b.dataset.var === "theme"){ if(w === "auto") delete document.documentElement.dataset.theme; else document.documentElement.dataset.theme = w; }
+});
+$("#glasAus").onchange = e => { if(e.target.checked) document.documentElement.dataset.glas = "aus"; else delete document.documentElement.dataset.glas; };
+
+// Für Bildschirmfotos: ?ansicht=plan&plan=B&theme=dark&wochen=8
+const q = new URLSearchParams(location.search);
+if(q.get("theme")) document.documentElement.dataset.theme = q.get("theme");
+if(q.get("plan") === "B") $('[data-var="plan"][data-wert="B"]').click();
+if(q.get("tb") === "B") $('[data-var="tb"][data-wert="B"]').click();
+if(q.get("schritt")) { schritt = +q.get("schritt"); schrittZeigen(); }
+if(q.get("wochen")) $(`[data-wochen="${q.get("wochen")}"]`).click();
+if(q.get("ansicht")) zeige(q.get("ansicht"));
+if(q.get("blatt")) dlg.showModal();
+</script>
+</body>
+</html>
