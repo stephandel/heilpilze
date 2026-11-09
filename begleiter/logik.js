@@ -70,21 +70,33 @@ function rueckblick(plan, einnahmen, eintraege, wochen, heute){
 }
 
 /* Kalender-Erinnerung (.ics): täglich zur Uhrzeit, für die Dauer des Plans, mit Hinweis 0 Minuten vorher.
-   Ortszeit ohne Zeitzone ("floating"), damit sie im Urlaub zur gewohnten Uhrzeit kommt. */
+   Ortszeit ohne Zeitzone ("floating"), damit sie im Urlaub zur gewohnten Uhrzeit kommt.
+   RFC 5545: CRLF, Zeilen höchstens 75 Byte (Fortsetzung mit Leerzeichen), Komma/Semikolon/Backslash maskiert,
+   Ende 5 Minuten nach Start – notfalls am Folgetag, weil Safari Termine mit Start = Ende ablehnt. */
+function icsText(s){ return String(s).replace(/\\/g, "\\\\").replace(/;/g, "\\;").replace(/,/g, "\\,").replace(/\r?\n/g, "\\n"); }
+function icsZeile(zeile){
+  const bytes = s => new TextEncoder().encode(s).length;
+  const teile = []; let akt = "";
+  for(const ch of zeile){ if(bytes(akt + ch) > 75){ teile.push(akt); akt = " " + ch; } else akt += ch; }
+  teile.push(akt);
+  return teile.join("\r\n");
+}
 function icsErinnerung(plan, pilzName, jetzt = new Date()){
   const d = plan.start.replace(/-/g, ""), u = plan.uhr.replace(":", "") + "00";
   const stempel = jetzt.toISOString().replace(/[-:]/g, "").replace(/\.\d+/, "");
   const [h, m] = plan.uhr.split(":").map(Number);
   const endeMin = h * 60 + m + 5;
+  const endeTag = (endeMin >= 1440 ? plusTage(plan.start, 1) : plan.start).replace(/-/g, "");
   const z = n => String(n).padStart(2, "0");
-  const bis = endeMin >= 1440 ? "235900" : z(Math.floor(endeMin / 60)) + z(endeMin % 60) + "00";
+  const bis = z(Math.floor((endeMin % 1440) / 60)) + z(endeMin % 60) + "00";
+  const name = icsText(pilzName);
   return ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Heilpilze//Pilz-Begleiter//DE", "CALSCALE:GREGORIAN",
     "BEGIN:VEVENT", `UID:begleiter-${plan.pilz}-${d}@heilpilze`, `DTSTAMP:${stempel}`,
-    `DTSTART:${d}T${u}`, `DTEND:${d}T${bis}`, `RRULE:FREQ=DAILY;COUNT=${plan.wochen * 7}`,
-    `SUMMARY:${pilzName} nehmen (Pilz-Begleiter)`,
-    "DESCRIPTION:Danach im Begleiter abhaken. Allgemeine Information\\, kein medizinischer Rat.",
-    "BEGIN:VALARM", "ACTION:DISPLAY", `DESCRIPTION:${pilzName} nehmen`, "TRIGGER:PT0M", "END:VALARM",
-    "END:VEVENT", "END:VCALENDAR"].join("\r\n");
+    `DTSTART:${d}T${u}`, `DTEND:${endeTag}T${bis}`, `RRULE:FREQ=DAILY;COUNT=${plan.wochen * 7}`,
+    `SUMMARY:${name} nehmen (Pilz-Begleiter)`,
+    `DESCRIPTION:${icsText("Danach im Begleiter abhaken. Allgemeine Information, kein medizinischer Rat.")}`,
+    "BEGIN:VALARM", "ACTION:DISPLAY", `DESCRIPTION:${name} nehmen`, "TRIGGER:PT0M", "END:VALARM",
+    "END:VEVENT", "END:VCALENDAR"].map(icsZeile).join("\r\n");
 }
 
 /* Sicherung laden: nur bekannte Felder, ungültige Tage werden verworfen. Gibt null zurück, wenn nichts Brauchbares drin ist. */

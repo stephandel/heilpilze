@@ -61,8 +61,22 @@ test("Kalender-Datei: tägliche Wiederholung für die Plandauer", () => {
   assert.match(ics, /DTSTART:20261101T200000\r\n/);
   assert.match(ics, /RRULE:FREQ=DAILY;COUNT=56/);
   assert.match(ics, /BEGIN:VALARM/);
-  assert.match(ics, /kein medizinischer Rat/);
-  assert.match(L.icsErinnerung(plan({uhr: "23:58"}), "Reishi"), /DTEND:20261101T235900/);
+  assert.match(ics.replace(/\r\n[ \t]/g, ""), /kein medizinischer Rat/); // entfaltet, die Zeile ist länger als 75 Byte
+  // Ende 5 Minuten nach Start, über Mitternacht hinweg auf den nächsten Tag (Safari lehnt Start = Ende ab)
+  assert.match(L.icsErinnerung(plan({uhr: "23:58"}), "Reishi"), /DTEND:20261102T000300/);
+  assert.match(L.icsErinnerung(plan({uhr: "23:59"}), "Reishi"), /DTEND:20261102T000400/);
+});
+
+test("Kalender-Datei: RFC 5545 – CRLF, Zeilen höchstens 75 Byte, Sonderzeichen maskiert", () => {
+  const ics = L.icsErinnerung(plan(), "Coriolus / Schmetterlingstramete, Trametes; Test\\x");
+  assert.ok(!/[^\r]\n/.test(ics), "nur CRLF-Zeilenenden");
+  for(const zeile of ics.split("\r\n")) assert.ok(Buffer.byteLength(zeile, "utf8") <= 75, `Zeile zu lang: ${zeile}`);
+  const entfaltet = ics.replace(/\r\n[ \t]/g, "");
+  assert.match(entfaltet, /SUMMARY:Coriolus \/ Schmetterlingstramete\\, Trametes\\; Test\\\\x nehmen/);
+  assert.match(entfaltet, /DESCRIPTION:Danach im Begleiter abhaken\. Allgemeine Information\\, kein medizinischer Rat\./);
+  assert.match(entfaltet, /^BEGIN:VCALENDAR\r\nVERSION:2\.0\r\nPRODID:/);
+  assert.match(entfaltet, /END:VALARM\r\nEND:VEVENT\r\nEND:VCALENDAR$/);
+  assert.equal((entfaltet.match(/^UID:/gm) || []).length, 1);
 });
 
 test("Sicherung laden verwirft Ungültiges", () => {
