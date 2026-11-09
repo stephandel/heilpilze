@@ -17,7 +17,15 @@ const jetzt = () => { if(q.get("heute")){ const [j,m,t] = q.get("heute").split("
 const heute = () => L.datumText(jetzt());
 const datumLang = (t, opt = {weekday:"long", day:"numeric", month:"long"}) => { const [j,m,d] = t.split("-").map(Number); return new Date(j, m-1, d).toLocaleDateString("de-DE", opt); };
 
-function laden(){ try { const d = JSON.parse(localStorage.getItem(SPEICHER)); if(d) return {plan: d.plan || null, einnahmen: d.einnahmen || {}, eintraege: d.eintraege || {}}; } catch(e){} return {plan: null, einnahmen: {}, eintraege: {}}; }
+// Gespeicherte Daten gehen durch dieselbe Prüfung wie eine Sicherung: Kaputtes oder Unbekanntes (z. B. eine Pilz-ID, die es nicht mehr gibt) wird verworfen statt die App zu blockieren
+function laden(){
+  try {
+    const roh = JSON.parse(localStorage.getItem(SPEICHER)), d = L.sicherungPruefen(roh, PILZE.map(p => p.id));
+    if(roh && roh.plan && !(d && d.plan)) setTimeout(() => toast("Dein gespeicherter Plan passte nicht mehr zu den Pilzdaten und wurde entfernt. Tagebuch und Haken bleiben."), 400);
+    if(d) return d;
+  } catch(e){}
+  return {plan: null, einnahmen: {}, eintraege: {}};
+}
 let S = laden();
 function speichern(){ try { localStorage.setItem(SPEICHER, JSON.stringify(S)); } catch(e){ toast("Konnte nicht speichern. Ist privates Surfen an?"); } }
 
@@ -76,7 +84,8 @@ function steckbrief(id){
       <p>Der Begleiter erinnert dich an deinen selbst gewählten Plan und hält fest, wie es dir geht. Er sagt nicht, ob ${esc(p.name)} für dich passt.</p>
       <button class="knopf" type="button" id="planMit">${aktiv() ? "Zu meinem Plan" : `Plan mit ${esc(p.name)} anlegen`}</button>
     </div>`;
-  $("#planMit").onclick = () => { if(!aktiv()){ entwurf = {pilz: p.id, uhr: "20:00", wochen: 8, erinnern: true, befinden: true}; schritt = 1; } location.hash = "#plan"; };
+  // S.neu: auch nach einem abgeschlossenen Plan direkt in den Assistenten, nicht auf die Seite „Plan abgeschlossen“
+  $("#planMit").onclick = () => { if(!aktiv()){ entwurf = {pilz: p.id, uhr: "20:00", wochen: 8, erinnern: true, befinden: true}; schritt = 1; S.neu = true; } location.hash = "#plan"; };
 }
 
 /* ---------- Plan ---------- */
@@ -262,6 +271,7 @@ function rueckblickZeigen(){
 /* ---------- Steuerung ---------- */
 function fokus(){ window.scrollTo(0, 0); $("#main").focus({preventScroll: true}); }
 function render(){
+  gezeichnetAm = heute();
   const [v, id] = (location.hash.slice(1) || "atlas").split("/");
   const ansicht = ["atlas","pilz","plan","tagebuch","rueckblick"].includes(v) ? v : "atlas";
   if(ansicht === "atlas"){ planband(); raster($("#suche").value); }
@@ -279,8 +289,9 @@ function render(){
 $("#zurueck").onclick = () => { location.hash = "#atlas"; };
 $("#sprung").onclick = () => $("#main").focus();
 addEventListener("hashchange", () => { render(); fokus(); });
-// Nach Mitternacht oder beim Zurückkehren in die App den Tag neu berechnen
-document.addEventListener("visibilitychange", () => { if(!document.hidden) render(); });
+// Beim Zurückkehren in die App nur neu zeichnen, wenn inzwischen ein neuer Tag ist – sonst ginge ein angefangener Tagebuch-Eintrag verloren
+let gezeichnetAm = "";
+document.addEventListener("visibilitychange", () => { if(!document.hidden && heute() !== gezeichnetAm) render(); });
 render();
 if("serviceWorker" in navigator && location.protocol !== "file:") navigator.serviceWorker.register("sw.js").catch(() => {});
 })();
