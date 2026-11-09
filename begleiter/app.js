@@ -87,7 +87,7 @@ function steckbrief(id){
     <p>${esc(p.summary)}</p>
     <details class="mehr"><summary>Sicherheit und Wechselwirkungen</summary>${liste(p.safety)}</details>
     <details class="mehr"><summary>Mengen in Studien und im Handel</summary><p>${esc(p.dose)}</p><p class="klein">Maßgeblich ist die Angabe auf deiner Packung.</p></details>
-    <p><a href="../pilzhandel/#/pilz/${p.id}">Alle Aussagen mit Evidenzstufe und Quellen</a></p>
+    <a class="knopf zwei" href="../pilzhandel/#/pilz/${p.id}">Alle Aussagen mit Evidenzstufe und Quellen</a>
     <p class="hinweis">Allgemeine Information, kein medizinischer Rat. Wenn du Medikamente nimmst, schwanger bist oder stillst: vorher ärztlich abklären.</p>
     <div class="karte" style="background:var(--moos-hg);border:0">
       <h3>${esc(p.name)} selbst ausprobieren?</h3>
