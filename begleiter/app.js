@@ -37,11 +37,12 @@ function toast(text, rueckgaengig){
   if(rueckgaengig) t.querySelector("button").onclick = () => { rueckgaengig(); t.hidden = true; };
   clearTimeout(toastZeit); toastZeit = setTimeout(() => t.hidden = true, rueckgaengig ? 7000 : 3500);
 }
-// Datei weitergeben. Auf Touch-Geräten über das Teilen-Blatt (Web Share mit Datei, Bibliothek M105): in der
-// iOS-Home-Bildschirm-App tut ein Download-Link sonst nichts (Apple-Forum 95911, WebKit-Bug 275288). Sonst Download.
+// Datei weitergeben. Im Browser-Tab per Download (in Safari führt der Download-Pfeil direkt zur Datei). In der
+// Home-Bildschirm-App tut ein Download-Link auf iOS nichts (Apple-Forum 95911, WebKit-Bug 275288) – dort über das
+// Teilen-Blatt (Web Share mit Datei, Bibliothek M105), Download nur als Rückfall.
 function datei(name, typ, inhalt){
   const f = new File([inhalt], name, {type: typ});
-  if(matchMedia("(pointer: coarse)").matches && navigator.canShare && navigator.canShare({files: [f]})){
+  if(installiert() && navigator.canShare && navigator.canShare({files: [f]})){
     navigator.share({files: [f], title: name}).catch(e => { if(e.name !== "AbortError") herunterladen(name, typ, inhalt); });
     return;
   }
@@ -123,7 +124,7 @@ function plan(){
     ${S.plan.erinnern ? `<div class="karte"><h3>Erinnerung</h3>
       <p class="klein">${naechste ? `Nächste: ${naechste.toLocaleDateString("de-DE", {weekday:"long"})}, ${S.plan.uhr} Uhr.` : (S.plan.pause ? "Pause – der Begleiter plant gerade keine Erinnerung." : "Keine weitere Erinnerung in diesem Plan.")}</p>
       <p>Der Begleiter kann keine Mitteilungen schicken. Speichere die Erinnerung in deinem Kalender – sie kommt dann jeden Tag zur gewählten Uhrzeit, bis der Plan endet.</p>
-      <p class="klein">Am iPhone: Datei über das Teilen-Blatt in „Dateien“ sichern, dort antippen und in den Kalender übernehmen. Eine gespeicherte Kalender-Serie läuft bei Pause, Uhrzeitwechsel oder Planende weiter – lösche sie dann im Kalender.</p>
+      <p class="klein">Am iPhone öffnest du die Datei danach aus den Downloads oder aus „Dateien“ und übernimmst sie in den Kalender. Eine gespeicherte Kalender-Serie läuft bei Pause, Uhrzeitwechsel oder Planende weiter – lösche sie dann im Kalender.</p>
       <button class="knopf zwei" type="button" id="ics">Kalender-Erinnerung speichern</button></div>` : ""}
     ${installiert() ? "" : `<p class="hinweis">Tipp: Leg den Begleiter auf den Home-Bildschirm (Safari: Teilen, dann „Zum Home-Bildschirm“). Dann öffnet er sich wie eine App und funktioniert auch ohne Internet.</p>`}
     <p class="hinweis">Allgemeine Information, kein medizinischer Rat. Bei Beschwerden: Einnahme beenden und ärztlich abklären.</p>
