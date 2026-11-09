@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#FBF5E4" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#14140E" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Begleiter">
+<title>Pilz-Begleiter</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="../pilzhandel/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../pilzhandel/icons/icon-192.png">
+<link rel="stylesheet" href="begleiter.css">
+</head>
+<body>
+<button class="sprung" type="button" id="sprung">Zum Inhalt</button>
+<div class="app">
+  <header class="kopf">
+    <button class="zurueck" id="zurueck" type="button" aria-label="Zurück zum Atlas">‹ Atlas</button>
+    <h1 id="titel">Atlas</h1>
+  </header>
+
+  <main class="inhalt" id="main" tabindex="-1">
+
+    <section class="ansicht" id="v-atlas" data-titel="Atlas">
+      <div class="eyebrow">Heilpilze ehrlich eingeordnet</div>
+      <h2>21 Pilze, jede Aussage mit Studienlage</h2>
+      <p class="lead">Schlag nach, was untersucht ist – und was nicht. Wenn du einen Pilz ausprobierst, hilft dir der Begleiter, den Überblick zu behalten.</p>
+      <div id="planband"></div>
+      <input class="suche" type="search" placeholder="Pilz suchen, z. B. Reishi" aria-label="Pilz suchen" id="suche">
+      <div class="raster" id="raster" aria-live="polite"></div>
+      <p class="hinweis">Allgemeine Information, kein medizinischer Rat. Heilpilze sind in Deutschland Lebensmittel oder Nahrungsergänzungsmittel, keine Arzneimittel.</p>
+    </section>
+
+    <section class="ansicht" id="v-pilz" data-titel="Steckbrief"></section>
+
+    <section class="ansicht" id="v-plan" data-titel="Mein Pilz-Plan"></section>
+
+    <section class="ansicht" id="v-tagebuch" data-titel="Tagebuch"></section>
+
+    <section class="ansicht" id="v-rueckblick" data-titel="Rückblick"></section>
+  </main>
+
+  <nav class="tabs" aria-label="Hauptbereiche">
+    <a href="#atlas" data-tab="atlas"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h6a2 2 0 0 1 2 2v13a2 2 0 0 0-2-2H4zM20 5h-6a2 2 0 0 0-2 2v13a2 2 0 0 1 2-2h6z"/></svg>Atlas</a>
+    <a href="#plan" data-tab="plan"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 3v4M16 3v4M4 10h16M9 15l2 2 4-4"/></svg>Plan</a>
+    <a href="#tagebuch" data-tab="tagebuch"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h11a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1H6zM6 3v18M10 8h5M10 12h5"/></svg>Tagebuch</a>
+    <a href="#rueckblick" data-tab="rueckblick"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>Rückblick</a>
+  </nav>
+  <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+</div>
+<script src="../pilzhandel/data.js"></script>
+<script src="logik.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
