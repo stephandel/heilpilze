@@ -1,6 +1,6 @@
 /* Pilz-Begleiter · Service Worker (Muster wie pilzhandel/sw.js)
    App-Dateien: zuerst aus dem Cache, im Hintergrund aktualisieren. Nach jeder Änderung VERSION hochzählen. */
-const VERSION = "pb-v2";
+const VERSION = "pb-v4";
 const SHELL = ["./", "index.html", "begleiter.css", "app.js", "logik.js", "manifest.webmanifest",
   "../pilzhandel/data.js", "../pilzhandel/icon.svg", "../pilzhandel/icons/icon-192.png"];
 
