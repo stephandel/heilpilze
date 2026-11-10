@@ -5,7 +5,7 @@
   --text:#23241A; --text2:#575844; --text3:#6A6B54; --linie:#E8DDBE;
   --akzent:#C9761A; --akzent-text:#955B18; --akzent-hg:#F8E2BE; --akzent-kontrast:#23241A;
   --moos:#667A36; --moos-text:#4E5E27; --moos-hg:#E7ECCF;
-  --glas:rgba(255,253,246,.72); --glas-kopf:rgba(251,245,228,.82); --schatten:0 1px 2px rgba(35,36,26,.06),0 6px 20px rgba(35,36,26,.06);
+  --glas:rgba(255,253,246,.96); --glas-kopf:rgba(251,245,228,.96); --schatten:0 1px 2px rgba(35,36,26,.06),0 6px 20px rgba(35,36,26,.06);
   --pfeil:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23575844' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
   --r:14px; --r-klein:8px;
   --serif:ui-serif,"New York",Georgia,"Times New Roman",serif;
@@ -17,7 +17,7 @@
   --text:#F2EEDC; --text2:#C9C3A6; --text3:#A8A288; --linie:#36352A;
   --akzent:#F0A850; --akzent-text:#F0A850; --akzent-hg:#3A2C14; --akzent-kontrast:#1E1E14;
   --moos:#B8C985; --moos-text:#B8C985; --moos-hg:#2A301B;
-  --glas:rgba(32,32,22,.72); --glas-kopf:rgba(20,20,14,.82); --schatten:0 1px 2px rgba(0,0,0,.3),0 6px 20px rgba(0,0,0,.25);
+  --glas:rgba(32,32,22,.96); --glas-kopf:rgba(20,20,14,.96); --schatten:0 1px 2px rgba(0,0,0,.3),0 6px 20px rgba(0,0,0,.25);
   --pfeil:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23C9C3A6' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
 }}
 :root[data-theme="dark"]{
@@ -26,7 +26,7 @@
   --text:#F2EEDC; --text2:#C9C3A6; --text3:#A8A288; --linie:#36352A;
   --akzent:#F0A850; --akzent-text:#F0A850; --akzent-hg:#3A2C14; --akzent-kontrast:#1E1E14;
   --moos:#B8C985; --moos-text:#B8C985; --moos-hg:#2A301B;
-  --glas:rgba(32,32,22,.72); --glas-kopf:rgba(20,20,14,.82); --schatten:0 1px 2px rgba(0,0,0,.3),0 6px 20px rgba(0,0,0,.25);
+  --glas:rgba(32,32,22,.96); --glas-kopf:rgba(20,20,14,.96); --schatten:0 1px 2px rgba(0,0,0,.3),0 6px 20px rgba(0,0,0,.25);
   --pfeil:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23C9C3A6' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
 }
 @media (prefers-contrast:more){:root{--glas:var(--flaeche);--glas-kopf:var(--hg)}}
@@ -44,6 +44,7 @@ a{color:var(--akzent-text)}
 @media (min-width:600px){.app{border-left:1px solid var(--linie);border-right:1px solid var(--linie)}}
 
 .kopf{position:sticky;top:0;z-index:5;padding:calc(10px + env(safe-area-inset-top)) calc(16px + env(safe-area-inset-right)) 10px calc(16px + env(safe-area-inset-left));background:var(--glas-kopf);-webkit-backdrop-filter:blur(18px) saturate(1.4);backdrop-filter:blur(18px) saturate(1.4);border-bottom:1px solid var(--linie);display:flex;align-items:center;gap:8px;min-height:56px}
+/* Kopf und Reiterleiste zu 96 % deckend: bei 72/82 % blieb gerollter Text dahinter lesbar (Bibliothek M132, Teil C 370) */
 /* Kopf im Ton von html: iOS malt die Statusleiste der Home-Bildschirm-App in der html-Farbe, ein hellerer Kopf gäbe einen Streifen (Bibliothek Teil C 1) */
 /* Installierte App: iOS 27 zeichnet die obersten ~33 pt weich (Bibliothek Teil C Nr. 1, 36 px am Gerät bestätigt) – Titel tiefer setzen */
 @media (display-mode:standalone){.kopf{padding-top:calc(36px + env(safe-area-inset-top))}}
