@@ -1,7 +1,8 @@
 // Dauertest Pilz-Begleiter in WebKit (Safari-Engine) mit iPhone-Maßen: node begleiter/tools/oberflaeche.webkit.cjs
 // Prüft 1) kein waagrechtes Überlaufen aller Ansichten bei 402/375/320 px hell und dunkel (Stephans Foto P-351a: Atlas-Spalte abgeschnitten),
 // 2) Kopf oben in derselben Farbe wie html – iOS malt die Statusleiste der Home-Bildschirm-App in der html-Farbe (Bibliothek Teil C 1),
-// 3) die von Stephan am 10.11.2026 bestätigten Schritte: Plan anlegen, Kalender-Datei, Haken und Tagebuch nach Neuladen, offline, Dunkelmodus.
+// 3) nichts scheint durch Kopf und Reiterleiste (Bibliothek M132/Teil C 370; Kanal-Schwelle 20 statt 40, bei 40 blieb „Schmetterlingstramete“ hinter dem Kopf lesbar),
+// 4) die von Stephan am 10.11.2026 bestätigten Schritte: Plan anlegen, Kalender-Datei, Haken und Tagebuch nach Neuladen, offline, Dunkelmodus.
 // Standalone lässt sich nicht einschalten: der Server macht aus „@media (display-mode:standalone)“ „@media all“ (wie Bibliothek vorlage/tests/kopfzeile.browser.mjs).
 const { webkit } = require("/Users/stephanhandel/KI Projekte/Wetter Apps/Wetterlage/node_modules/playwright");
 const http = require("http"), fs = require("fs"), path = require("path");
@@ -91,7 +92,19 @@ const ueberlauf = page => page.evaluate(() => {
       await ctx.close();
     }
 
-    // 3) Bestätigte Schritte aus P-351a als Dauertest
+    // 3) Durchscheinen: gerollter Inhalt hinter Kopf und Reiterleiste (Playwright zeichnet keinen Weichzeichner – strenger als das iPhone, so gewollt)
+    const { durchschein } = await import("./durchschein.mjs");
+    for(const schema of ["light", "dark"]) for(const [ziel, y] of [["atlas", 600], ["rueckblick", 300], ["tagebuch", 400]]){
+      const [ctx, p] = await neu(402, schema);
+      await p.goto(BASIS + `?heute=2026-11-23#${ziel}`); await p.evaluate(d => localStorage.setItem("pb-v1", JSON.stringify(d)), beispiel()); await p.reload();
+      await p.evaluate(y => scrollTo(0, y), y); await p.waitForTimeout(200);
+      const bereiche = await p.evaluate(() => { const k = document.querySelector(".kopf").getBoundingClientRect(), t = document.querySelector(".tabs").getBoundingClientRect(); return [{name: "kopf", oben: 0, unten: Math.round(k.bottom)}, {name: "reiter", oben: Math.round(t.top), unten: innerHeight}]; });
+      const werte = await durchschein(p, {bereiche, inhalt: "#main", schwelleKanal: 20});
+      for(const w of werte) pruefe(w.anteil < 0.005, `Durchscheinen ${schema} #${ziel} ${w.name}: ${(w.anteil * 100).toFixed(2)} % der Pixel weichen ab (stärkste ${w.schlimmste})`);
+      await ctx.close();
+    }
+
+    // 4) Bestätigte Schritte aus P-351a als Dauertest
     for(const schema of ["light", "dark"]){
       const [ctx, p] = await neu(402, schema);
       await p.goto(BASIS + "?heute=2026-11-10");
