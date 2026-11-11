@@ -30,7 +30,9 @@ Sicherheit und Einkauf achten müssen.
 - Nach jeder Änderung an App-Dateien `VERSION` in `pilzhandel/sw.js` hochzählen.
 - Studien-Radar: `node pilzhandel/tools/studien-radar.js [Tage]`. Treffer gelten als
   „nicht eingestuft“, bis sie in `heilpilze.html` bewertet sind.
-- Vor jedem Commit: `node --test pilzhandel/tools/test.mjs`.
+- Vor jedem Commit: `node --test pilzhandel/tools/test.mjs` und `node --test begleiter/tools/test.mjs`;
+  bei Änderungen in `begleiter/` zusätzlich der Oberflächen-Dauertest `node begleiter/tools/oberflaeche.webkit.cjs`
+  (WebKit, 402/375/320 px hell und dunkel, eigener Server auf Port 8832, anderer Port per `PORT=…`; muss „GRÜN“ melden).
 - Browsertest: `python3 -m http.server` im Repo-Ordner, dann `/pilzhandel/` öffnen. Vorher den
   Service Worker abmelden und hart neu laden (Cmd+Shift+R), sonst zeigt der Browser alte Dateien.
 
