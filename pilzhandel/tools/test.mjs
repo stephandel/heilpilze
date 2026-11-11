@@ -244,6 +244,20 @@ describe("Regel-Nachweise im Quelltext (CLAUDE.md-Tabelle)", () => {
   });
 });
 
+describe("Nachschlagewerk (heilpilze.html, P-7c1e)", () => {
+  const NW = readFileSync(join(root, "..", "heilpilze.html"), "utf8");
+  test("leitet vor dem Zeichnen zu Pilz Handel um, Sprungmarke #m-<id> auf die Pilzseite", () => {
+    const kopf = NW.slice(0, NW.indexOf("<style>"));
+    assert.match(kopf, /location\.replace\("pilzhandel\/" \+ \(m \? "#\/pilz\/" \+ m\[1\] : ""\)\)/);
+    assert.match(kopf, /<noscript><meta http-equiv="refresh" content="0; url=pilzhandel\/"><\/noscript>/);
+  });
+  test("jede Sprungmarke des Nachschlagewerks ist ein Pilz in Pilz Handel", () => {
+    const ids = [...NW.matchAll(/^\s*id:\s*"([\w-]+)"/gm)].map(m => m[1]);
+    assert.equal(ids.length, 21);
+    assert.deepEqual(ids.filter(id => !PH.MUSHROOMS.some(m => m.id === id)), []);
+  });
+});
+
 describe("Offline-Fähigkeit (sw.js)", () => {
   test("jede in index.html eingebundene lokale Datei steht im App-Cache (SHELL)", () => {
     const shell = new Function("return " + SW.match(/const SHELL = (\[[\s\S]*?\]);/)[1])();
@@ -276,9 +290,26 @@ describe("Farbkontrast (app.css, WCAG AA)", () => {
         }
       const r = ratio(t["on-accent"], t.accent);
       if(r < 4.5) low.push(`on-accent auf accent: ${r.toFixed(2)}:1`);
+      // Kasten „Sicherheit zuerst“: --brand ist im Dunkelmodus Creme, die helle Akzentfarbe darauf nur 1,5:1 (Rundum-Prüfung 10.11.2026, B6)
+      const b = ratio(t["band-accent"] || "#000000", t.brand);
+      if(!t["band-accent"] || b < 4.5) low.push(`band-accent auf brand: ${t["band-accent"] ? b.toFixed(2) + ":1" : "fehlt"}`);
       assert.deepEqual(low, []);
     });
   }
+
+  // Farbe einer CSS-Regel (genauer Selektor) aus app.css
+  const farbe = sel => (CSS.match(new RegExp("(?:^|[}\\s])" + sel.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "\\{([^}]*)\\}")) || [])[1]?.match(/(?:^|;)color:([^;]+)/)?.[1];
+
+  test("Schrift in Akzentfarbe nutzt die abgedunkelte Fassung (Titel „Handel“, Risiko-Punkt, B6)", () => {
+    assert.equal(farbe(".brand .wm em"), "var(--accent-ink)");
+    assert.match(CSS, /\.riskdot\.r2\{color:var\(--accent-ink\);\}/);
+  });
+
+  test("Kasten „Sicherheit zuerst“: Überschrift und Haken in --band-accent, keine feste Farbe in app.js", () => {
+    assert.equal(farbe(".band .eyebrow"), "var(--band-accent)");
+    assert.equal(farbe(".band li::before"), "var(--band-accent)");
+    assert.doesNotMatch(fnSrc("home"), /class="eyebrow" style="color:/);
+  });
 });
 
 describe("Impressum & Datenschutz (betreiber.js, LEGAL-01)", () => {

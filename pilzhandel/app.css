@@ -18,6 +18,8 @@
      Akzentfarbe (Buttons) — weißer Text erreicht darauf nur 3,45:1 (dunkel: 2:1). */
   --accent-ink:#955B18; /* war #975D1A: auf --bg-2 (Fußzeile) nur 4,49:1 */
   --on-accent:#23241A;
+  /* --band-accent: Akzent im Kasten „Sicherheit zuerst“ (Grund --brand); dunkel ist der Kasten Creme, dort die dunkle Fassung */
+  --band-accent:#D18B3C;
   --moss:#667A36; --moss-bg:#E7ECCF;
   --plum:#6B4E71;
   --danger:#B0392A; --danger-bg:#F7DBC9;
@@ -45,7 +47,7 @@
     --ink:#F2EEDC; --ink-2:#C9C3A6; --ink-3:#999379; --line:#36352A; --line-2:#58564A;
     --brand:#F2EEDC; --brand-ink:#1E1E14;
     --accent:#F0A850; --accent-2:#F3B973; --accent-bg:#3A2C14;
-    --accent-ink:#F0A850;
+    --accent-ink:#F0A850; --band-accent:#955B18;
     --moss:#B8C985; --moss-bg:#2A301B;
     --plum:#C7A6CE;
     --danger:#F0917A; --danger-bg:#3A2117;
@@ -65,7 +67,7 @@
   --ink:#F2EEDC; --ink-2:#C9C3A6; --ink-3:#999379; --line:#36352A; --line-2:#58564A;
   --brand:#F2EEDC; --brand-ink:#1E1E14;
   --accent:#F0A850; --accent-2:#F3B973; --accent-bg:#3A2C14;
-  --accent-ink:#F0A850;
+  --accent-ink:#F0A850; --band-accent:#955B18;
   --moss:#B8C985; --moss-bg:#2A301B;
   --plum:#C7A6CE;
   --danger:#F0917A; --danger-bg:#3A2117;
@@ -114,7 +116,7 @@ button{font:inherit;color:inherit;}
 .brand{display:flex;align-items:center;gap:.55rem;text-decoration:none;color:var(--ink);flex:none;}
 .brand svg{width:2.4rem;height:2.4rem;flex:none;}
 .brand .wm{font-family:var(--font-display);font-weight:600;font-size:1.3rem;letter-spacing:-.01em;line-height:1;white-space:nowrap;}
-.brand .wm em{font-style:italic;font-weight:500;color:var(--accent);}
+.brand .wm em{font-style:italic;font-weight:500;color:var(--accent-ink);}
 .mainnav{display:none;gap:.15rem;margin-left:1rem;}
 .mainnav a{
   text-decoration:none;color:var(--ink-2);font-weight:600;font-size:.9rem;
@@ -343,7 +345,7 @@ a.chip:hover{border-color:var(--line-2);color:var(--ink);}
 .riskdot{display:inline-flex;align-items:center;gap:.3rem;font-size:.75rem;font-weight:700;white-space:nowrap;}
 .riskdot::before{content:"";width:.55rem;height:.55rem;border-radius:50%;background:var(--ok);}
 .riskdot.r1::before{background:var(--warn);} .riskdot.r2::before{background:var(--accent);} .riskdot.r3::before{background:var(--danger);}
-.riskdot.r0{color:var(--ok);} .riskdot.r1{color:var(--warn);} .riskdot.r2{color:var(--accent);} .riskdot.r3{color:var(--danger);}
+.riskdot.r0{color:var(--ok);} .riskdot.r1{color:var(--warn);} .riskdot.r2{color:var(--accent-ink);} .riskdot.r3{color:var(--danger);}
 
 /* ---------- Catalog ---------- */
 .pagehead{padding-top:2rem;padding-bottom:1rem;}
@@ -531,7 +533,8 @@ details.acc table.tbl td{padding:.5rem .6rem;border-bottom:1px solid var(--line)
 .band .btn{background:var(--accent);color:var(--on-accent);}
 .band ul{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:minmax(0,1fr);gap:.5rem;}
 .band li{position:relative;padding-left:1.4rem;font-size:.95rem;}
-.band li::before{content:"✓";position:absolute;left:0;color:var(--accent-2);font-weight:800;}
+.band .eyebrow{color:var(--band-accent);}
+.band li::before{content:"✓";position:absolute;left:0;color:var(--band-accent);font-weight:800;}
 
 /* ---------- Footer ---------- */
 .footer{border-top:1px solid var(--line);margin-top:3rem;padding:2.5rem 0 2rem;background:var(--bg-2);font-size:.88rem;color:var(--ink-2);}

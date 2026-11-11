@@ -7,7 +7,10 @@ eine installierbare Webapp. Keine Abhängigkeiten, kein Build, kein Tracking.
 
 ## Nachschlagewerk
 
-[`heilpilze.html`](heilpilze.html) — https://stephandel.github.io/heilpilze/heilpilze.html
+[`heilpilze.html`](heilpilze.html) — leitet seit 11.11.2026 zu Pilz Handel weiter (war nicht fürs iPhone
+gebaut: seitlich verschiebbar, kleine Tippflächen, kein Dunkelmodus). `#m-<id>` führt auf die Pilzseite.
+Die Datei bleibt die Datenquelle für `pilzhandel/data.js`; zum Ansehen der alten Seite die Umleitung
+im Kopf auskommentieren.
 
 - 21 in Deutschland kaufbare Heil- und Vitalpilze (Reishi, Shiitake, Coriolus, Austernpilz,
   Hericium, Cordyceps, Agaricus, Maitake, Chaga, Judasohr, Eichhase, Schopftintling,

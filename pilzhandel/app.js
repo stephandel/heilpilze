@@ -375,7 +375,7 @@ function home(el){
   <section class="section container" style="padding-top:0">
     <div class="band">
       <div>
-        <div class="eyebrow" style="color:var(--accent-2)">Sicherheit zuerst</div>
+        <div class="eyebrow">Sicherheit zuerst</div>
         <h2>Nimmst du Medikamente?</h2>
         <p>Einige Heilpilze verstärken Blutverdünner oder senken den Blutzucker. Der Check zeigt in Sekunden, welche Pilze du mit deinem Arzt besprechen solltest.</p>
         <a class="btn" href="#/check">${icon("shield")} Wechselwirkungen prüfen</a>
